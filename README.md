@@ -24,5 +24,7 @@ Il est accessible à l'adresse suivante : http://89.168.52.45/
     - Si il y a une erreur à cause de la version de NodeJs, désinstaller NodeJs `sudo apt remove nodejs` et installer la dernière version : https://nodejs.org/en/download/package-manager
     - Puis faire `npm install -g oracledb`
     - Pour vérifier l'installation `npm list -g oracledb`
-- Mettre le dossier wallet dans /opt/oracle/. 
+- Mettre le dossier wallet dans /opt/oracle/.
+- Configurer la variable d'environnement pour le wallet :
+    - `export TNS_ADMIN=/opt/oracle/wallet`
 - Pour exécuter le serveur : `node index.js`
