@@ -3,6 +3,7 @@ const oracledb = require('oracledb');
 const path = require('path');
 const app = express();
 const port = 3000;
+let oracleConnection;
 
 const dbConfig = {
   user: 'ADMIN',
@@ -24,11 +25,8 @@ const dbConfig = {
   `
 };
 
-app.listen(port, () => {
-  console.log(`Web server started on http://localhost:${port}`);
-});
-
 app.use(express.static('public'));
+app.use(express.json());
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
@@ -39,14 +37,37 @@ oracledb.initOracleClient({ libDir: '/opt/oracle/instantclient_19_23' });
 async function connection() {
   try {
     console.log('Initializing database connection...');
-    const connection = await oracledb.getConnection(dbConfig);
-    console.log('Oracle database connection sucessful !');
-    await connection.close();
-    console.log('Database connection closed.');
-  } 
-  catch (err) {
+    oracleConnection = await oracledb.getConnection(dbConfig);
+    console.log('Oracle database connection successful!');
+  } catch (err) {
     console.error('Error to get oracle database connection:', err);
   }
 }
 
-connection()
+app.get('/announcements', async (req, res) => {
+  try {
+    if (!oracleConnection) {
+      return res.status(500).json({ error: 'Database connection not established' });
+    }
+    const query = `
+      SELECT JSON_OBJECT(*) 
+      FROM announcements 
+      NATURAL JOIN users
+    `
+    const resultRequest = await oracleConnection.execute(query);
+    const announcements = resultRequest.rows.map(row => JSON.parse(row[0]));
+    console.log("Result of query: ", announcements);
+    res.json(announcements);
+  } catch (err) {
+    console.error('Error executing query:', err);
+    res.status(500).json({ error: 'Failed to execute query' });
+  }
+});
+
+// Initialize the database connection and start the server
+connection().then(() => {
+  app.listen(port, () => {
+    console.log(`Web server started on http://localhost:${port}`);
+  });
+});
+
