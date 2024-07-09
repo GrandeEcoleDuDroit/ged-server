@@ -32,7 +32,7 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-oracledb.initOracleClient({ libDir: '/opt/oracle/instantclient_19_23' });
+oracledb.initOracleClient({ libDir: '/opt/oracle/instantclient_23_4' });
 
 async function connection() {
   try {
