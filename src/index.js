@@ -38,9 +38,10 @@ async function connection() {
   try {
     console.log('Initializing database connection...');
     oracleConnection = await oracledb.getConnection(dbConfig);
-    console.log('Oracle database connection successful!');
+    console.log('Database connection established !');
   } catch (err) {
-    console.error('Error to get oracle database connection:', err);
+    console.error('Failed to connect to the database:', err);
+    setTimeout(connection, 2000);
   }
 }
 
