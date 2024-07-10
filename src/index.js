@@ -45,7 +45,7 @@ async function connection() {
   }
 }
 
-app.get('/announcements', async (req, res) => {
+app.get('/announcements/get', async (req, res) => {
   try {
     if (!oracleConnection) {
       return res.status(500).json({ error: 'Database connection not established' });
