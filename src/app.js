@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const AnnouncementsRepository = require('./data/AnnouncementsRepository');
+const AnnouncementsRepository = require('./data/announcementsRepository');
 const app = express();
 const port = 3000;
 const announcementsRepository = new AnnouncementsRepository();
