@@ -18,6 +18,6 @@ app.get('/announcements/get', async (req, res) => {
 
 // Initialize the database connection and start the server
   app.listen(port, () => {
-    console.log(`Web server started on http://localhost:${port}`);
+    console.log(`Web server started on http://89.168.52.45/:${port}`);
 });
 
