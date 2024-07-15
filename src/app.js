@@ -12,7 +12,7 @@ app.use(express.static('public'));
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, './ui/index.html'));
 });
 
 app.get('/announcements/get', async (req, res) => {
@@ -23,6 +23,6 @@ imageRepository.listObjects()
 
 // Initialize the database connection and start the server
   app.listen(port, () => {
-    console.log(`Web server started on http://localhost:${port}`);
+    console.log(`Web server started on http://89.168.52.45/:${port}`);
 });
 
