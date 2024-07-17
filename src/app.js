@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const multer = require('multer');
+const { Readable } = require('stream')
 const upload = multer({ dest: 'uploads/' });
 const AnnouncementsRepository = require('./data/announcementsRepository');
 const ImageRepository = require("./data/imageRepository");
@@ -27,8 +28,14 @@ app.get('/image/download/:filename', async (req, res) => {
   try {
     const response = await imageRepository.downloadImage(objectName)
     const contentType = response.contentType
+
+    const imageStream = new Readable();
+    imageStream._read = () => {}
+    imageStream.push(response.value)
+    imageStream.push(null)
+
     res.set('Content-Type', contentType)
-    response.value.pipe(res)
+    imageStream.pipe(res)
   }
   catch (err) {
     console.error(`Error downloading image ${objectName}: ${err.message}`);
