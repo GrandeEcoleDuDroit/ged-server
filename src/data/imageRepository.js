@@ -21,6 +21,7 @@ class ImageRepository {
         }
         catch (err) {
             console.error('Error listing objects in bucket: ', err)
+            throw err
         }
     }
 
@@ -33,10 +34,11 @@ class ImageRepository {
             }
 
             const response = await client.getObject(request)
-            return response.value
+            return response
         }
         catch (err) {
             console.error(`Error getting image ${objectName}: ${err}`)
+            throw err
         }
     }
 

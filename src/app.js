@@ -25,8 +25,10 @@ app.get('/image/download/:filename', async (req, res) => {
   const objectName = req.params.filename;
   
   try {
-    const imageStream = await imageRepository.downloadImage(objectName)
-    imageStream.pipe(res)
+    const response = await imageRepository.downloadImage(objectName)
+    const contentType = response.contentType
+    res.set('Content-Type', contentType)
+    response.value.pipe(res)
   }
   catch (err) {
     console.error(`Error downloading image ${objectName}: ${err.message}`);
@@ -57,6 +59,6 @@ imageRepository.listObjects()
 
 // Initialize the database connection and start the server
   app.listen(port, () => {
-    console.log(`Web server started on http://89.168.52.45/:${port}`);
+    console.log(`Web server started on http://89.168.52.45:${port}`);
 });
 
