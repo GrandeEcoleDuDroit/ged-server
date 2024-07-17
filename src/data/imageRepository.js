@@ -9,22 +9,6 @@ const client = new oci.objectstorage.ObjectStorageClient({
 
 class ImageRepository {
 
-    async listObjects(){
-        try {
-            const request = {
-                namespaceName: namespaceName,
-                bucketName: bucketName
-            }
-
-            const response = await client.listObjects(request);
-            console.log('Objects in bucket: ', response.listObjects.objects)
-        }
-        catch (err) {
-            console.error('Error listing objects in bucket: ', err)
-            throw err
-        }
-    }
-
     async downloadImage(objectName){
         try {
             const request = {
@@ -33,8 +17,7 @@ class ImageRepository {
                 objectName: objectName
             }
 
-            const response = await client.getObject(request)
-            return response
+            return await client.getObject(request)
         }
         catch (err) {
             console.error(`Error getting image ${objectName}: ${err}`)
@@ -56,7 +39,6 @@ class ImageRepository {
             }
 
             const response = await client.putObject(request)
-            console.log(`Image uploaded successfully.: ${response}`)
             fs.unlinkSync(filePath)
             return response
         }
@@ -65,7 +47,6 @@ class ImageRepository {
             throw err
         }
     }
-
 }
 
 module.exports = ImageRepository;
