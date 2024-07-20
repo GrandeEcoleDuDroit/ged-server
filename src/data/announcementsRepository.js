@@ -5,7 +5,11 @@ class AnnouncementsRepository {
     #oracleConnection;
 
     constructor() {
-        this.#oracleConnection = this.#oracleDatabaseManager.getConnection();
+        this.#initializeConnection();
+    }
+
+    async #initializeConnection() {
+        this.#oracleConnection = await this.#oracleDatabaseManager.getConnection();
     }
 
     async getAllAnnouncements(response) {
