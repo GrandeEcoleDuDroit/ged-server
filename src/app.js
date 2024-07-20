@@ -27,7 +27,7 @@ app.get('/announcements/get', async (req, res) => {
   await announcementsRepository.getAllAnnouncements(res);
 })
 
-app.post('/user/create', async (req, res) => {
+app.post('/users/create', async (req, res) => {
   const {
     id,
     firstName,
