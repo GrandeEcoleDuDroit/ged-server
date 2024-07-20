@@ -2,7 +2,7 @@ const OracleDatabaseManager = require('./oracleDatabaseManager');
 
 class AnnouncementsRepository {
     #oracleDatabaseManager = new OracleDatabaseManager();
-    #oracleConnection
+    #oracleConnection;
 
     constructor() {
         this.#oracleConnection = this.#oracleDatabaseManager.getConnection();
@@ -15,16 +15,17 @@ class AnnouncementsRepository {
             }
             const query = `
                 SELECT JSON_OBJECT(*) 
-                FROM announcements 
-                NATURAL JOIN users
-            `
+                FROM ANNOUNCEMENTS 
+                NATURAL JOIN USERS
+            `;
+
             const resultRequest = await this.#oracleConnection.execute(query);
             const announcements = resultRequest.rows.map(row => JSON.parse(row[0]));
             console.log('Result of query: ', announcements);
             response.json(announcements);
         }
-        catch (err) {
-            console.error('Error executing query:', err);
+        catch (error) {
+            console.error('Error executing query:', error);
             response.status(500).json({ error: 'Failed to execute query' });
         }
     }
