@@ -6,7 +6,7 @@ class User {
     #schoolLevel;
     #isMember;
 
-    constructor(id, firstName, lastName, email, schoolLevel, isMember = 0) {
+    constructor(id = null, firstName, lastName, email, schoolLevel, isMember = 0) {
         this.#id = id;
         this.#firstName = firstName;
         this.#lastName = lastName;

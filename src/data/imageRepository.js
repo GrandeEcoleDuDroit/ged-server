@@ -10,19 +10,13 @@ const client = new oci.objectstorage.ObjectStorageClient({
 class ImageRepository {
 
     async downloadImage(objectName){
-        try {
-            const request = {
-                namespaceName: namespaceName,
-                bucketName: bucketName,
-                objectName: objectName
-            }
+        const request = {
+            namespaceName: namespaceName,
+            bucketName: bucketName,
+            objectName: objectName
+        }
 
-            return await client.getObject(request);
-        }
-        catch (error) {
-            console.error(`Error getting image ${objectName}: ${error}`);
-            throw error;
-        }
+        return await client.getObject(request);
     }
 
     async uploadImage(filePath, objectName){

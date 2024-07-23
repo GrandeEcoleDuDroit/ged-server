@@ -24,25 +24,57 @@ app.get('/', (req, res) => {
 });
 
 app.get('/announcements/get', async (req, res) => {
-  await announcementsRepository.getAllAnnouncements(res);
+  try {
+    const result = await announcementsRepository.getAllAnnouncements();
+    res.json(result);
+  }
+  catch (error) {
+    console.error('Error get all announcements:', error);
+    res.status(500).json(`Failed to execute getAllAnnouncements query: ${error.message}`);
+  }
 })
 
-app.post('/user/create', async (req, res) => {
+app.post('/users/create', async (req, res) => {
   const {
-    id,
-    firstName,
-    lastName,
-    email,
-    schoolLevel,
-    isMember
+    USER_ID: id,
+    USER_FIRST_NAME: firstName,
+    USER_LAST_NAME: lastName,
+    USER_EMAIL: email,
+    USER_SCHOOL_LEVEL: schoolLevel,
+    USER_IS_MEMBER: isMember
   } = req.body
 
   if (!firstName || !lastName || !email || !schoolLevel) {
-    return res.status(400).send('All user fields are required');
+    const errorMessage = `
+    All user fields are required :
+    {
+      firstName: ${firstName},
+      lastName: ${lastName},
+      email: ${email},
+      schoolLevel: ${schoolLevel},
+      firstname: ${firstName},
+    }
+    `
+    return res.status(400).json(errorMessage);
   }
 
-  const user = new User(id, firstName, lastName, email, schoolLevel);
-  await userRepository.createUser(res, user);
+  try {
+    const user = new User(id, firstName, lastName, email, schoolLevel, isMember);
+    const result = await userRepository.createUser(res, user);
+    const userId = result.outBinds.user_id[0];
+
+    const serverResponse = {
+      message: `User ${user.firstName} ${user.lastName} created successfully.`,
+      data : userId
+    }
+
+    res.status(201).json(serverResponse);
+    console.log(`User ${user.firstName} ${user.lastName} create successfully with ID ${userId}`);
+  }
+  catch (error) {
+    console.error('Error inserting user:', error);
+    res.status(500).json(`Error inserting user ${error.message}`);
+  }
 });
 
 app.get('/image/download/:filename', async (req, res) => {
@@ -59,7 +91,7 @@ app.get('/image/download/:filename', async (req, res) => {
   }
   catch (err) {
     console.error(`Error downloading image ${objectName}: ${err.message}`);
-    res.status(500).send(`Error download image ${objectName}: ${err.message}`);
+    res.status(500).json(`Error download image ${objectName}: ${err.message}`);
   }
 })
 
@@ -69,15 +101,15 @@ app.post('/image/upload', upload.single('image'), async (req, res) => {
 
   try {
     if(!imageFile){
-      return res.status(400).send('No image file found');
+      return res.status(400).json('No image file found');
     }
 
     const response = await imageRepository.uploadImage(imageFile.path, objectName);
-    res.send(response);
+    res.json(response);
     console.log(`Image uploaded successfully: ${objectName}`);
   }
   catch (error) {
-    res.status(500).send(`Error uploading image ${objectName}: ${error}`)
+    res.status(500).json(`Error uploading image ${objectName}: ${error}`)
   }
 })
 

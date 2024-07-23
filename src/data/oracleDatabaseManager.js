@@ -1,4 +1,5 @@
 const oracledb= require('oracledb');
+
 const dbConfig = {
     user: 'ADMIN',
     password: 'GEdoiseSch00L.!',
@@ -34,7 +35,7 @@ class OracleDatabaseManager {
     async #connect(){
         try {
             console.log('Initializing database connection...');
-            let connection = await oracledb.getConnection(dbConfig);
+            const connection = await oracledb.getConnection(dbConfig);
             console.log('Database connection established !');
             return connection;
         }
@@ -47,11 +48,8 @@ class OracleDatabaseManager {
     async getConnection(){
         if(this.#oracleConnection == null){
             this.#oracleConnection = this.#connect()
-            return this.#oracleConnection;
         }
-        else {
-            return this.#oracleConnection;
-        }
+        return this.#oracleConnection;
     }
 }
 

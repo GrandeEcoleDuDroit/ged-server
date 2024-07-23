@@ -5,29 +5,26 @@ class AnnouncementsRepository {
     #oracleConnection;
 
     constructor() {
-        this.#oracleConnection = this.#oracleDatabaseManager.getConnection();
+        this.#initializeConnection();
     }
 
-    async getAllAnnouncements(response) {
-        try {
-            if (!this.#oracleConnection) {
-                return response.status(500).json({ error: 'Database connection not established' });
-            }
-            const query = `
-                SELECT JSON_OBJECT(*) 
-                FROM ANNOUNCEMENTS 
-                NATURAL JOIN USERS
-            `;
+    async #initializeConnection() {
+        this.#oracleConnection = await this.#oracleDatabaseManager.getConnection();
+    }
 
-            const resultRequest = await this.#oracleConnection.execute(query);
-            const announcements = resultRequest.rows.map(row => JSON.parse(row[0]));
-            console.log('Result of query: ', announcements);
-            response.json(announcements);
+    async getAllAnnouncements() {
+        if (!this.#oracleConnection) {
+            throw 'Database connection not established';
         }
-        catch (error) {
-            console.error('Error executing query:', error);
-            response.status(500).json({ error: 'Failed to execute query' });
-        }
+
+        const query = `
+            SELECT JSON_OBJECT(*) 
+            FROM ANNOUNCEMENTS 
+            NATURAL JOIN USERS
+        `;
+
+        const resultRequest = await this.#oracleConnection.execute(query);
+        return resultRequest.rows.map(row => JSON.parse(row[0]));
     }
 }
 
