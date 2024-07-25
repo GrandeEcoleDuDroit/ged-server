@@ -1,3 +1,4 @@
+const oracledb = require('oracledb');
 const OracleDatabaseManager = require("./oracleDatabaseManager");
 
 class UserRepository {
@@ -31,6 +32,7 @@ class UserRepository {
                 :user_school_level,
                 :user_is_member
             )
+            RETURNING USER_ID INTO :user_id
         `;
 
         const binds = {
@@ -39,6 +41,7 @@ class UserRepository {
             user_email: user.email,
             user_school_level: user.schoolLevel,
             user_is_member: user.isMember,
+            user_id: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER }
         }
 
         return await this.#oracleConnection.execute(query, binds, { autoCommit: true });

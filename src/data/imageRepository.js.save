@@ -1,10 +1,12 @@
-const ociCommon = require('oci-common');
-const ociObjectStorage = require('oci-objectstorage');
+cont ociCommon = require('oci-sdk');
+console.log('Require fs -> imageRepository');
 const fs = require('fs');
-const provider = new ociCommon.ConfigFileAuthenticationDetailsProvider();
+console.log('New oci.common.Config... -> imageRepository');
+const provider = new oci.common.ConfigFileAuthenticationDetailsProvider();
 const namespaceName = "ax5bfuffglob";
 const bucketName = "bucket-gedoise";
-const client = new ociObjectStorage.ObjectStorageClient({
+console.log('client = new oci.objectstorage.ObjectStorage... -> imageRepository');
+const client = new oci.objectstorage.ObjectStorageClient({
     authenticationDetailsProvider: provider
 });
 
@@ -12,6 +14,7 @@ class ImageRepository {
 
     async downloadImage(objectName){
         try {
+console.log('Inside downloadImage -> imageRepository');
             const request = {
                 namespaceName: namespaceName,
                 bucketName: bucketName,
@@ -28,6 +31,7 @@ class ImageRepository {
 
     async uploadImage(filePath, objectName){
         try {
+console.log('Inside uploadImage -> imageRepository');
             const fileStream = fs.createReadStream(filePath);
             const fileStats = fs.statSync(filePath);
 
