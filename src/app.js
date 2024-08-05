@@ -41,7 +41,8 @@ app.post('/users/create', async (req, res) => {
     USER_LAST_NAME: lastName,
     USER_EMAIL: email,
     USER_SCHOOL_LEVEL: schoolLevel,
-    USER_IS_MEMBER: isMember
+    USER_IS_MEMBER: isMember,
+    USER_PROFILE_PICTURE_URL: profilePictureUrl
   } = req.body
 
   if (!firstName || !lastName || !email || !schoolLevel) {
@@ -59,7 +60,7 @@ app.post('/users/create', async (req, res) => {
   }
 
   try {
-    const user = new User(id, firstName, lastName, email, schoolLevel, isMember);
+    const user = new User(id, firstName, lastName, email, schoolLevel, isMember, profilePictureUrl);
     const result = await userRepository.createUser(user);
     const userId = result.outBinds.user_id[0];
 
