@@ -46,6 +46,25 @@ class UserRepository {
 
         return await this.#oracleConnection.execute(query, binds, { autoCommit: true });
     }
+
+    async updateProfilePicture(profilePictureUrl, userId) {
+        if (!this.#oracleConnection) {
+            throw 'Database connection not established';
+        }
+
+        const query = `
+            UPDATE USERS
+            SET USER_PROFILE_PICTURE_URL = :user_profile_picture_url
+            WHERE USER_ID = user_id;
+        `;
+
+        const binds = {
+            user_profile_picture_url: profilePictureUrl,
+            user_id: userId
+        };
+
+        await this.#oracleConnection.execute(query, binds, { autoCommit: true });
+    }
 }
 
 module.exports = UserRepository;
