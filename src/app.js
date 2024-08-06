@@ -82,7 +82,7 @@ app.post('/users/create', async (req, res) => {
 });
 
 app.post('/users/updateProfilePictureUrl', async(req, res) => {
-  console.log('update profil picture url request received');
+  console.log('Update profil picture url request received');
   const profilePictureUrl = req.body.USER_PROFILE_PICTURE_URL;
   const userId = req.body.USER_ID;
 
