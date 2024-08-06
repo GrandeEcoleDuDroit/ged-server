@@ -55,7 +55,7 @@ class UserRepository {
         const query = `
             UPDATE USERS
             SET USER_PROFILE_PICTURE_URL = :user_profile_picture_url
-            WHERE USER_ID = user_id;
+            WHERE USER_ID = :user_id;
         `;
 
         const binds = {
