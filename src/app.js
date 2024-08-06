@@ -82,6 +82,7 @@ app.post('/users/create', async (req, res) => {
 });
 
 app.post('/users/updateProfilePictureUrl', async(req, res) => {
+  console.log('update profil picture url request received');
   const profilePictureUrl = req.body.USER_PROFILE_PICTURE_URL;
   const userId = req.body.USER_ID;
 
@@ -94,7 +95,7 @@ app.post('/users/updateProfilePictureUrl', async(req, res) => {
             userId: ${userId}
           }`
     }
-
+    console.log(`Error to update profile picture url: profilePictureUrl: ${profilePictureUrl}, userId: ${userId}`);
     return res.status(400).json(errorMessage);
   }
 
@@ -103,7 +104,7 @@ app.post('/users/updateProfilePictureUrl', async(req, res) => {
     const serverResponse = {
       message: `Profile picture updated successfully`
     };
-
+    console.log('Profile picture updated successfully')
     res.status(201).json(serverResponse);
   }
   catch (error) {
