@@ -18,6 +18,7 @@ const User = require("./data/model/user");
 
 app.use(express.static('public'));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, './ui/index.html'));
@@ -46,16 +47,18 @@ app.post('/users/create', async (req, res) => {
   } = req.body
 
   if (!firstName || !lastName || !email || !schoolLevel) {
-    const errorMessage = `
-    All user fields are required :
-    {
-      firstName: ${firstName},
-      lastName: ${lastName},
-      email: ${email},
-      schoolLevel: ${schoolLevel},
-      firstname: ${firstName},
+    const errorMessage = {
+      message: "Error to create user",
+      error: `
+          All user fields are required :
+          {
+            firstName: ${firstName},
+            lastName: ${lastName},
+            email: ${email},
+            schoolLevel: ${schoolLevel},
+            firstname: ${firstName},
+          }`
     }
-    `
     return res.status(400).json(errorMessage);
   }
 
@@ -83,12 +86,15 @@ app.post('/users/updateProfilePictureUrl', async(req, res) => {
   const userId = req.body.USER_ID;
 
   if(!profilePictureUrl && !userId){
-    const errorMessage =
-        `It\'s missing fields : 
+    const errorMessage = {
+      message: "Error to update profile picture url",
+      error: `Missing fields : 
           { 
             profilePictureUrl: ${profilePictureUrl},
             userId: ${userId}
           }`
+    }
+
     return res.status(400).json(errorMessage);
   }
 
