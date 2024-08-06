@@ -18,6 +18,7 @@ const User = require("./data/model/user");
 
 app.use(express.static('public'));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, './ui/index.html'));
@@ -41,25 +42,28 @@ app.post('/users/create', async (req, res) => {
     USER_LAST_NAME: lastName,
     USER_EMAIL: email,
     USER_SCHOOL_LEVEL: schoolLevel,
-    USER_IS_MEMBER: isMember
+    USER_IS_MEMBER: isMember,
+    USER_PROFILE_PICTURE_URL: profilePictureUrl
   } = req.body
 
   if (!firstName || !lastName || !email || !schoolLevel) {
-    const errorMessage = `
-    All user fields are required :
-    {
-      firstName: ${firstName},
-      lastName: ${lastName},
-      email: ${email},
-      schoolLevel: ${schoolLevel},
-      firstname: ${firstName},
+    const errorMessage = {
+      message: "Error to create user",
+      error: `
+          All user fields are required :
+          {
+            firstName: ${firstName},
+            lastName: ${lastName},
+            email: ${email},
+            schoolLevel: ${schoolLevel},
+            firstname: ${firstName},
+          }`
     }
-    `
     return res.status(400).json(errorMessage);
   }
 
   try {
-    const user = new User(id, firstName, lastName, email, schoolLevel, isMember);
+    const user = new User(id, firstName, lastName, email, schoolLevel, isMember, profilePictureUrl);
     const result = await userRepository.createUser(user);
     const userId = result.outBinds.user_id[0];
 
@@ -77,6 +81,42 @@ app.post('/users/create', async (req, res) => {
   }
 });
 
+app.post('/users/updateProfilePictureUrl', async(req, res) => {
+  console.log('Update profil picture url request received');
+  const profilePictureUrl = req.body.USER_PROFILE_PICTURE_URL;
+  const userId = req.body.USER_ID;
+
+  if(!profilePictureUrl && !userId){
+    const errorMessage = {
+      message: "Error to update profile picture url",
+      error: `Missing fields : 
+          { 
+            profilePictureUrl: ${profilePictureUrl},
+            userId: ${userId}
+          }`
+    }
+    console.log(`Error to update profile picture url: profilePictureUrl: ${profilePictureUrl}, userId: ${userId}`);
+    return res.status(400).json(errorMessage);
+  }
+
+  try {
+    await userRepository.updateProfilePicture(profilePictureUrl, userId);
+    const serverResponse = {
+      message: `Profile picture updated successfully`
+    };
+    console.log('Profile picture updated successfully')
+    res.status(201).json(serverResponse);
+  }
+  catch (error) {
+    const errorMessage = {
+      message: 'Error update profile picture',
+      error: error.message
+    }
+    console.error(errorMessage.message, error);
+    res.status(500).json(errorMessage);
+  }
+})
+
 app.get('/image/download/:filename', async (req, res) => {
   const objectName = req.params.filename;
   
@@ -90,8 +130,12 @@ app.get('/image/download/:filename', async (req, res) => {
     console.log(`Image ${objectName} downloaded`);
   }
   catch (err) {
-    console.error(`Error downloading image ${objectName}: ${err.message}`);
-    res.status(500).json(`Error download image ${objectName}: ${err.message}`);
+    const errorMessage = {
+        message: `Error downloading image ${objectName}`,
+        error: err.message
+  }
+    console.error(`${errorMessage.message}: ${errorMessage.error}`);
+    res.status(500).json(errorMessage);
   }
 })
 
@@ -104,9 +148,13 @@ app.post('/image/upload', upload.single('image'), async (req, res) => {
       return res.status(400).json('No image file found');
     }
 
-    const response = await imageRepository.uploadImage(imageFile.path, objectName);
-    res.json(response);
-    console.log(`Image uploaded successfully: ${objectName}`);
+    await imageRepository.uploadImage(imageFile.path, objectName);
+    const serverResponse = {
+      message: `Image uploaded successfully: ${objectName}`
+    }
+
+    res.json(serverResponse);
+    console.log(serverResponse.message);
   }
   catch (error) {
     res.status(500).json(`Error uploading image ${objectName}: ${error}`)
