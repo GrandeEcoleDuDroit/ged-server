@@ -16,12 +16,28 @@ class ImageRepository {
                 namespaceName: namespaceName,
                 bucketName: bucketName,
                 objectName: objectName
-            }
+            };
 
             return await client.getObject(request);
         }
         catch (error) {
             console.error(`Error getting image ${objectName}: ${error}`);
+            throw error;
+        }
+    }
+
+    async deleteImage(objectName) {
+        try {
+            const request = {
+                namespaceName: namespaceName,
+                bucketName: bucketName,
+                objectName: objectName
+            };
+
+            return await client.deleteObject(request);
+        }
+        catch (error) {
+            console.error(`Error deleting image ${objectName}`, error);
             throw error;
         }
     }
@@ -37,7 +53,7 @@ class ImageRepository {
                 objectName: objectName,
                 putObjectBody: fileStream,
                 contentLength: fileStats.size
-            }
+            };
 
             const response = await client.putObject(request);
             fs.unlinkSync(filePath);
