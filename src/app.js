@@ -82,7 +82,7 @@ app.post('/users/create', async (req, res) => {
 });
 
 app.post('/users/updateProfilePictureUrl', async(req, res) => {
-  console.log('Update profil picture url request received');
+  console.log('Update profile picture url request received');
   const profilePictureUrl = req.body.USER_PROFILE_PICTURE_URL;
   const userId = req.body.USER_ID;
 
@@ -115,7 +115,7 @@ app.post('/users/updateProfilePictureUrl', async(req, res) => {
     console.error(errorMessage.message, error);
     res.status(500).json(errorMessage);
   }
-})
+});
 
 app.get('/image/download/:filename', async (req, res) => {
   const objectName = req.params.filename;
@@ -137,7 +137,29 @@ app.get('/image/download/:filename', async (req, res) => {
     console.error(`${errorMessage.message}: ${errorMessage.error}`);
     res.status(500).json(errorMessage);
   }
-})
+});
+
+app.delete('/image/delete/:filename', async (req, res) => {
+  console.log('Delete image request received');
+  const objectName = req.params.filename;
+
+  try {
+    await imageRepository.deleteImage(objectName);
+    const serverResponse = {
+      message: `Image ${objectName} deleted sucessfully`
+    };
+    console.log(serverResponse.message)
+    res.json(serverResponse)
+  }
+  catch (error) {
+    const serverResponse = {
+      message: `Error deleting image ${objectName}`,
+      error: error.message
+    }
+    console.error(serverResponse.message, error);
+    res.status(500).json(serverResponse)
+  }
+});
 
 app.post('/image/upload', upload.single('image'), async (req, res) => {
   const imageFile = req.file;
@@ -151,13 +173,17 @@ app.post('/image/upload', upload.single('image'), async (req, res) => {
     await imageRepository.uploadImage(imageFile.path, objectName);
     const serverResponse = {
       message: `Image uploaded successfully: ${objectName}`
-    }
+    };
 
     res.json(serverResponse);
     console.log(serverResponse.message);
   }
   catch (error) {
-    res.status(500).json(`Error uploading image ${objectName}: ${error}`)
+    const serverResponse = {
+      message: `Error uploading image ${objectName}`,
+      error: error
+    }
+    res.status(500).json(serverResponse)
   }
 })
 
