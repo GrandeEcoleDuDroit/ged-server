@@ -82,7 +82,7 @@ app.post('/users/create', async (req, res) => {
 });
 
 app.post('/users/updateProfilePictureUrl', async(req, res) => {
-  console.log('Update profil picture url request received');
+  console.log('Update profile picture url request received');
   const profilePictureUrl = req.body.USER_PROFILE_PICTURE_URL;
   const userId = req.body.USER_ID;
 
@@ -139,21 +139,24 @@ app.get('/image/download/:filename', async (req, res) => {
   }
 });
 
-app.get('image/delete/:filename', async (req, res) => {
+app.delete('/image/delete/:filename', async (req, res) => {
+  console.log('Delete image request received');
   const objectName = req.params.filename;
 
   try {
     await imageRepository.deleteImage(objectName);
-    const serverReponse = {
+    const serverResponse = {
       message: `Image ${objectName} deleted sucessfully`
     };
-    res.json(serverReponse)
+    console.log(serverResponse.message)
+    res.json(serverResponse)
   }
   catch (error) {
     const serverResponse = {
       message: `Error deleting image ${objectName}`,
-      error: error
+      error: error.message
     }
+    console.error(serverResponse.message, error);
     res.status(500).json(serverResponse)
   }
 });
