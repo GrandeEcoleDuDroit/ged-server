@@ -117,7 +117,7 @@ app.post('/users/update/profile-picture-url', async(req, res) => {
   }
 });
 
-app.delete('/users/profile-picture-url/userId', async (req, res) => {
+app.delete('/users/profile-picture-url/:userId', async (req, res) => {
   const userId = req.params.userId;
 
   try {
@@ -138,7 +138,7 @@ app.delete('/users/profile-picture-url/userId', async (req, res) => {
   }
 });
 
-app.get('/image/download/filename', async (req, res) => {
+app.get('/image/download/:filename', async (req, res) => {
   const objectName = req.params.filename;
   
   try {
