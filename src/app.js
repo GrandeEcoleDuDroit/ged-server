@@ -100,16 +100,16 @@ app.post('/users/update/profile-picture-url', async(req, res) => {
   }
 
   try {
-    await userRepository.updateProfilePicture(profilePictureUrl, userId);
+    await userRepository.updateProfilePictureUrl(profilePictureUrl, userId);
     const serverResponse = {
-      message: `Profile picture updated successfully`
+      message: `Profile picture url updated successfully`
     };
-    console.log('Profile picture updated successfully')
+    console.log('Profile picture url updated successfully')
     res.status(201).json(serverResponse);
   }
   catch (error) {
     const errorMessage = {
-      message: 'Error update profile picture',
+      message: 'Error update profile picture url',
       error: error.message
     }
     console.error(errorMessage.message, error);
@@ -117,7 +117,28 @@ app.post('/users/update/profile-picture-url', async(req, res) => {
   }
 });
 
-app.get('/image/download/filename', async (req, res) => {
+app.delete('/users/profile-picture-url/:userId', async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    await userRepository.deleteProfilePictureUrl(userId)
+    const serverResponse = {
+      message: `Profile picture url deleted successfully`
+    };
+    console.log('Profile picture url deleted successfully')
+    res.status(201).json(serverResponse);
+  }
+  catch (error) {
+    const errorMessage = {
+      message: 'Error delete profile picture url',
+      error: error.message
+    }
+    console.error(errorMessage.message, error);
+    res.status(500).json(errorMessage);
+  }
+});
+
+app.get('/image/download/:filename', async (req, res) => {
   const objectName = req.params.filename;
   
   try {
@@ -185,7 +206,7 @@ app.post('/image/upload', upload.single('image'), async (req, res) => {
     }
     res.status(500).json(serverResponse)
   }
-})
+});
 
 // Initialize the database connection and start the server
   app.listen(port, () => {
