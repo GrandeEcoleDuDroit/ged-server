@@ -81,7 +81,7 @@ app.post('/users/create', async (req, res) => {
   }
 });
 
-app.post('/users/updateProfilePictureUrl', async(req, res) => {
+app.post('/users/update/profile-picture-url', async(req, res) => {
   console.log('Update profile picture url request received');
   const profilePictureUrl = req.body.USER_PROFILE_PICTURE_URL;
   const userId = req.body.USER_ID;
@@ -117,7 +117,7 @@ app.post('/users/updateProfilePictureUrl', async(req, res) => {
   }
 });
 
-app.get('/image/download/:filename', async (req, res) => {
+app.get('/image/download/filename', async (req, res) => {
   const objectName = req.params.filename;
   
   try {
@@ -139,7 +139,7 @@ app.get('/image/download/:filename', async (req, res) => {
   }
 });
 
-app.delete('/image/delete/:filename', async (req, res) => {
+app.delete('/image/filename', async (req, res) => {
   console.log('Delete image request received');
   const objectName = req.params.filename;
 
