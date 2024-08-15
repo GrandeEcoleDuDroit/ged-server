@@ -73,7 +73,7 @@ class UserRepository {
 
         const query = `
             DELETE FROM USERS
-            WHERE USER_ID = :user_id;
+            WHERE USER_ID = :user_id
         `;
 
         const binds = {
