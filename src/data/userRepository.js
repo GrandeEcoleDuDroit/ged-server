@@ -47,7 +47,7 @@ class UserRepository {
         return await this.#oracleConnection.execute(query, binds, { autoCommit: true });
     }
 
-    async updateProfilePicture(profilePictureUrl, userId) {
+    async updateProfilePictureUrl(profilePictureUrl, userId) {
         if (!this.#oracleConnection) {
             throw 'Database connection not established';
         }
@@ -60,6 +60,23 @@ class UserRepository {
 
         const binds = {
             user_profile_picture_url: profilePictureUrl,
+            user_id: userId
+        };
+
+        await this.#oracleConnection.execute(query, binds, { autoCommit: true });
+    }
+
+    async deleteProfilePictureUrl(userId) {
+        if (!this.#oracleConnection) {
+            throw 'Database connection not established';
+        }
+
+        const query = `
+            DELETE FROM USERS
+            WHERE USER_ID = :user_id;
+        `;
+
+        const binds = {
             user_id: userId
         };
 
