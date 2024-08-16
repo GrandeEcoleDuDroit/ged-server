@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../data/model/user');
-const userRepository = require('../data/userRepository');
+const UserRepository = require('../data/userRepository');
+
+const userRepository = new UserRepository();
 
 router.post('/create', async (req, res) => {
     const {
@@ -81,7 +83,6 @@ router.post('/update/profile-picture-url', async (req, res) => {
         });
     }
 });
-
 
 router.delete('/profile-picture-url/:userId', async (req, res) => {
     const userId = req.params.userId;

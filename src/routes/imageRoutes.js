@@ -3,7 +3,9 @@ const multer = require('multer');
 const { Readable } = require('stream');
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
-const imageRepository = require('../data/imageRepository');
+const ImageRepository = require('../data/imageRepository');
+
+const imageRepository = new ImageRepository();
 
 router.post('/upload', upload.single('image'), async (req, res) => {
     const imageFile = req.file;

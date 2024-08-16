@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const announcementsRepository = require('../data/announcementsRepository');
+const AnnouncementsRepository = require('../data/announcementsRepository');
+
+const announcementsRepository = new AnnouncementsRepository();
 
 router.get('/', async (req, res) => {
     try {
