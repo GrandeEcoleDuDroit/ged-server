@@ -160,7 +160,7 @@ app.get('/image/download/:filename', async (req, res) => {
   }
 });
 
-app.delete('/image/filename', async (req, res) => {
+app.delete('/image/:filename', async (req, res) => {
   console.log('Delete image request received');
   const objectName = req.params.filename;
 
