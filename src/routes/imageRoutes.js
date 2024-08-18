@@ -47,7 +47,7 @@ router.get('/download/:filename', async (req, res) => {
 });
 
 
-router.delete('/filename/:filename', async (req, res) => {
+router.delete('/image/:filename', async (req, res) => {
     const objectName = req.params.filename;
 
     try {
