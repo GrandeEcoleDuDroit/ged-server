@@ -72,7 +72,8 @@ class UserRepository {
         }
 
         const query = `
-            DELETE FROM USERS
+            UPDATE USERS
+            SET USER_PROFILE_PICTURE_URL = NULL
             WHERE USER_ID = :user_id
         `;
 
