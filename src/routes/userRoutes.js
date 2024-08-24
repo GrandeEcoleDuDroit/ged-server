@@ -41,7 +41,7 @@ router.post('/create', async (req, res) => {
         const serverResponse = {
             message: `User ${user.firstName} ${user.lastName} created successfully.`,
             data : userId
-        }
+        };
 
         res.status(201).json(serverResponse);
     }
