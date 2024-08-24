@@ -44,8 +44,7 @@ router.post('/create', async (req, res) => {
     }
 
     try {
-        const formattedDate = new Date(date).toISOString();
-        const announcement = new Announcement(id, title, content, formattedDate, userId);
+        const announcement = new Announcement(id, title, content, date, userId);
         const result = await announcementsRepository.createAnnouncement(announcement);
         const announcementId = result.outBinds.announcement_id[0];
 
