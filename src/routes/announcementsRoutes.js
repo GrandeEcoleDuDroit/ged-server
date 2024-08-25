@@ -63,4 +63,21 @@ router.post('/create', async (req, res) => {
     }
 });
 
+router.delete('/:id', async (req, res) => {
+    const announcementId = req.params.id;
+
+    try {
+        await announcementsRepository.deleteAnnouncement(announcementId);
+        res.status(200).json({
+            message: `Announcement ${announcementId} deleted successfully`
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            message: 'Error delete announcement',
+            error: error.message
+        });
+    }
+})
+
 module.exports = router;

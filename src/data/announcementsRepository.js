@@ -59,6 +59,23 @@ class AnnouncementsRepository {
 
         return await this.#oracleConnection.execute(query, binds, { autoCommit: true });
     }
+
+    async deleteAnnouncement(announcementId) {
+        if(!this.#oracleConnection) {
+            throw 'Database connection not established';
+        }
+
+        const query = `
+            DELETE FROM ANNOUNCEMENTS
+            WHERE ANNOUNCEMENT_ID = :announcement_id
+        `
+
+        const binds = {
+            announcement_id: announcementId
+        }
+
+        return await this.#oracleConnection.execute(query, binds, { autoCommit: true });
+    }
 }
 
 module.exports = AnnouncementsRepository;
