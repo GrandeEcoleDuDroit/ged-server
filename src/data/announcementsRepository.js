@@ -67,7 +67,7 @@ class AnnouncementsRepository {
 
         const query = `
             DELETE FROM ANNOUNCEMENTS
-            WHERE ANNOUNCEMENT_ID = :announcementId
+            WHERE ANNOUNCEMENT_ID = :announcement_id
         `
 
         const binds = {
