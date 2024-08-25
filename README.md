@@ -14,6 +14,7 @@ Ne pas développer directement sur la machine virtuelle, utiliser un docker ou v
 - Lancer le docker avec un port d'ouvert (par exemple le port 3000 et avec le nom ubuntu-dev) : `docker run -it -p 3000:3000 --name ubuntu-dev ubuntu`
    
 ### Initialisation
+#### A la main
 1. Installer node js : `apt install nodejs`
 2. Vérifier l'installation : `node -v; npm; -v`
 3. Installer Libaio1 : `apt install libaio1`, dans le cas où cela ne fonctionne pas.
@@ -34,6 +35,9 @@ Ne pas développer directement sur la machine virtuelle, utiliser un docker ou v
 8. Configurer la variable d'environnement pour le wallet :
     - `export TNS_ADMIN=/opt/oracle/wallet`
 9. Pour exécuter le serveur : `node app.js`
+
+#### Utiliser Dockerfile
+//TODO
 
 ### GIT
 Git est installé sur les VMs par SSH avec la passphrase : `johncena`
