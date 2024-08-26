@@ -13,7 +13,6 @@ RUN apt clean && \
         git -o Debug::pkgProblemResolver=yes
 
 WORKDIR /usr/app
-COPY ./ ./
 
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt install -y nodejs
