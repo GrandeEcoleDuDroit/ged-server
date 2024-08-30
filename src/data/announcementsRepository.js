@@ -19,9 +19,14 @@ class AnnouncementsRepository {
         }
 
         const query = `
-            SELECT JSON_OBJECT(*) 
-            FROM ANNOUNCEMENTS 
-            NATURAL JOIN USERS
+            SELECT JSON_OBJECT(
+                'ANNOUNCEMENT_ID' VALUE TO_NUMBER(ANNOUNCEMENT_ID),
+                'ANNOUNCEMENT_TITLE' VALUE TO_CHAR(ANNOUNCEMENT_TITLE),
+                'ANNOUNCEMENT_CONTENT' VALUE TO_CHAR(ANNOUNCEMENT_CONTENT),
+                'ANNOUNCEMENT_DATE' VALUE TO_NUMBER(ANNOUNCEMENT_DATE),
+                'USER_ID' VALUE TO_NUMBER(USER_ID)
+            )
+            FROM ANNOUNCEMENTS;
         `;
 
         const resultRequest = await this.#oracleConnection.execute(query);
