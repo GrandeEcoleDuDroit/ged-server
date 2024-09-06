@@ -26,10 +26,10 @@ class UserRepository {
 
         const binds = {
             user_id: userId
-        }
+        };
 
         const result = await this.#oracleConnection.execute(query, binds);
-        return result.rows.map(row => JSON.parse(row[0]));
+        return JSON.parse(result.rows[0]);
     }
 
     async createUser(user) {
