@@ -13,6 +13,25 @@ class UserRepository {
         this.#oracleConnection = await this.#oracleDatabaseManager.getConnection();
     }
 
+    async getUser(userId) {
+        if (!this.#oracleConnection) {
+            throw 'Database connection not established';
+        }
+
+        const query = `
+            SELECT JSON_OBJECT(*)
+            FROM USERS
+            WHERE USER_ID = :user_id
+        `;
+
+        const binds = {
+            user_id: userId
+        }
+
+        const result = await this.#oracleConnection.execute(query, binds);
+        return result.rows.map(row => JSON.parse(row[0]));
+    }
+
     async createUser(user) {
         if (!this.#oracleConnection) {
             throw 'Database connection not established';
