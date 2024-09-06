@@ -5,6 +5,18 @@ const UserRepository = require('../data/userRepository');
 
 const userRepository = new UserRepository();
 
+router.get('/:userId', async (req, res) => {
+    const userId = req.params.userId;
+
+    try {
+        const user = await userRepository.getUser(userId);
+        res.status(200).json(user);
+    }
+    catch (error) {
+        res.status(500).json(`Error getting user: ${error.message}`);
+    }
+});
+
 router.post('/create', async (req, res) => {
     const {
         USER_ID: id,
@@ -18,7 +30,7 @@ router.post('/create', async (req, res) => {
 
     if (!firstName || !lastName || !email || !schoolLevel) {
         const errorMessage = {
-            message: "Error to create user",
+            message: "Error creating user",
             error: `
               All user fields are required :
               {
@@ -59,7 +71,7 @@ router.post('/update/profile-picture-url', async (req, res) => {
 
     if(!profilePictureUrl && !userId) {
         const errorMessage = {
-            message: "Error to update profile picture url",
+            message: "Error updating profile picture url",
             error: `Missing fields : 
             { 
                 profilePictureUrl: ${profilePictureUrl},
@@ -78,7 +90,7 @@ router.post('/update/profile-picture-url', async (req, res) => {
     }
     catch (error) {
         res.status(500).json({
-            message: 'Error update profile picture url',
+            message: 'Error updating profile picture url',
             error: error.message
         });
     }
@@ -95,7 +107,7 @@ router.delete('/profile-picture-url/:userId', async (req, res) => {
     }
     catch (error) {
         res.status(500).json({
-            message: 'Error delete profile picture url',
+            message: 'Error deleting profile picture url',
             error: error.message
         });
     }

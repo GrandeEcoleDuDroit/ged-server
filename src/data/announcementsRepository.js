@@ -24,8 +24,8 @@ class AnnouncementsRepository {
             NATURAL JOIN USERS
         `;
 
-        const resultRequest = await this.#oracleConnection.execute(query);
-        return resultRequest.rows.map(row => JSON.parse(row[0]));
+        const result = await this.#oracleConnection.execute(query);
+        return result.rows.map(row => JSON.parse(row[0]));
     }
 
     async createAnnouncement(announcement) {
