@@ -19,8 +19,8 @@ class AnnouncementsRepository {
         }
 
         const query = `
-            SELECT JSON_OBJECT(*) 
-            FROM ANNOUNCEMENTS 
+            SELECT JSON_OBJECT(*)
+            FROM ANNOUNCEMENTS
             NATURAL JOIN USERS
         `;
 
