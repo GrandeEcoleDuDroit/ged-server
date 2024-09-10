@@ -68,8 +68,8 @@ class AnnouncementsRepository {
         const query = `
             UPDATE ANNOUNCEMENTS
             SET ANNOUNCEMENT_TITLE = :announcement_title,
-            SET ANNOUNCEMENT_CONTENT = :announcement_content,
-            SET ANNOUNCEMENT_DATE = :announcement_date
+                ANNOUNCEMENT_CONTENT = :announcement_content,
+                ANNOUNCEMENT_DATE = :announcement_date
             WHERE ANNOUNCEMENT_ID = :announcement_id
         `;
 
