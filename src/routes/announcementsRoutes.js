@@ -63,6 +63,47 @@ router.post('/create', async (req, res) => {
     }
 });
 
+router.post('/update', async (req, res) => {
+    const {
+        ANNOUNCEMENT_ID: id,
+        ANNOUNCEMENT_TITLE: title,
+        ANNOUNCEMENT_CONTENT: content,
+        ANNOUNCEMENT_DATE: date,
+        USER_ID: userId
+    } = req.body;
+
+    if(!content || !date || !userId) {
+        const errorMessage = {
+            message: "Error to update announcement",
+            error: `
+            Some missing announcement fields : 
+            {
+                content: ${content},
+                date: ${date},
+                userId: ${userId}
+            }
+            `
+        };
+
+        return res.status(400).json(errorMessage);
+    }
+    
+    try {
+        const announcement = new Announcement(id, title, content, date, userId);
+        await announcementsRepository.updateAnnouncement(announcement);
+
+        res.status(201).json({
+            message: `Announcement ${announcement.id} updated successfully`
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            message: 'Error updating announcement',
+            error: error.message
+        })
+    }
+});
+
 router.delete('/:id', async (req, res) => {
     const announcementId = req.params.id;
 
