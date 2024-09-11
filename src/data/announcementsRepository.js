@@ -60,6 +60,29 @@ class AnnouncementsRepository {
         return await this.#oracleConnection.execute(query, binds, { autoCommit: true });
     }
 
+    async updateAnnouncement(announcement) {
+        if (!this.#oracleConnection) {
+            throw 'Database connection not established';
+        }
+
+        const query = `
+            UPDATE ANNOUNCEMENTS
+            SET ANNOUNCEMENT_TITLE = :announcement_title,
+                ANNOUNCEMENT_CONTENT = :announcement_content,
+                ANNOUNCEMENT_DATE = :announcement_date
+            WHERE ANNOUNCEMENT_ID = :announcement_id
+        `;
+
+        const binds = {
+            announcement_title: announcement.title,
+            announcement_content: announcement.content,
+            announcement_date: announcement.date,
+            announcement_id: announcement.id
+        }
+
+        return await this.#oracleConnection.execute(query, binds, { autoCommit: true });
+    }
+
     async deleteAnnouncement(announcementId) {
         if(!this.#oracleConnection) {
             throw 'Database connection not established';
