@@ -32,6 +32,25 @@ class UserRepository {
         return JSON.parse(result.rows[0]);
     }
 
+    async getUserWithEmail(userEmail) {
+        if (!this.#oracleConnection) {
+            throw 'Database connection not established';
+        }
+
+        const query = `
+            SELECT JSON_OBJECT(*)
+            FROM USERS
+            WHERE USER_EMAIL = :user_email
+        `;
+
+        const binds = {
+            user_email: userEmail
+        };
+
+        const result = await this.#oracleConnection.execute(query, binds);
+        return JSON.parse(result.rows[0]);
+    }
+
     async createUser(user) {
         if (!this.#oracleConnection) {
             throw 'Database connection not established';
