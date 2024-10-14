@@ -96,10 +96,10 @@ router.post('/update/profile-picture-url', async (req, res) => {
     }
 });
 
-router.post('get-user-with-email', async (req, res) => {
+router.post('/get-user-with-email', async (req, res) => {
     const { USER_EMAIL: userEmail } = req.body;
 
-    if(!profilePictureUrl && !userId) {
+    if(!userEmail) {
         const errorMessage = {
             message: "Error getting user with email",
             error: `Missing field : 
