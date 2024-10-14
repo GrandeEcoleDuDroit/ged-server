@@ -96,6 +96,30 @@ router.post('/update/profile-picture-url', async (req, res) => {
     }
 });
 
+router.post('get-user-with-email', async (req, res) => {
+    const { USER_EMAIL: userEmail } = req.body;
+
+    if(!profilePictureUrl && !userId) {
+        const errorMessage = {
+            message: "Error getting user with email",
+            error: `Missing field : 
+            { 
+                userEmail: ${userEmail}
+            }`
+        }
+
+        return res.status(400).json(errorMessage);
+    }
+
+    try {
+        const user = await userRepository.getUserWithEmail(userEmail);
+        res.status(200).json(user);
+    }
+    catch (error) {
+        res.status(500).json(`Error getting user: ${error.message}`);
+    }
+});
+
 router.delete('/profile-picture-url/:userId', async (req, res) => {
     const userId = req.params.userId;
 
