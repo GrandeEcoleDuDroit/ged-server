@@ -55,8 +55,10 @@ class UserRepository {
         if (!this.#oracleConnection) {
             throw 'Database connection not established';
         }
+        
         const query = `
             INSERT INTO USERS(
+                USER_ID,
                 USER_FIRST_NAME,
                 USER_LAST_NAME,
                 USER_EMAIL,
@@ -64,22 +66,22 @@ class UserRepository {
                 USER_IS_MEMBER
             )
             VALUES(
+                :user_id,
                 :user_first_name,
                 :user_last_name,
                 :user_email,
                 :user_school_level,
                 :user_is_member
             )
-            RETURNING USER_ID INTO :user_id
         `;
 
         const binds = {
+            user_id: user.id,
             user_first_name: user.firstName,
             user_last_name: user.lastName,
             user_email: user.email,
             user_school_level: user.schoolLevel,
             user_is_member: user.isMember,
-            user_id: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER }
         }
 
         return await this.#oracleConnection.execute(query, binds, { autoCommit: true });

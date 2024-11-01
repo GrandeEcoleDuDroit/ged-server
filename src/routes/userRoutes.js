@@ -28,12 +28,13 @@ router.post('/create', async (req, res) => {
         USER_PROFILE_PICTURE_URL: profilePictureUrl
     } = req.body;
 
-    if (!firstName || !lastName || !email || !schoolLevel) {
+    if (!id || !firstName || !lastName || !email || !schoolLevel) {
         const errorMessage = {
             message: "Error creating user",
             error: `
               All user fields are required :
               {
+                id: ${id}, 
                 firstName: ${firstName},
                 lastName: ${lastName},
                 email: ${email},
@@ -47,12 +48,10 @@ router.post('/create', async (req, res) => {
 
     try {
         const user = new User(id, firstName, lastName, email, schoolLevel, isMember, profilePictureUrl);
-        const result = await userRepository.createUser(user);
-        const userId = result.outBinds.user_id[0];
+        await userRepository.createUser(user);
 
         const serverResponse = {
-            message: `User ${user.firstName} ${user.lastName} created successfully.`,
-            data : userId
+            message: `User ${user.firstName} ${user.lastName} created successfully.`
         };
 
         res.status(201).json(serverResponse);
