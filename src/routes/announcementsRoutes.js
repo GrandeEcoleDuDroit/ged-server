@@ -11,10 +11,12 @@ router.get('/', async (req, res) => {
         res.json(result);
     }
     catch (error) {
-        res.status(500).json({
+        const serverResponse = {
             message: 'Error to get all announcements',
             error : error.message
-        });
+        };
+
+        res.status(500).json(serverResponse);
     }
 })
 
@@ -28,7 +30,7 @@ router.post('/create', async (req, res) => {
     } = req.body;
 
     if(!content || !date || !userId) {
-        const errorMessage = {
+        const serverResponse = {
             message: "Error to create announcement",
             error: `
             Some missing announcement fields : 
@@ -40,7 +42,7 @@ router.post('/create', async (req, res) => {
             `
         };
 
-        return res.status(400).json(errorMessage);
+        return res.status(400).json(serverResponse);
     }
 
     try {
@@ -56,10 +58,12 @@ router.post('/create', async (req, res) => {
         res.status(201).json(serverResponse);
     }
     catch (error) {
-        res.status(500).json({
+        const serverResponse = {
             message: 'Error creating announcement',
             error: error.message
-        })
+        };
+
+        res.status(500).json(serverResponse)
     }
 });
 
@@ -73,7 +77,7 @@ router.post('/update', async (req, res) => {
     } = req.body;
 
     if(!content || !date || !userId) {
-        const errorMessage = {
+        const serverResponse = {
             message: "Error to update announcement",
             error: `
             Some missing announcement fields : 
@@ -85,22 +89,26 @@ router.post('/update', async (req, res) => {
             `
         };
 
-        return res.status(400).json(errorMessage);
+        return res.status(400).json(serverResponse);
     }
     
     try {
         const announcement = new Announcement(id, title, content, date, userId);
         await announcementsRepository.updateAnnouncement(announcement);
 
-        res.status(201).json({
-            message: `Announcement ${announcement.id} updated successfully`
-        });
+        const serverResponse = { 
+            message: `Announcement ${announcement.id} updated successfully` 
+        };
+
+        res.status(201).json(serverResponse);
     }
     catch (error) {
-        res.status(500).json({
+        const serverResponse = {
             message: 'Error updating announcement',
             error: error.message
-        })
+        };
+
+        res.status(500).json(serverResponse)
     }
 });
 
@@ -109,15 +117,19 @@ router.delete('/:id', async (req, res) => {
 
     try {
         await announcementsRepository.deleteAnnouncement(announcementId);
-        res.status(200).json({
-            message: `Announcement ${announcementId} deleted successfully`
-        });
+        const serverResponse = { 
+            message: `Announcement ${announcementId} deleted successfully` 
+        };
+        
+        res.status(200).json(serverResponse);
     }
     catch (error) {
-        res.status(500).json({
+        const serverResponse = {
             message: 'Error delete announcement',
             error: error.message
-        });
+        };
+
+        res.status(500).json(serverResponse);
     }
 })
 

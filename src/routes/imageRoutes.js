@@ -13,17 +13,28 @@ router.post('/upload', upload.single('image'), async (req, res) => {
 
     try {
         if (!imageFile) {
-            return res.status(400).json('No image file found');
+            const serverResponse = { 
+                message: `Error to upload image : ${objectName}`,
+                error: 'No image file found'
+            };
+
+            return res.status(400).json(serverResponse);
         }
 
         await imageRepository.uploadImage(imageFile.path, objectName);
-        res.status(200).json({ message: `Image uploaded successfully: ${objectName}` });
+        const serverResponse = { 
+            message: `Image uploaded successfully: ${objectName}` 
+        };
+        
+        res.status(200).json(serverResponse);
     }
     catch (error) {
-        res.status(500).json({
+        const serverResponse = { 
             message: `Error uploading image ${objectName}`,
-            error: error
-        })
+            error: error.message
+        };
+
+        res.status(500).json(serverResponse)
     }
 });
 
@@ -39,10 +50,12 @@ router.get('/download/:filename', async (req, res) => {
         imageStream.pipe(res);
     }
     catch (error) {
-        res.status(500).json({
+        const serverResponse = {
             message: `Error downloading image ${objectName}`,
             error: error.message
-        });
+        };
+
+        res.status(500).json(serverResponse);
     }
 });
 
@@ -52,13 +65,19 @@ router.delete('/:filename', async (req, res) => {
 
     try {
         await imageRepository.deleteImage(objectName);
-        res.status(200).json({ message: `Image ${objectName} deleted successfully` });
+        const serverResponse = { 
+            message: `Image ${objectName} deleted successfully` 
+        };
+
+        res.status(200).json(serverResponse);
     }
     catch (error) {
-        res.status(500).json({
+        const serverResponse = {
             message: `Error deleting image ${objectName}`,
             error: error.message
-        });
+        };
+
+        res.status(500).json(serverResponse);
     }
 });
 
