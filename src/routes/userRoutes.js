@@ -13,7 +13,12 @@ router.get('/:userId', async (req, res) => {
         res.status(200).json(user);
     }
     catch (error) {
-        res.status(500).json(`Error getting user: ${error.message}`);
+        const serverResponse = { 
+            message: `Error getting user: ${error.message}`,
+            error: error.message
+        };
+
+        res.status(500).json(serverResponse);
     }
 });
 
@@ -28,37 +33,41 @@ router.post('/create', async (req, res) => {
         USER_PROFILE_PICTURE_URL: profilePictureUrl
     } = req.body;
 
-    if (!firstName || !lastName || !email || !schoolLevel) {
-        const errorMessage = {
-            message: "Error creating user",
+    if (!id || !firstName || !lastName || !email || !schoolLevel) {
+        const serverResponse = {
+            message: 'Error creating user',
             error: `
               All user fields are required :
               {
+                id: ${id},
                 firstName: ${firstName},
                 lastName: ${lastName},
                 email: ${email},
                 schoolLevel: ${schoolLevel},
                 firstname: ${firstName},
               }`
-        }
+        };
 
-        return res.status(400).json(errorMessage);
+        return res.status(400).json(serverResponse);
     }
 
     try {
         const user = new User(id, firstName, lastName, email, schoolLevel, isMember, profilePictureUrl);
-        const result = await userRepository.createUser(user);
-        const userId = result.outBinds.user_id[0];
+        await userRepository.createUser(user);
 
-        const serverResponse = {
-            message: `User ${user.firstName} ${user.lastName} created successfully.`,
-            data : userId
+        const serverResponse = { 
+            message: `User ${user.firstName} ${user.lastName} created successfully.` 
         };
-
+        
         res.status(201).json(serverResponse);
     }
     catch (error) {
-        res.status(500).json(`Error inserting user ${error.message}`);
+        const serverResponse = {
+            message: `Error inserting user ${user.firstName} ${user.lastName}`,
+            error: error.message 
+        };
+
+        res.status(500).json(serverResponse);
     }
 });
 
@@ -70,53 +79,33 @@ router.post('/update/profile-picture-url', async (req, res) => {
     } = req.body;
 
     if(!profilePictureUrl && !userId) {
-        const errorMessage = {
-            message: "Error updating profile picture url",
+        const serverResponse = {
+            message: 'Error updating profile picture url',
             error: `Missing fields : 
             { 
                 profilePictureUrl: ${profilePictureUrl},
                 userId: ${userId}
             }`
-        }
+        };
 
-        return res.status(400).json(errorMessage);
+        return res.status(400).json(serverResponse);
     }
 
     try {
         await userRepository.updateProfilePictureUrl(profilePictureUrl, userId);
-        res.status(200).json({
-            message: `Profile picture url updated successfully`
-        });
+        const serverResponse = { 
+            message: `Profile picture url updated successfully` 
+        };
+
+        res.status(200).json(serverResponse);
     }
     catch (error) {
-        res.status(500).json({
+        const serverResponse = { 
             message: 'Error updating profile picture url',
             error: error.message
-        });
-    }
-});
+        };
 
-router.post('/get-user-with-email', async (req, res) => {
-    const { USER_EMAIL: userEmail } = req.body;
-
-    if(!userEmail) {
-        const errorMessage = {
-            message: "Error getting user with email",
-            error: `Missing field : 
-            { 
-                userEmail: ${userEmail}
-            }`
-        }
-
-        return res.status(400).json(errorMessage);
-    }
-
-    try {
-        const user = await userRepository.getUserWithEmail(userEmail);
-        res.status(200).json(user);
-    }
-    catch (error) {
-        res.status(500).json(`Error getting user: ${error.message}`);
+        res.status(500).json(serverResponse);
     }
 });
 
@@ -125,15 +114,16 @@ router.delete('/profile-picture-url/:userId', async (req, res) => {
 
     try {
         await userRepository.deleteProfilePictureUrl(userId);
-        res.status(200).json({
-            message: `Profile picture url deleted successfully`
-        });
+        const serverResponse = { message: `Profile picture url deleted successfully` };
+        res.status(200).json(serverResponse);
     }
     catch (error) {
-        res.status(500).json({
+        const serverResponse = { 
             message: 'Error deleting profile picture url',
             error: error.message
-        });
+        };
+        
+        res.status(500).json(serverResponse);
     }
 });
 
