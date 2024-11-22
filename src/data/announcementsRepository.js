@@ -35,18 +35,18 @@ class AnnouncementsRepository {
 
         const query = `
             INSERT INTO ANNOUNCEMENTS(
-                ANNOUNCEMENT-ID,
+                ANNOUNCEMENT_ID,
                 ANNOUNCEMENT_TITLE,
                 ANNOUNCEMENT_CONTENT,
                 ANNOUNCEMENT_DATE,
-                USER_ID    
+                USER_ID
             )
             VALUES(
                 :announcement_id,
                 :announcement_title,
                 :announcement_content,
                 :announcement_date,
-                :user_id    
+                :user_id
             )
         `;
 
@@ -55,7 +55,7 @@ class AnnouncementsRepository {
             announcement_title: announcement.title,
             announcement_content: announcement.content,
             announcement_date: announcement.date,
-            user_id: announcement.userId,
+            user_id: announcement.userId
         }
 
         return await this.#oracleConnection.execute(query, binds, { autoCommit: true });
