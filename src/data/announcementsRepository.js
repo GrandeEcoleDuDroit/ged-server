@@ -35,26 +35,27 @@ class AnnouncementsRepository {
 
         const query = `
             INSERT INTO ANNOUNCEMENTS(
+                ANNOUNCEMENT-ID,
                 ANNOUNCEMENT_TITLE,
                 ANNOUNCEMENT_CONTENT,
                 ANNOUNCEMENT_DATE,
                 USER_ID    
             )
             VALUES(
+                :announcement_id,
                 :announcement_title,
                 :announcement_content,
                 :announcement_date,
                 :user_id    
             )
-            RETURNING ANNOUNCEMENT_ID INTO :announcement_id
         `;
 
         const binds = {
+            announcement_id: announcement.id,
             announcement_title: announcement.title,
             announcement_content: announcement.content,
             announcement_date: announcement.date,
             user_id: announcement.userId,
-            announcement_id: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER }
         }
 
         return await this.#oracleConnection.execute(query, binds, { autoCommit: true });

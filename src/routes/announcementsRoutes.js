@@ -47,12 +47,10 @@ router.post('/create', async (req, res) => {
 
     try {
         const announcement = new Announcement(id, title, content, date, userId);
-        const result = await announcementsRepository.createAnnouncement(announcement);
-        const announcementId = result.outBinds.announcement_id[0];
+        await announcementsRepository.createAnnouncement(announcement);
 
         const serverResponse = {
-            message: `Announcement ${announcementId} created successfully`,
-            data: announcementId
+            message: `Announcement created successfully`
         };
 
         res.status(201).json(serverResponse);
