@@ -3,7 +3,8 @@ const multer = require('multer');
 const { Readable } = require('stream');
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
-const ImageRepository = require('../data/imageRepository');
+const ImageRepository = require('@repositories/imageRepository');
+const log = require('@utils/logsUtils');
 
 const imageRepository = new ImageRepository();
 
@@ -18,6 +19,7 @@ router.post('/upload', upload.single('image'), async (req, res) => {
                 error: 'No image file found'
             };
 
+            log.error(serverResponse.message, new Error(serverResponse.error));
             return res.status(400).json(serverResponse);
         }
 
@@ -34,6 +36,7 @@ router.post('/upload', upload.single('image'), async (req, res) => {
             error: error.message
         };
 
+        log.error(serverResponse.message, error);
         res.status(500).json(serverResponse)
     }
 });
@@ -55,6 +58,7 @@ router.get('/download/:filename', async (req, res) => {
             error: error.message
         };
 
+        log.error(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
 });
@@ -76,7 +80,8 @@ router.delete('/:filename', async (req, res) => {
             message: `Error deleting image ${objectName}`,
             error: error.message
         };
-
+    
+        log.error(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
 });

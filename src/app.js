@@ -1,11 +1,15 @@
+require('module-alias/register');
+require('dotenv').config();
+
 const express = require('express');
 const path = require('path');
 const app = express();
-const port = 3000;
+const ip = `http://${process.env.IP_ADDRESS}`;
+const port = process.env.PORT;
 
-const userRoutes= require('./routes/userRoutes');
-const imageRoutes= require('./routes/imageRoutes');
-const announcementsRoutes= require('./routes/announcementsRoutes');
+const userRoutes = require('@routes/userRoutes');
+const imageRoutes = require('@routes/imageRoutes');
+const announcementsRoutes = require('@routes/announcementsRoutes');
 
 app.use(express.static('public'));
 app.use(express.json());
@@ -16,10 +20,9 @@ app.use('/image', imageRoutes);
 app.use('/announcements', announcementsRoutes);
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, './ui/index.html'));
+  res.sendFile(path.join(__dirname, 'ui/index.html'));
 });
 
 app.listen(port, () => {
-  console.log(`Web server started on http://89.168.52.45:${port}`);
+  console.log(`Web server started on ${ip}:${port}`);
 });
-

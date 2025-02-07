@@ -1,5 +1,7 @@
-const oracledb= require('oracledb');
-const config = require('../../config.json');
+const oracledb = require('oracledb');
+const config = require('@root/config.json');
+const log = require('@utils/logsUtils');
+const oraclePath = process.env.ORACLE_HOME;
 
 class OracleDatabaseManager {
     #oracleConnection
@@ -9,19 +11,20 @@ class OracleDatabaseManager {
             return OracleDatabaseManager.instance;
         }
 
-        oracledb.initOracleClient({ libDir: '/opt/oracle/instantclient_23_5' });
+        oracledb.initOracleClient({ libDir: oraclePath });
         OracleDatabaseManager.instance = this;
     }
 
     async #connect(){
         try {
-            console.log('Initializing database connection...');
+            log.info('Initializing database connection...');
             let connection = await oracledb.getConnection(config.dbConfig);
-            console.log('Database connection established !');
+            log.info('Database connection established !');
             return connection;
         }
         catch (err) {
-            console.error('Failed to connect to the database:', err);
+            log.error('Failed to connect to the database:', err);
+            log.info('Retrying to connect in 2 seconds...');
             setTimeout(this.#connect, 2000);
         }
     }

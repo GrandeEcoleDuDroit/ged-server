@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../data/model/user');
-const UserRepository = require('../data/userRepository');
+const log = require('@utils/logsUtils');
+
+const User = require('@models/user');
+const UserRepository = require('@repositories/userRepository');
 
 const userRepository = new UserRepository();
 
@@ -18,6 +20,7 @@ router.get('/:userId', async (req, res) => {
             error: error.message
         };
 
+        log.error(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
 });
@@ -48,6 +51,7 @@ router.post('/create', async (req, res) => {
               }`
         };
 
+        log.error(serverResponse.message, new Error(serverResponse.error));
         return res.status(400).json(serverResponse);
     }
 
@@ -67,6 +71,7 @@ router.post('/create', async (req, res) => {
             error: error.message 
         };
 
+        log.error(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
 });
@@ -88,6 +93,7 @@ router.post('/update/profile-picture-url', async (req, res) => {
             }`
         };
 
+        log.error(serverResponse.message, new Error(serverResponse.error));
         return res.status(400).json(serverResponse);
     }
 
@@ -105,6 +111,7 @@ router.post('/update/profile-picture-url', async (req, res) => {
             error: error.message
         };
 
+        log.error(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
 });
@@ -123,6 +130,7 @@ router.delete('/profile-picture-url/:userId', async (req, res) => {
             error: error.message
         };
         
+        log.error(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
 });
