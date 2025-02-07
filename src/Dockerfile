@@ -45,7 +45,10 @@ RUN npm install @logtail/winston @logtail/node
 RUN npm install dotenv
 
 # Installer module-alias pour la gestion des alias
-RUN npm install module-alias   
+RUN npm install module-alias
+
+# Corriger les vulnérabilités
+RUN npm audit fix
 
 # Exposer le port 3000
 EXPOSE 3000
