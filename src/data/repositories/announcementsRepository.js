@@ -1,5 +1,5 @@
 const oracledb = require('oracledb');
-const OracleDatabaseManager = require('./oracleDatabaseManager');
+const OracleDatabaseManager = require('@data/oracleDatabaseManager');
 
 class AnnouncementsRepository {
     #oracleDatabaseManager = new OracleDatabaseManager();

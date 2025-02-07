@@ -1,2 +1,13 @@
+# Node.js
 node_modules/
+
+# Configuration base de données
 config.json
+
+# Fichier d'environnement
+.env
+
+# Fichiers de logs
+/logs
+
+.DS_Store

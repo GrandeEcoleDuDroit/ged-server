@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const AnnouncementsRepository = require('../data/announcementsRepository');
-const Announcement = require("../data/model/announcement");
+const log = require('@utils/logsUtils');
+const AnnouncementsRepository = require('@repositories/announcementsRepository');
+const Announcement = require("@models/announcement");
 
 const announcementsRepository = new AnnouncementsRepository();
 
@@ -16,6 +17,7 @@ router.get('/', async (req, res) => {
             error : error.message
         };
 
+        log.error(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
 })
@@ -42,6 +44,7 @@ router.post('/create', async (req, res) => {
             `
         };
 
+        log.error(serverResponse.message, new Error(serverResponse.error));
         return res.status(400).json(serverResponse);
     }
 
@@ -61,6 +64,7 @@ router.post('/create', async (req, res) => {
             error: error.message
         };
 
+        log.error(serverResponse.message, error);
         res.status(500).json(serverResponse)
     }
 });
@@ -87,6 +91,7 @@ router.post('/update', async (req, res) => {
             `
         };
 
+        log.error(serverResponse.message, new Error(serverResponse.error));
         return res.status(400).json(serverResponse);
     }
     
@@ -106,6 +111,7 @@ router.post('/update', async (req, res) => {
             error: error.message
         };
 
+        log.error(serverResponse.message, error);
         res.status(500).json(serverResponse)
     }
 });
@@ -127,6 +133,7 @@ router.delete('/:id', async (req, res) => {
             error: error.message
         };
 
+        log.error(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
 })

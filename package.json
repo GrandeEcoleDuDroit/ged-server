@@ -12,11 +12,25 @@
   },
   "private": true,
   "dependencies": {
+    "@logtail/node": "^0.5.2",
+    "@logtail/winston": "^0.5.2",
+    "dotenv": "^16.4.7",
+    "expres": "^0.0.5",
     "express": "^4.19.2",
+    "module-alias": "^2.2.3",
     "multer": "^1.4.5-lts.1",
     "oci-common": "^2.89.4",
     "oci-objectstorage": "^2.89.4",
     "oci-sdk": "^2.89.2",
-    "oracledb": "^6.5.1"
+    "oracledb": "^6.7.1",
+    "winston": "^3.17.0"
+  },
+  "_moduleAliases": {
+    "@root": ".",
+    "@routes": "src/routes",
+    "@data": "src/data",
+    "@models": "src/data/models",
+    "@repositories": "src/data/repositories",
+    "@utils": "src/utils"
   }
 }

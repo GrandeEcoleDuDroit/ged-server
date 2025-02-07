@@ -37,5 +37,15 @@ RUN npm cache clean --force
 # Installer oracledb et express
 RUN npm install oracledb expres
 
+# Installer winston et logtail pour la gestion des logs
+RUN npm install winston
+RUN npm install @logtail/winston @logtail/node
+
+# Installer dotenv pour la gestion des variables d'environnement
+RUN npm install dotenv
+
+# Installer module-alias pour la gestion des alias
+RUN npm install module-alias   
+
 # Exposer le port 3000
 EXPOSE 3000
