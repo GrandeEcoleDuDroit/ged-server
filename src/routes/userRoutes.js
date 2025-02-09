@@ -46,8 +46,7 @@ router.post('/create', async (req, res) => {
                 firstName: ${firstName},
                 lastName: ${lastName},
                 email: ${email},
-                schoolLevel: ${schoolLevel},
-                firstname: ${firstName},
+                schoolLevel: ${schoolLevel}
               }`
         };
 
