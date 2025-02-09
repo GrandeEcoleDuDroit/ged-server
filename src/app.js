@@ -3,8 +3,8 @@ require('dotenv').config();
 
 const express = require('express');
 const path = require('path');
+const ip = require('@utils/utils');
 const app = express();
-const ip = `http://${process.env.IP_ADDRESS}`;
 const port = process.env.PORT;
 
 const userRoutes = require('@routes/userRoutes');
@@ -24,5 +24,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Web server started on ${ip}:${port}`);
+  console.log(`Web server started on http://${ip}:${port}`);
 });
