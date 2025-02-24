@@ -76,7 +76,7 @@ router.post('/create', async (req, res) => {
 });
 
 
-router.post('/update/profile-picture-url', async (req, res) => {
+router.put('/profile-picture-url', async (req, res) => {
     const {
         USER_PROFILE_PICTURE_URL: profilePictureUrl,
         USER_ID: userId
