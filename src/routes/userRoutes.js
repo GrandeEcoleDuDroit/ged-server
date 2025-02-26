@@ -33,7 +33,7 @@ router.post('/create', async (req, res) => {
         USER_EMAIL: email,
         USER_SCHOOL_LEVEL: schoolLevel,
         USER_IS_MEMBER: isMember,
-        USER_PROFILE_PICTURE_URL: profilePictureUrl
+        USER_PROFILE_PICTURE_FILE_NAME: profilePictureFileName
     } = req.body;
 
     if (!id || !firstName || !lastName || !email || !schoolLevel) {
@@ -55,7 +55,7 @@ router.post('/create', async (req, res) => {
     }
 
     try {
-        const user = new User(id, firstName, lastName, email, schoolLevel, isMember, profilePictureUrl);
+        const user = new User(id, firstName, lastName, email, schoolLevel, isMember, profilePictureFileName);
         await userRepository.createUser(user);
 
         const serverResponse = { 
@@ -76,18 +76,18 @@ router.post('/create', async (req, res) => {
 });
 
 
-router.put('/profile-picture-url', async (req, res) => {
+router.put('/profile-picture-file-name', async (req, res) => {
     const {
-        USER_PROFILE_PICTURE_URL: profilePictureUrl,
+        USER_PROFILE_PICTURE_FILE_NAME: profilePictureFileName,
         USER_ID: userId
     } = req.body;
 
-    if(!profilePictureUrl && !userId) {
+    if(!profilePictureFileName && !userId) {
         const serverResponse = {
-            message: 'Error updating profile picture url',
+            message: 'Error updating profile picture file name',
             error: `Missing fields : 
             { 
-                profilePictureUrl: ${profilePictureUrl},
+                profilePictureFileName: ${profilePictureFileName},
                 userId: ${userId}
             }`
         };
@@ -97,16 +97,16 @@ router.put('/profile-picture-url', async (req, res) => {
     }
 
     try {
-        await userRepository.updateProfilePictureUrl(profilePictureUrl, userId);
+        await userRepository.updateProfilePictureFileName(profilePictureFileName, userId);
         const serverResponse = { 
-            message: `Profile picture url updated successfully` 
+            message: `Profile picture file name updated successfully`
         };
 
         res.status(200).json(serverResponse);
     }
     catch (error) {
         const serverResponse = { 
-            message: 'Error updating profile picture url',
+            message: 'Error updating profile picture file name',
             error: error.message
         };
 
@@ -115,17 +115,17 @@ router.put('/profile-picture-url', async (req, res) => {
     }
 });
 
-router.delete('/profile-picture-url/:userId', async (req, res) => {
+router.delete('/profile-picture-file-name/:userId', async (req, res) => {
     const userId = req.params.userId;
 
     try {
-        await userRepository.deleteProfilePictureUrl(userId);
-        const serverResponse = { message: `Profile picture url deleted successfully` };
+        await userRepository.deleteProfilePictureFileName(userId);
+        const serverResponse = { message: `Profile picture file name deleted successfully` };
         res.status(200).json(serverResponse);
     }
     catch (error) {
         const serverResponse = { 
-            message: 'Error deleting profile picture url',
+            message: 'Error deleting profile picture file name',
             error: error.message
         };
         
