@@ -1,4 +1,3 @@
-const oracledb = require('oracledb');
 const OracleDatabaseManager = require("@data/oracleDatabaseManager");
 
 class UserRepository {
@@ -98,33 +97,33 @@ class UserRepository {
         return await this.#oracleConnection.execute(query, binds, { autoCommit: true });
     }
 
-    async updateProfilePictureUrl(profilePictureUrl, userId) {
+    async updateProfilePictureFileName(profilePictureFileName, userId) {
         if (!this.#oracleConnection) {
             throw 'Database connection not established';
         }
 
         const query = `
             UPDATE USERS
-            SET USER_PROFILE_PICTURE_URL = :user_profile_picture_url
+            SET USER_PROFILE_PICTURE_FILE_NAME = :user_profile_picture_file_name
             WHERE USER_ID = :user_id
         `;
 
         const binds = {
-            user_profile_picture_url: profilePictureUrl,
+            user_profile_picture_file_name: profilePictureFileName,
             user_id: userId
         };
 
         await this.#oracleConnection.execute(query, binds, { autoCommit: true });
     }
 
-    async deleteProfilePictureUrl(userId) {
+    async deleteProfilePictureFileName(userId) {
         if (!this.#oracleConnection) {
             throw 'Database connection not established';
         }
 
         const query = `
             UPDATE USERS
-            SET USER_PROFILE_PICTURE_URL = NULL
+            SET USER_PROFILE_PICTURE_FILE_NAME = NULL
             WHERE USER_ID = :user_id
         `;
 
