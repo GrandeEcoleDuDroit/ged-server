@@ -66,7 +66,7 @@ router.post('/create', async (req, res) => {
     }
     catch (error) {
         const serverResponse = {
-            message: `Error inserting user ${user.firstName} ${user.lastName}`,
+            message: `Error inserting user`,
             error: error.message 
         };
 

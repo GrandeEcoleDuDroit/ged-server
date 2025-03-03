@@ -1,15 +1,18 @@
 require('module-alias/register');
 require('dotenv').config();
-
 const express = require('express');
+const https = require('https');
+const fs = require('fs');
 const path = require('path');
-const ip = require('@utils/utils');
-const app = express();
-const port = process.env.PORT;
-
 const userRoutes = require('@routes/userRoutes');
 const imageRoutes = require('@routes/imageRoutes');
 const announcementsRoutes = require('@routes/announcementsRoutes');
+
+const app = express();
+const options = {
+  key: fs.readFileSync(process.env.SSL_KEY_PATH),
+  cert: fs.readFileSync(process.env.SSL_CERT_PATH)
+};
 
 app.use(express.static('public'));
 app.use(express.json());
@@ -23,6 +26,6 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'ui/index.html'));
 });
 
-app.listen(port, () => {
-  console.log(`Web server started on http://${ip}:${port}`);
+https.createServer(options, app).listen(443, () => {
+  console.log(`Web server started !`);
 });
