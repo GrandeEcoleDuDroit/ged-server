@@ -23,7 +23,7 @@
     "oci-common": "^2.89.4",
     "oci-objectstorage": "^2.89.4",
     "oci-sdk": "^2.89.2",
-    "oracledb": "^6.7.1",
+    "oracledb": "^6.8.0",
     "winston": "^3.17.0"
   },
   "_moduleAliases": {

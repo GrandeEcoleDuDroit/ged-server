@@ -26,6 +26,6 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'ui/index.html'));
 });
 
-https.createServer(options, app).listen(443, () => {
+https.createServer(options, app).listen(3000, () => {
   console.log(`Web server started !`);
 });
