@@ -52,7 +52,7 @@ class UserRepository {
 
     async createUser(user) {
         if (!this.#oracleConnection) {
-            throw 'Database connection not established';
+            throw new Error('Database connection not established');
         }
 
         const query = `
