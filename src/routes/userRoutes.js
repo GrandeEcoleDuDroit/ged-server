@@ -56,6 +56,18 @@ router.post('/create', async (req, res) => {
 
     try {
         const user = new User(id, firstName, lastName, email, schoolLevel, isMember, profilePictureFileName);
+        
+        const isWhiteListed = await userRepository.checkUserWhiteList(email);
+        if (!isWhiteListed) {
+            const serverResponse = {
+                message: 'Error creating user',
+                error: `User ${email} is not whitelisted`
+            };
+
+            log.error(serverResponse.message, new Error(serverResponse.error));
+            return res.status(403).json(serverResponse);
+        }
+
         await userRepository.createUser(user);
 
         const serverResponse = { 
