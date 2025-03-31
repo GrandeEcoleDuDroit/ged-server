@@ -141,7 +141,7 @@ class UserRepository {
 
         const query = `
             SELECT COUNT(*)
-            FROM USERS_WHITELIST
+            FROM USERS_WHITE_LIST
             WHERE USER_EMAIL = :user_email
         `;
 
