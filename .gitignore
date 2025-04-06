@@ -7,6 +7,9 @@ config.json
 # Fichier d'environnement
 .env
 
+# Clé API Firebase
+firebase_staging_key.json
+
 # Fichiers de logs
 /logs
 
