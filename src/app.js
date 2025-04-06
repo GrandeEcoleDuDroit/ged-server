@@ -10,10 +10,6 @@ const announcementsRoutes = require('@routes/announcementsRoutes');
 const credentialsRoutes = require('@routes/credentialsRoutes');
 
 const app = express();
-const options = {
-  key: fs.readFileSync(process.env.SSL_KEY_PATH),
-  cert: fs.readFileSync(process.env.SSL_CERT_PATH)
-};
 
 app.use(express.static('public'));
 app.use(express.json());
@@ -28,6 +24,17 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'ui/index.html'));
 });
 
-https.createServer(options, app).listen(3000, () => {
-  console.log(`Web server started !`);
-});
+if (process.env.NODE_ENV == 'production') {
+  const options = {
+    key: fs.readFileSync(process.env.SSL_KEY_PATH),
+    cert: fs.readFileSync(process.env.SSL_CERT_PATH)
+  };
+  
+  https.createServer(options, app).listen(3000, () => {
+    console.log(`Web server started !`);
+  });
+} else {
+  app.listen(3000, () => {
+    console.log(`Web server started !`);
+  });
+}

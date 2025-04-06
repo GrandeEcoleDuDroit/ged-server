@@ -11,4 +11,4 @@ class FirestoreAPI {
     }
 }
 
-module.exports = FirebaseRepository;
+module.exports = FirestoreAPI;

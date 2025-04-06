@@ -2,7 +2,8 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const homeDir = os.homedir();
-const firestoreAPI = require('@data/firestoreAPI');
+const FirestoreAPI = require('@data/api/firestoreAPI');
+const firestoreAPI = new FirestoreAPI();
 
 class CredentialsRepository {
     async upsertToken(token, tokenFileName) {
