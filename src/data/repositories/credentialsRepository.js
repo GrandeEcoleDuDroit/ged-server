@@ -8,7 +8,13 @@ const firestoreAPI = new FirestoreAPI();
 class CredentialsRepository {
     async upsertToken(token, tokenFileName) {
         firestoreAPI.upsertToken(token);
-        const filePath = path.join(`${homeDir}/${token.userId}`, tokenFileName);
+        const userDir = path.join(homeDir, `${token.userId}`);
+        const filePath = path.join(userDir, tokenFileName);
+        
+        if (!fs.existsSync(userDir)) {
+            fs.mkdirSync(userDir, { recursive: true });
+        }
+
         fs.writeFileSync(filePath, token.value, 'utf8');
     }
 
