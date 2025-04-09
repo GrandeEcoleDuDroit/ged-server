@@ -9,17 +9,17 @@ const credentialsRepository = new CredentialsRepository();
 router.post('/fcmToken/add', async (req, res) => {
     const {
         userId: userId,
-        fcmToken: fcmToken
+        fcmToken: tokenValue
     } = req.body;
 
-    if(!userId || !fcmToken) {
+    if(!userId || !tokenValue) {
         const serverResponse = {
             message: "Error to add fcm token",
             error: `
             Some missing fields : 
             {
                 userId: ${userId},
-                fcmToken: ${fcmToken}
+                fcmToken: ${tokenValue}
             }
             `
         };
@@ -29,7 +29,7 @@ router.post('/fcmToken/add', async (req, res) => {
     }
 
     try {
-        const fcmToken = new FCMToken(userId, fcmToken);
+        const fcmToken = new FCMToken(userId, tokenValue);
         await credentialsRepository.upsertToken(fcmToken, FCMToken.getFileName());
 
         const serverResponse = {
