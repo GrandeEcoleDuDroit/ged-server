@@ -5,6 +5,13 @@
  */
 class Token {
   /**
+   * @param {string} userId
+   * @param {string} value
+   */
+  #userId;
+  #value;
+
+  /**
    * Creates an instance of Token.
    *
    * @param {string} userId
@@ -14,8 +21,8 @@ class Token {
     if (new.target === Token) {
       throw new TypeError("Cannot construct Token instances directly");
     }
-    this._userId = userId;
-    this._value = value;
+    this.#userId = userId;
+    this.#value = value;
   }
 
   /**
@@ -24,7 +31,7 @@ class Token {
    * @returns {string}
    */
   get userId() {
-    return this.userId;
+    return this.#userId;
   }
 
   /**
@@ -32,8 +39,8 @@ class Token {
    *
    * @returns {string}
    */
-  get token() {
-    return this.token;
+  get value() {
+    return this.#value;
   }
 
   /**
