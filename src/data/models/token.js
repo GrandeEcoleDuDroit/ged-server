@@ -14,8 +14,8 @@ class Token {
     if (new.target === Token) {
       throw new TypeError("Cannot construct Token instances directly");
     }
-    this.userId = userId;
-    this.value = value;
+    this._userId = userId;
+    this._value = value;
   }
 
   /**
