@@ -46,7 +46,7 @@ class Token {
   /**
    * Get Json value.
    */
-  toJSON() {
+  toJson() {
     throw new Error("Must implement toJSON method");
   }
 
