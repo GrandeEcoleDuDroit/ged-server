@@ -1,4 +1,5 @@
-const firebaseManager = require('@data/firebaseManager');
+const FirebaseManager = require('@data/firebaseManager');
+const firebaseManager = new FirebaseManager();
 
 const CREDENTIALS_TABLE_NAME = 'credentials';
 
