@@ -65,7 +65,7 @@ class FCMToken extends Token {
     super(userId, value);
   }
 
-  toJSON() {
+  toJson() {
     return {
       fcmToken: this.value
     };
