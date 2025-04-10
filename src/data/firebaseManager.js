@@ -1,0 +1,27 @@
+const admin = require('firebase-admin');
+require('dotenv').config();
+
+class FirebaseManager {
+    constructor() {
+        if (FirebaseManager.instance) {
+            return FirebaseManager.instance;
+        }
+
+        FirebaseManager.instance = this;
+        this.initialize();
+    }
+
+    initialize() {
+        if (!this.app) {
+            this.app = admin.initializeApp({
+                credential: admin.credential.cert(require(process.env.FIREBASE_CREDENTIALS_PATH))
+            });
+        }
+    }
+
+    firestore() {
+        return admin.firestore();
+    }
+}
+
+module.exports = FirebaseManager;

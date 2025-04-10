@@ -1,4 +1,3 @@
-const oracledb = require('oracledb');
 const OracleDatabaseManager = require('@data/oracleDatabaseManager');
 
 class AnnouncementsRepository {
