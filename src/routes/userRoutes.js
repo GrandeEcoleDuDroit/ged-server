@@ -15,11 +15,7 @@ router.get('/:userId', async (req, res) => {
         res.status(200).json(user);
     }
     catch (error) {
-        const serverResponse = { 
-            message: `Error getting user: ${error.message}`,
-            error: error.message
-        };
-
+        const serverResponse = formatOracleError(error, 'Error getting user');
         log.error(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
@@ -77,11 +73,7 @@ router.post('/create', async (req, res) => {
         res.status(201).json(serverResponse);
     }
     catch (error) {
-        const serverResponse = {
-            message: `Error inserting user`,
-            error: error.message 
-        };
-
+        const serverResponse = formatOracleError(error, 'Error inserting user');
         log.error(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
@@ -117,11 +109,7 @@ router.put('/profile-picture-file-name', async (req, res) => {
         res.status(200).json(serverResponse);
     }
     catch (error) {
-        const serverResponse = { 
-            message: 'Error updating profile picture file name',
-            error: error.message
-        };
-
+        const serverResponse = formatOracleError(error, 'Error updating profile picture file name');
         log.error(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
@@ -136,11 +124,7 @@ router.delete('/profile-picture-file-name/:userId', async (req, res) => {
         res.status(200).json(serverResponse);
     }
     catch (error) {
-        const serverResponse = { 
-            message: 'Error deleting profile picture file name',
-            error: error.message
-        };
-        
+        const serverResponse = formatOracleError(error, 'Error deleting profile picture file name');
         log.error(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }

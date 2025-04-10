@@ -59,11 +59,7 @@ router.post('/create', async (req, res) => {
         res.status(201).json(serverResponse);
     }
     catch (error) {
-        const serverResponse = {
-            message: 'Error creating announcement',
-            error: error.message
-        };
-
+        const serverResponse = formatOracleError(error, 'Error creating announcement');
         log.error(serverResponse.message, error);
         res.status(500).json(serverResponse)
     }
@@ -106,11 +102,7 @@ router.post('/update', async (req, res) => {
         res.status(201).json(serverResponse);
     }
     catch (error) {
-        const serverResponse = {
-            message: 'Error updating announcement',
-            error: error.message
-        };
-
+        const serverResponse = formatOracleError(error, 'Error updating announcement');
         log.error(serverResponse.message, error);
         res.status(500).json(serverResponse)
     }
@@ -128,11 +120,7 @@ router.delete('/:id', async (req, res) => {
         res.status(200).json(serverResponse);
     }
     catch (error) {
-        const serverResponse = {
-            message: 'Error delete announcement',
-            error: error.message
-        };
-
+        const serverResponse = formatOracleError(error, 'Error delete announcement');
         log.error(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }

@@ -3,16 +3,16 @@ const config = require('@root/config.json');
 const log = require('@utils/logsUtils');
 const oraclePath = process.env.ORACLE_HOME;
 
-class OracleDatabaseManager {
+class OracleDatabaseConnection {
     #oracleConnection
 
     constructor() {
-        if(OracleDatabaseManager.instance){
-            return OracleDatabaseManager.instance;
+        if(OracleDatabaseConnection.instance){
+            return OracleDatabaseConnection.instance;
         }
 
         oracledb.initOracleClient({ libDir: oraclePath });
-        OracleDatabaseManager.instance = this;
+        OracleDatabaseConnection.instance = this;
     }
 
     async #connect(){
@@ -40,4 +40,4 @@ class OracleDatabaseManager {
     }
 }
 
-module.exports = OracleDatabaseManager;
+module.exports = OracleDatabaseConnection;
