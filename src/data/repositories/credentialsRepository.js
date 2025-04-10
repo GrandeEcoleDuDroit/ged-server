@@ -8,7 +8,7 @@ const firestoreAPI = new FirestoreAPI();
 class CredentialsRepository {
     async upsertToken(token, tokenFileName) {
         firestoreAPI.upsertToken(token);
-        const userDir = path.join(homeDir, `${token.userId}`);
+        const userDir = path.join(`${homeDir}`, 'gedoise-data', 'users', `${token.userId}`);
         const filePath = path.join(userDir, tokenFileName);
         
         if (!fs.existsSync(userDir)) {
