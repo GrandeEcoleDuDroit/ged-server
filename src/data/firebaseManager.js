@@ -22,6 +22,12 @@ class FirebaseManager {
     firestore() {
         return admin.firestore();
     }
+
+    async sendNotification(message) {
+        await admin
+            .messaging()
+            .send(message)
+    }
 }
 
 module.exports = FirebaseManager;

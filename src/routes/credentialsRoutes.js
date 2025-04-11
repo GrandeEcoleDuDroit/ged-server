@@ -28,25 +28,56 @@ router.post('/fcmToken/add', async (req, res) => {
         return res.status(400).json(serverResponse);
     }
 
-    try {
-        const fcmToken = new FCMToken(userId, tokenValue);
-        await credentialsRepository.upsertToken(fcmToken, FCMToken.getFileName());
+    const fcmToken = new FCMToken(userId, tokenValue);
+    credentialsRepository.upsertToken(fcmToken, FCMToken.fileName())
+        .then(_ => {
+            const serverResponse = {
+                message: 'FCM token added successfully'
+            };
 
-        const serverResponse = {
-            message: 'FCM token added successfully'
-        };
+            res.status(201).json(serverResponse);
+        })
+        .catch((error) => {
+            const serverResponse = {
+                message: 'Error adding FCM token',
+                error: error.message
+            };
 
-        res.status(201).json(serverResponse);
-    }
-    catch (error) {
-        const serverResponse = {
-            message: 'Error adding FCM token',
-            error: error.message
-        };
-
-        log.error(serverResponse.message, error);
-        res.status(500).json(serverResponse)
-    }
+            log.error(serverResponse.message, error);
+            res.status(500).json(serverResponse)
+        })
 });
+
+router.post('/notification/message', async (req, res) => {
+    const { userId, message } = req.body;
+    const fcmToken = await credentialsRepository.getTokenValue(userId);
+
+    const notificationMessage = {
+        notification: {
+            title: "New Message",
+            body: "You have a new message !",
+        },
+        data: JSON.stringify(message),
+        token: fcmToken
+    };
+
+    credentialsRepository.sendNotification(notificationMessage)
+        .then(_ => {
+            const serverResponse = {
+                message: 'Notification sent successfully',
+            };
+
+            res.status(201).json(serverResponse);
+        })
+        .catch((error) => {
+            const serverResponse = {
+                message: 'Error adding FCM token',
+                error: error.message
+            };
+
+            log.error(serverResponse.message, error);
+            res.status(500).json(serverResponse)
+        })
+})
 
 module.exports = router;
