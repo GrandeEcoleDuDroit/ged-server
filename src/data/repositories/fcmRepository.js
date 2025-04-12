@@ -9,10 +9,11 @@ const userDir = path.join(`${homeDir}`, 'gedoise-data', 'users');
 class FcmRepository {
     async upsertToken(token, tokenFileName) {
         firestoreAPI.upsertToken(token);
-        const filePath = path.join(userDir, `${token.userId}`, tokenFileName);
+        const dirPath = path.join(userDir, `${token.userId}`);
+        const filePath = path.join(`${dirPath}`, tokenFileName);
         
-        if (!fs.existsSync(userDir)) {
-            fs.mkdirSync(userDir, { recursive: true });
+        if (!fs.existsSync(dirPath)) {
+            fs.mkdirSync(dirPath, { recursive: true });
         }
 
         fs.writeFileSync(filePath, token.value, 'utf8');
