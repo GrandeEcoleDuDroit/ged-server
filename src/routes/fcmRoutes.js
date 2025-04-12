@@ -53,7 +53,7 @@ router.post('/addToken', async (req, res) => {
 router.post('/sendNotification', async (req, res) => {
     const { recipientId, data } = req.body;
 
-    if (recipientId || data) {
+    if (!recipientId || !data) {
         const serverResponse = {
             message: "Error to send notification",
             error: `
