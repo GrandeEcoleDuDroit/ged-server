@@ -9,6 +9,7 @@ config.json
 
 # Clé API Firebase
 firebase_staging_key.json
+firebase_credentials.json
 
 # Fichiers de logs
 /logs
