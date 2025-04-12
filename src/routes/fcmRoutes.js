@@ -51,15 +51,15 @@ router.post('/addToken', async (req, res) => {
 });
 
 router.post('/sendNotification', async (req, res) => {
-    const { userId, data } = req.body;
+    const { recipientId, data } = req.body;
 
-    if (userId || data) {
+    if (recipientId || data) {
         const serverResponse = {
             message: "Error to send notification",
             error: `
             Some missing fields : 
             {
-                userId: ${userId},
+                recipientId: ${recipientId},
                 data: ${data}
             }
             `
@@ -69,7 +69,7 @@ router.post('/sendNotification', async (req, res) => {
         return res.status(400).json(serverResponse);
     }
 
-    const fcmToken = await fcmRepository.getTokenValue(userId);
+    const fcmToken = await fcmRepository.getTokenValue(recipientId);
     const notificationMessage = {
         notification: {
             title: "New Message",
