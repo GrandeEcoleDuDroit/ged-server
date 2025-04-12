@@ -7,7 +7,7 @@ const path = require('path');
 const userRoutes = require('@routes/userRoutes');
 const imageRoutes = require('@routes/imageRoutes');
 const announcementsRoutes = require('@routes/announcementsRoutes');
-const credentialsRoutes = require('@routes/credentialsRoutes');
+const fcmRoutes = require('@routes/fcmRoutes');
 
 const app = express();
 
@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/users', userRoutes);
 app.use('/image', imageRoutes);
 app.use('/announcements', announcementsRoutes);
-app.use('/credentials', credentialsRoutes);
+app.use('/fcm', fcmRoutes);
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'ui/index.html'));

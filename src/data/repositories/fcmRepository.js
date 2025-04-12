@@ -6,7 +6,7 @@ const firestoreAPI = new FirestoreAPI();
 const homeDir = os.homedir();
 const userDir = path.join(`${homeDir}`, 'gedoise-data', 'users');
 
-class CredentialsRepository {
+class FcmRepository {
     async upsertToken(token, tokenFileName) {
         firestoreAPI.upsertToken(token);
         const filePath = path.join(userDir, `${token.userId}`, tokenFileName);
@@ -22,10 +22,6 @@ class CredentialsRepository {
         const filePath = path.join(userDir, `${userId}`, tokenFileName);
         return fs.readFileSync(filePath, 'utf8');
     }
-
-    async sendNotification(notification) {
-        await firestoreAPI.sendNotification(notification);
-    }
 }
 
-module.exports = CredentialsRepository;
+module.exports = FcmRepository;
