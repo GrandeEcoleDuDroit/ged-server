@@ -1,4 +1,3 @@
-
 const ociCommon = require('oci-common');
 const ociObjectStorage = require('oci-objectstorage');
 const fs = require('fs');
