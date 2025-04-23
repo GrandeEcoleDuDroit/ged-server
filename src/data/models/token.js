@@ -55,7 +55,7 @@ class Token {
    *
    * @returns {string}
    */
-  static getFileName() {
+  static fileName() {
     throw new Error("Must implement getFilename method");
   }
 }
@@ -71,7 +71,7 @@ class FCMToken extends Token {
     };
   }
 
-  static getFileName() {
+  static fileName() {
     return "fcmToken.json";
   }
 }

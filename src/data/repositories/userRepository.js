@@ -1,7 +1,7 @@
-const OracleDatabaseManager = require("@data/oracleDatabaseManager");
+const OracleDatabaseConnection = require("@data/oracleDatabaseConnection");
+oracleDatabaseConnection = new OracleDatabaseConnection();
 
 class UserRepository {
-    #oracleDatabaseManager = new OracleDatabaseManager();
     #oracleConnection;
 
     constructor() {
@@ -9,7 +9,7 @@ class UserRepository {
     }
 
     async #initializeConnection() {
-        this.#oracleConnection = await this.#oracleDatabaseManager.getConnection();
+        this.#oracleConnection = await oracleDatabaseConnection.getConnection();
     }
 
     async getUser(userId) {
