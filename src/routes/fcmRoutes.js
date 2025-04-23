@@ -4,8 +4,6 @@ const router = express.Router();
 const log = require('@utils/logsUtils');
 const FCMRepository = require('@repositories/fcmRepository');
 const fcmRepository = new FCMRepository();
-const FirestoreAPI = require('@data/api/firestoreAPI');
-const firestoreAPI = new FirestoreAPI();
 const FCMToken = require('@models/token');
 
 router.post('/addToken', async (req, res) => {
@@ -31,7 +29,7 @@ router.post('/addToken', async (req, res) => {
     }
 
     const fcmToken = new FCMToken(userId, token);
-    fcmRepository.upsertToken(fcmToken, FCMToken.fileName())
+    fcmRepository.upsertToken(fcmToken)
         .then(_ => {
             const serverResponse = {
                 message: 'FCM token added successfully'
@@ -51,16 +49,16 @@ router.post('/addToken', async (req, res) => {
 });
 
 router.post('/sendNotification', async (req, res) => {
-    const { recipientId, data } = req.body;
+    let { fcmMessage } = req.body;
+    fcmMessage = JSON.parse(fcmMessage);
 
-    if (!recipientId || !data) {
+    if (!fcmMessage) {
         const serverResponse = {
             message: "Error to send notification",
             error: `
-            Some missing fields : 
+            Missing field : 
             {
-                recipientId: ${recipientId},
-                data: ${data}
+                fcmMessage: ${fcmMessage},
             }
             `
         };
@@ -69,33 +67,48 @@ router.post('/sendNotification', async (req, res) => {
         return res.status(400).json(serverResponse);
     }
 
-    const fcmToken = await fcmRepository.getTokenValue(recipientId);
-    const notificationMessage = {
-        notification: {
-            title: "New Message",
-            body: "You have a new message !",
-        },
-        data: JSON.stringify(data),
-        token: fcmToken
-    };
+    try {
+        const fcmToken = await fcmRepository.getTokenValue(fcmMessage.recipientId);
+        const message = {
+            token: fcmToken,
+            notification: {
+                title: fcmMessage.notification.title,
+                body: fcmMessage.notification.body
+            },
+            data: {
+                type: fcmMessage.data.type,
+                value: JSON.stringify(fcmMessage.data.value)
+            },
+            android: {
+                priority: fcmMessage.priority
+            }
+        };
 
-    firestoreAPI.sendNotification(notificationMessage)
-        .then(_ => {
-            const serverResponse = {
-                message: 'Notification sent successfully',
-            };
+        fcmRepository.sendNotification(message)
+            .then(_ => {
+                const serverResponse = {
+                    message: 'Notification sent successfully',
+                };
+                res.status(201).json(serverResponse);
+            })
+            .catch((error) => {
+                const serverResponse = {
+                    message: 'Error sending notification',
+                    error: error.message
+                };
 
-            res.status(201).json(serverResponse);
-        })
-        .catch((error) => {
-            const serverResponse = {
-                message: 'Error sending notification',
-                error: error.message
-            };
+                log.error(serverResponse.message, error);
+                res.status(500).json(serverResponse)
+            })
+    } catch (error) {
+        const serverResponse = {
+            message: 'Error sending notification',
+            error: error.message
+        }
 
-            log.error(serverResponse.message, error);
-            res.status(500).json(serverResponse)
-        })
+        log.error(serverResponse.message, error);
+        res.status(500).json(serverResponse);
+    }
 })
 
 module.exports = router;
