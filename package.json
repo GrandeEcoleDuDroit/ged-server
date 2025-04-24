@@ -33,6 +33,8 @@
     "@data": "src/data",
     "@models": "src/data/models",
     "@repositories": "src/data/repositories",
+    "@controllers": "src/controllers",
+    "@config": "src/config",
     "@utils": "src/utils"
   }
 }

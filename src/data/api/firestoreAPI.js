@@ -1,4 +1,4 @@
-const FirebaseManager = require('@data/firebaseManager');
+const FirebaseManager = require('@config/firebaseManager');
 const firebaseManager = new FirebaseManager();
 
 const TOKEN_TABLE_NAME = 'token';
@@ -6,9 +6,7 @@ const TOKEN_TABLE_NAME = 'token';
 class FirestoreAPI {
     async upsertToken(token) {
         const tokenRef = firebaseManager.firestore().collection(TOKEN_TABLE_NAME).doc(token.userId);
-        await tokenRef.set({
-            ...token.toJson()
-        }, { merge: true });
+        await tokenRef.set({...token.toJson()}, { merge: true });
     }
 
     async sendNotification(notificationMessage) {

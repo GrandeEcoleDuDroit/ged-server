@@ -1,4 +1,4 @@
-const OracleDatabaseConnection = require("@data/oracleDatabaseConnection");
+const OracleDatabaseConnection = require("@config/oracleDatabaseConnection");
 oracleDatabaseConnection = new OracleDatabaseConnection();
 
 class AnnouncementsRepository {

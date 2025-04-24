@@ -14,8 +14,6 @@ const log = winston.createLogger({
    transports: [getTransport()]
 });
 
-module.exports = log;
-
 function getTransport() {
      const token = process.env.BETTER_STACK_TOKEN;
      const endpoint = process.env.BETTER_STACK_ENDPOINT;
@@ -27,3 +25,5 @@ function getTransport() {
            return new winston.transports.Console();
       }
 }
+
+module.exports = log;
