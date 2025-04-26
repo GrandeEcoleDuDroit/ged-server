@@ -1,4 +1,4 @@
-const log = require('@utils/logsUtils');
+const { e } = require('@utils/logs');
 const { Readable } = require('stream');
 const ImageRepository = require('@repositories/imageRepository');
 
@@ -21,7 +21,7 @@ const downloadImage = async (req, res) => {
             error: error.message
         };
 
-        log.error(serverResponse.message, error);
+        e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
 }
@@ -37,7 +37,7 @@ const uploadImage = async (req, res) => {
                 error: 'No image file found'
             };
 
-            log.error(serverResponse.message, new Error(serverResponse.error));
+            e(serverResponse.message, new Error(serverResponse.error));
             return res.status(400).json(serverResponse);
         }
 
@@ -54,7 +54,7 @@ const uploadImage = async (req, res) => {
             error: error.message
         };
 
-        log.error(serverResponse.message, error);
+        e(serverResponse.message, error);
         res.status(500).json(serverResponse)
     }
 }
@@ -76,7 +76,7 @@ const deleteImage = async (req, res) => {
             error: error.message
         };
 
-        log.error(serverResponse.message, error);
+        e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
 }

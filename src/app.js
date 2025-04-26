@@ -1,5 +1,8 @@
 require('module-alias/register');
 require('dotenv').config();
+require("./instrument.js");
+
+const Sentry = require("@sentry/node");
 const express = require('express');
 const https = require('https');
 const fs = require('fs');
@@ -8,6 +11,7 @@ const userRoutes = require('@routes/userRoutes');
 const imageRoutes = require('@routes/imageRoutes');
 const announcementsRoutes = require('@routes/announcementsRoutes');
 const fcmRoutes = require('@routes/fcmRoutes');
+const prodEnvironment = process.env.NODE_ENV == 'production';
 
 const app = express();
 
@@ -24,7 +28,9 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'ui/index.html'));
 });
 
-if (process.env.NODE_ENV == 'production') {
+if (prodEnvironment) {
+  Sentry.setupExpressErrorHandler(app);
+
   const options = {
     key: fs.readFileSync(process.env.SSL_KEY_PATH),
     cert: fs.readFileSync(process.env.SSL_CERT_PATH)

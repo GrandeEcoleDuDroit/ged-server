@@ -1,4 +1,4 @@
-const log = require('@utils/logsUtils');
+const { e } = require('@utils/logs');
 const FCMRepository = require('@repositories/fcmRepository');
 const fcmRepository = new FCMRepository();
 const FCMToken = require('@models/token');
@@ -21,7 +21,7 @@ const addToken = async (req, res) => {
             `
         };
 
-        log.error(serverResponse.message, new Error(serverResponse.error));
+        e(serverResponse.message, new Error(serverResponse.error));
         return res.status(400).json(serverResponse);
     }
 
@@ -40,7 +40,7 @@ const addToken = async (req, res) => {
                 error: error.message
             };
 
-            log.error(serverResponse.message, error);
+            e(serverResponse.message, error);
             res.status(500).json(serverResponse)
         })
 }
@@ -60,7 +60,7 @@ const sendNotification = async (req, res) => {
             `
         };
 
-        log.error(serverResponse.message, new Error(serverResponse.error));
+        e(serverResponse.message, new Error(serverResponse.error));
         return res.status(400).json(serverResponse);
     }
 
@@ -94,7 +94,7 @@ const sendNotification = async (req, res) => {
                     error: error.message
                 };
 
-                log.error(serverResponse.message, error);
+                e(serverResponse.message, error);
                 res.status(500).json(serverResponse)
             })
     } catch (error) {
@@ -103,7 +103,7 @@ const sendNotification = async (req, res) => {
             error: error.message
         }
 
-        log.error(serverResponse.message, error);
+        e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
 }
