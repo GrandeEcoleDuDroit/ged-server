@@ -1,4 +1,4 @@
-const log = require('@utils/logsUtils');
+const { e } = require('@utils/logs');
 const User = require('@models/user');
 const UserRepository = require('@repositories/userRepository');
 const formatOracleError = require("@utils/exceptionUtils")
@@ -14,7 +14,7 @@ const getUser = async (req, res) => {
     }
     catch (error) {
         const serverResponse = formatOracleError(error, 'Error getting user');
-        log.error(serverResponse.message, error);
+        e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
 }
@@ -44,7 +44,7 @@ const createUser = async (req, res) => {
               }`
         };
 
-        log.error(serverResponse.message, new Error(serverResponse.error));
+        e(serverResponse.message, new Error(serverResponse.error));
         return res.status(400).json(serverResponse);
     }
 
@@ -58,7 +58,7 @@ const createUser = async (req, res) => {
                 error: `User ${email} is not whitelisted`
             };
 
-            log.error(serverResponse.message, new Error(serverResponse.error));
+            e(serverResponse.message, new Error(serverResponse.error));
             return res.status(403).json(serverResponse);
         }
 
@@ -72,7 +72,7 @@ const createUser = async (req, res) => {
     }
     catch (error) {
         const serverResponse = formatOracleError(error, 'Error inserting user');
-        log.error(serverResponse.message, error);
+        e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
 }
@@ -93,7 +93,7 @@ const updateProfilePicture = async (req, res) => {
             }`
         };
 
-        log.error(serverResponse.message, new Error(serverResponse.error));
+        e(serverResponse.message, new Error(serverResponse.error));
         return res.status(400).json(serverResponse);
     }
 
@@ -107,7 +107,7 @@ const updateProfilePicture = async (req, res) => {
     }
     catch (error) {
         const serverResponse = formatOracleError(error, 'Error updating profile picture file name');
-        log.error(serverResponse.message, error);
+        e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
 }
@@ -122,7 +122,7 @@ const deleteProfilePicture = async (req, res) => {
     }
     catch (error) {
         const serverResponse = formatOracleError(error, 'Error deleting profile picture file name');
-        log.error(serverResponse.message, error);
+        e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
 }

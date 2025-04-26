@@ -1,4 +1,4 @@
-const log = require('@utils/logsUtils');
+const { e } = require('@utils/logs');
 const AnnouncementsRepository = require('@repositories/announcementsRepository');
 const Announcement = require("@models/announcement");
 const formatOracleError = require("@utils/exceptionUtils")
@@ -16,7 +16,7 @@ const getAnnouncements = async (req, res) => {
             error : error.message
         };
 
-        log.error(serverResponse.message, error);
+        e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
 }
@@ -43,7 +43,7 @@ const createAnnouncement = async (req, res) => {
             `
         };
 
-        log.error(serverResponse.message, new Error(serverResponse.error));
+        e(serverResponse.message, new Error(serverResponse.error));
         return res.status(400).json(serverResponse);
     }
 
@@ -59,7 +59,7 @@ const createAnnouncement = async (req, res) => {
     }
     catch (error) {
         const serverResponse = formatOracleError(error, 'Error creating announcement');
-        log.error(serverResponse.message, error);
+        e(serverResponse.message, error);
         res.status(500).json(serverResponse)
     }
 }
@@ -86,7 +86,7 @@ const updateAnnouncement = async (req, res) => {
             `
         };
 
-        log.error(serverResponse.message, new Error(serverResponse.error));
+        e(serverResponse.message, new Error(serverResponse.error));
         return res.status(400).json(serverResponse);
     }
 
@@ -102,7 +102,7 @@ const updateAnnouncement = async (req, res) => {
     }
     catch (error) {
         const serverResponse = formatOracleError(error, 'Error updating announcement');
-        log.error(serverResponse.message, error);
+        e(serverResponse.message, error);
         res.status(500).json(serverResponse)
     }
 }
@@ -120,7 +120,7 @@ const deleteAnnouncement = async (req, res) => {
     }
     catch (error) {
         const serverResponse = formatOracleError(error, 'Error delete announcement');
-        log.error(serverResponse.message, error);
+        e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
 }
