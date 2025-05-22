@@ -1,9 +1,11 @@
 const { e } = require('@utils/logs');
 const User = require('@models/user');
 const UserRepository = require('@repositories/userRepository');
-const formatOracleError = require("@utils/exceptionUtils")
+const WhiteListRepository = require('@repositories/whiteListRepository');
+const formatOracleError = require('@utils/exceptionUtils')
 
 const userRepository = new UserRepository();
+const whiteListRepository = new WhiteListRepository();
 
 const getUser = async (req, res) => {
     const userId = req.params.userId;
@@ -49,9 +51,17 @@ const createUser = async (req, res) => {
     }
 
     try {
-        const user = new User(id, firstName, lastName, email, schoolLevel, isMember, profilePictureFileName);
+        const user = new User(
+            id,
+            firstName,
+            lastName,
+            email,
+            schoolLevel,
+            isMember,
+            profilePictureFileName
+        );
 
-        const isWhiteListed = await userRepository.checkUserWhiteList(email);
+        const isWhiteListed = await whiteListRepository.checkUserWhiteList(email);
         if (!isWhiteListed) {
             const serverResponse = {
                 message: 'Error creating user',

@@ -1,6 +1,6 @@
 const oracledb = require('oracledb');
 const config = require('@root/config.json');
-const { e, i } = require('@utils/logs');
+const { d, e } = require('@utils/logs');
 const oraclePath = process.env.ORACLE_HOME;
 
 class OracleDatabaseConnection {
@@ -17,13 +17,13 @@ class OracleDatabaseConnection {
 
     async #connect(){
         try {
-            i('Initializing database connection...');
+            d('Initializing database connection...');
             let connection = await oracledb.getConnection(config.dbConfig);
-            i('Database connection established !');
+            d('Database connection established !');
             return connection;
         }
         catch (err) {
-            e('Failed to connect to the database:', err);
+            d('Failed to connect to the database:', err);
             i('Retrying to connect in 2 seconds...');
             setTimeout(this.#connect, 2000);
         }

@@ -1,16 +1,19 @@
 const winston = require('winston');
 const Sentry = require("@sentry/node");
-const prodEnvironment = process.env.NODE_ENV == 'production';
+const prodEnvironment = process.env.NODE_ENV === 'production';
 
-const { combine, timestamp, json, prettyPrint, errors } = winston.format;
+const { combine, timestamp, printf, colorize, align, errors } = winston.format;
 
 const log = winston.createLogger({
-   level: 'info',
+   level: 'debug',
    format: combine(
-        errors({ stack: true }),
-        timestamp(),
-        json(),
-        prettyPrint()
+       errors({ stack: true }),
+       colorize({ all: true }),
+       timestamp({
+           format: 'YYYY-MM-DD HH:mm:ss'
+       }),
+       align(),
+       printf((info) => `[${info.timestamp}] ${info.level}: ${info.message}`)
    ),
    transports: [
        new winston.transports.Console()

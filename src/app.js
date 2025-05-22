@@ -1,6 +1,7 @@
 require('module-alias/register');
 require('dotenv').config();
 require("./instrument.js");
+const { d } = require('@utils/logs');
 
 const Sentry = require("@sentry/node");
 const express = require('express');
@@ -11,7 +12,8 @@ const userRoutes = require('@routes/userRoutes');
 const imageRoutes = require('@routes/imageRoutes');
 const announcementsRoutes = require('@routes/announcementsRoutes');
 const fcmRoutes = require('@routes/fcmRoutes');
-const prodEnvironment = process.env.NODE_ENV == 'production';
+const whiteListRoutes = require('@routes/whiteListRoutes');
+const prodEnvironment = process.env.NODE_ENV === 'production';
 
 const app = express();
 
@@ -23,6 +25,7 @@ app.use('/users', userRoutes);
 app.use('/image', imageRoutes);
 app.use('/announcements', announcementsRoutes);
 app.use('/fcm', fcmRoutes);
+app.use('/white-list', whiteListRoutes);
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'ui/index.html'));
@@ -37,10 +40,10 @@ if (prodEnvironment) {
   };
   
   https.createServer(options, app).listen(3000, () => {
-    console.log(`Web server started !`);
+    d(`Web server started !`);
   });
 } else {
   app.listen(3000, () => {
-    console.log(`Web server started !`);
+    d(`Web server started !`);
   });
 }

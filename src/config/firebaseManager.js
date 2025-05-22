@@ -1,4 +1,6 @@
 const admin = require('firebase-admin');
+const path = require('path');
+const serviceAccountPath = path.resolve(process.env.FIREBASE_CREDENTIALS_PATH);
 
 class FirebaseManager {
     constructor() {
@@ -13,7 +15,7 @@ class FirebaseManager {
     initialize() {
         if (!this.app) {
             this.app = admin.initializeApp({
-                credential: admin.credential.cert(require(process.env.FIREBASE_CREDENTIALS_PATH))
+                credential: admin.credential.cert(require(serviceAccountPath))
             });
         }
     }
