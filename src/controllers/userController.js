@@ -23,13 +23,13 @@ const getUser = async (req, res) => {
 
 const createUser = async (req, res) => {
     const {
-        USER_ID: id,
-        USER_FIRST_NAME: firstName,
-        USER_LAST_NAME: lastName,
-        USER_EMAIL: email,
-        USER_SCHOOL_LEVEL: schoolLevel,
-        USER_IS_MEMBER: isMember,
-        USER_PROFILE_PICTURE_FILE_NAME: profilePictureFileName
+        userId: id,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        schoolLevel: schoolLevel,
+        isMember: isMember,
+        profilePictureFileName: profilePictureFileName
     } = req.body;
 
     if (!id || !firstName || !lastName || !email || !schoolLevel) {
@@ -89,8 +89,8 @@ const createUser = async (req, res) => {
 
 const updateProfilePicture = async (req, res) => {
     const {
-        USER_PROFILE_PICTURE_FILE_NAME: profilePictureFileName,
-        USER_ID: userId
+        profilePictureFileName: profilePictureFileName,
+        userId: userId
     } = req.body;
 
     if(!profilePictureFileName && !userId) {

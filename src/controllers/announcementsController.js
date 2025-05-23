@@ -23,11 +23,11 @@ const getAnnouncements = async (req, res) => {
 
 const createAnnouncement = async (req, res) => {
     const {
-        ANNOUNCEMENT_ID: id,
-        ANNOUNCEMENT_TITLE: title,
-        ANNOUNCEMENT_CONTENT: content,
-        ANNOUNCEMENT_DATE: date,
-        USER_ID: userId
+        announcementId: id,
+        announcementTitle: title,
+        announcementContent: content,
+        announcementDate: date,
+        userId: userId
     } = req.body;
 
     if(!content || !date || !userId) {
@@ -66,11 +66,11 @@ const createAnnouncement = async (req, res) => {
 
 const updateAnnouncement = async (req, res) => {
     const {
-        ANNOUNCEMENT_ID: id,
-        ANNOUNCEMENT_TITLE: title,
-        ANNOUNCEMENT_CONTENT: content,
-        ANNOUNCEMENT_DATE: date,
-        USER_ID: userId
+        announcementId: id,
+        announcementTitle: title,
+        announcementContent: content,
+        announcementDate: date,
+        userId: userId
     } = req.body;
 
     if(!content || !date || !userId) {

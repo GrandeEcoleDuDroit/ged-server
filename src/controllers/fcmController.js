@@ -46,7 +46,7 @@ const addToken = async (req, res) => {
 }
 
 const sendNotification = async (req, res) => {
-    let { fcmMessage } = req.body;
+    let fcmMessage = req.body.fcmMessage;
     fcmMessage = JSON.parse(fcmMessage);
 
     if (!fcmMessage) {
