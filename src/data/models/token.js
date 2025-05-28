@@ -27,7 +27,7 @@ class Token {
   }
 }
 
-class FCMToken extends Token {
+class FcmToken extends Token {
   constructor(userId, value) {
     super(userId, value);
   }
@@ -43,4 +43,4 @@ class FCMToken extends Token {
   }
 }
 
-module.exports = FCMToken;
+module.exports = FcmToken;
