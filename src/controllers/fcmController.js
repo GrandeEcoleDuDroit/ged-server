@@ -1,6 +1,6 @@
 const { e } = require('@utils/logs');
-const FCMRepository = require('@repositories/fcmRepository');
-const fcmRepository = new FCMRepository();
+const FcmRepository = require('@repositories/fcmRepository');
+const fcmRepository = new FcmRepository();
 const FCMToken = require('@models/token');
 
 const addToken = async (req, res) => {
@@ -29,14 +29,14 @@ const addToken = async (req, res) => {
     fcmRepository.upsertToken(fcmToken)
         .then(_ => {
             const serverResponse = {
-                message: 'FCM token added successfully'
+                message: 'Fcm token added successfully'
             };
 
             res.status(201).json(serverResponse);
         })
         .catch((error) => {
             const serverResponse = {
-                message: 'Error adding FCM token',
+                message: 'Error adding fcm token',
                 error: error.message
             };
 
@@ -46,8 +46,10 @@ const addToken = async (req, res) => {
 }
 
 const sendNotification = async (req, res) => {
-    let fcmMessage = req.body.fcmMessage;
-    fcmMessage = JSON.parse(fcmMessage);
+    let {
+        recipientId: recipientId,
+        fcmMessage: fcmMessage
+    } = req.body;
 
     if (!fcmMessage) {
         const serverResponse = {
@@ -65,20 +67,17 @@ const sendNotification = async (req, res) => {
     }
 
     try {
-        const fcmToken = await fcmRepository.getTokenValue(fcmMessage.recipientId);
+        const fcmToken = await fcmRepository.getTokenValue(recipientId);
+        fcmMessage = JSON.parse(fcmMessage);
         const message = {
-            token: fcmToken,
-            notification: {
-                title: fcmMessage.notification.title,
-                body: fcmMessage.notification.body
-            },
             data: {
                 type: fcmMessage.data.type,
                 value: JSON.stringify(fcmMessage.data.value)
             },
             android: {
-                priority: fcmMessage.priority
-            }
+                priority: fcmMessage.android.priority,
+            },
+            token: fcmToken
         };
 
         fcmRepository.sendNotification(message)
