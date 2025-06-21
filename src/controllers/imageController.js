@@ -43,7 +43,7 @@ const uploadImage = async (req, res) => {
 
         await imageRepository.uploadImage(imageFile.path, objectName);
         const serverResponse = {
-            message: `Image uploaded successfully: ${objectName}`
+            message: `Image uploaded successfully`
         };
 
         res.status(200).json(serverResponse);
@@ -65,7 +65,7 @@ const deleteImage = async (req, res) => {
     try {
         await imageRepository.deleteImage(objectName);
         const serverResponse = {
-            message: `Image ${objectName} deleted successfully`
+            message: `Image deleted successfully`
         };
 
         res.status(200).json(serverResponse);
