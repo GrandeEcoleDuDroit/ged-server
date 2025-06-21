@@ -1,6 +1,6 @@
 const oracledb = require('oracledb');
 const config = require('@root/config.json');
-const { d, e } = require('@utils/logs');
+const { d, i, e } = require('@utils/logs');
 const oraclePath = process.env.ORACLE_HOME;
 
 class OracleDatabaseConnection {
