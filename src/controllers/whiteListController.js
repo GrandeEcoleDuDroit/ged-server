@@ -5,7 +5,7 @@ const formatOracleError = require('@utils/exceptionUtils')
 const whiteListRepository = new WhiteListRepository();
 
 const checkUserWhiteList = async (req, res) => {
-    const userEmail = req.body.email;
+    const userEmail = req.body.USER_EMAIL;
 
     try {
         const isWhiteListed = await whiteListRepository.checkUserWhiteList(userEmail);
