@@ -1,13 +1,13 @@
 const oracledb = require('oracledb');
 const config = require('@root/config.json');
-const { d, i, e } = require('@utils/logs');
+const { e } = require('@utils/logs');
 const oraclePath = process.env.ORACLE_HOME;
 
 class OracleDatabaseConnection {
-    #oracleConnection
+    static #pool = null;
 
     constructor() {
-        if(OracleDatabaseConnection.instance){
+        if (OracleDatabaseConnection.instance) {
             return OracleDatabaseConnection.instance;
         }
 
@@ -15,27 +15,39 @@ class OracleDatabaseConnection {
         OracleDatabaseConnection.instance = this;
     }
 
-    async #connect(){
-        try {
-            d('Initializing database connection...');
-            let connection = await oracledb.getConnection(config.dbConfig);
-            d('Database connection established !');
-            return connection;
+    async initPool() {
+        if (OracleDatabaseConnection.#pool) {
+            return;
         }
-        catch (err) {
-            d('Failed to connect to the database:', err);
-            i('Retrying to connect in 2 seconds...');
-            setTimeout(this.#connect, 2000);
+
+        try {
+            OracleDatabaseConnection.#pool = await oracledb.createPool(config.dbConfig);
+        } catch (err) {
+            e('Failed to create Oracle connection pool:', err);
+            throw err;
         }
     }
 
-    async getConnection(){
-        if(this.#oracleConnection == null){
-            this.#oracleConnection = this.#connect()
-            return this.#oracleConnection;
+    async getConnection() {
+        try {
+            if (!OracleDatabaseConnection.#pool) {
+                await this.initPool();
+            }
+            return await OracleDatabaseConnection.#pool.getConnection();
+        } catch (err) {
+            e('Error getting connection from pool:', err);
+            throw err;
         }
-        else {
-            return this.#oracleConnection;
+    }
+
+    async closePool() {
+        if (OracleDatabaseConnection.#pool) {
+            try {
+                await OracleDatabaseConnection.#pool.close(10);
+                OracleDatabaseConnection.#pool = null;
+            } catch (err) {
+                e('Error closing Oracle connection pool:', err);
+            }
         }
     }
 }
