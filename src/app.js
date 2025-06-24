@@ -2,6 +2,8 @@ require('module-alias/register');
 require('dotenv').config();
 require("./instrument.js");
 const { d } = require('@utils/logs');
+const OracleDatabaseConnection = require("@config/oracleDatabaseConnection");
+oracleDatabaseConnection = new OracleDatabaseConnection();
 
 const Sentry = require("@sentry/node");
 const express = require('express');
@@ -47,3 +49,8 @@ if (prodEnvironment) {
     d(`Web server started !`);
   });
 }
+
+process.on('SIGINT', async () => {
+  await oracleDatabaseConnection.closePool();
+  process.exit(0);
+});
