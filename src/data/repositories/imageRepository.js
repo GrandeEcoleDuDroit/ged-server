@@ -9,7 +9,6 @@ const client = new ociObjectStorage.ObjectStorageClient({
 });
 
 class ImageRepository {
-
     async downloadImage(objectName){
         const request = {
             namespaceName: namespaceName,

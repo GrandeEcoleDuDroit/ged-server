@@ -4,6 +4,7 @@
   "description": "Serveur web pour l'application Gedoise",
   "main": "app.js",
   "scripts": {
+    "start": "nodemon src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,11 +18,12 @@
     "@sentry/node": "^9.14.0",
     "dotenv": "^16.4.7",
     "expres": "^0.0.5",
-    "express": "^4.19.2",
+    "express": "^4.21.2",
     "firebase-admin": "^13.2.0",
     "https": "^1.0.0",
     "module-alias": "^2.2.3",
     "multer": "^1.4.5-lts.1",
+    "nodemon": "^3.1.10",
     "oci-common": "^2.89.4",
     "oci-objectstorage": "^2.89.4",
     "oci-sdk": "^2.89.2",
@@ -36,6 +38,7 @@
     "@repositories": "src/data/repositories",
     "@controllers": "src/controllers",
     "@config": "src/config",
-    "@utils": "src/utils"
+    "@utils": "src/utils",
+    "@middlewares": "src/middlewares"
   }
 }

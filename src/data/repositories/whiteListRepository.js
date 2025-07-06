@@ -1,5 +1,4 @@
-const OracleDatabaseConnection = require('@config/oracleDatabaseConnection');
-const oracleDatabaseConnection = new OracleDatabaseConnection();
+const { oracleDatabaseConnection } = require('@config');
 
 class WhiteListRepository {
 

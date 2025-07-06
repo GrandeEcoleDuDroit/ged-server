@@ -1,5 +1,4 @@
-const FirebaseManager = require('@config/firebaseManager');
-const firebaseManager = new FirebaseManager();
+const { firebaseManager } = require('@config')
 
 const CREDENTIALS_TABLE_NAME = 'credentials';
 
@@ -11,6 +10,10 @@ class FirestoreApi {
 
     async sendNotification(notificationMessage) {
         await firebaseManager.sendNotification(notificationMessage)
+    }
+
+    async verifyAuthIdToken(idToken) {
+        await firebaseManager.verifyAuthIdToken(idToken);
     }
 }
 

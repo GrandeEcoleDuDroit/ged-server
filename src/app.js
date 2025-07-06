@@ -1,52 +1,44 @@
 require('module-alias/register');
 require('dotenv').config();
-require("./instrument.js");
-const { d } = require('@utils/logs');
-const OracleDatabaseConnection = require("@config/oracleDatabaseConnection");
-oracleDatabaseConnection = new OracleDatabaseConnection();
+require('./instrument');
 
-const Sentry = require("@sentry/node");
 const express = require('express');
-const https = require('https');
-const fs = require('fs');
-const path = require('path');
-const userRoutes = require('@routes/userRoutes');
-const imageRoutes = require('@routes/imageRoutes');
-const announcementsRoutes = require('@routes/announcementsRoutes');
-const fcmRoutes = require('@routes/fcmRoutes');
-const whiteListRoutes = require('@routes/whiteListRoutes');
-const prodEnvironment = process.env.NODE_ENV === 'production';
+const applyMiddlewares = require('@middlewares');
+const routes = require('@routes');
 
+const fs = require('fs');
+const https = require('https');
+const Sentry = require('@sentry/node');
+const { d } = require('@utils/logs');
+const { oracleDatabaseConnection } = require('@config');
+const path = require("path");
 const app = express();
 
-app.use(express.static('public'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+const prod = process.env.NODE_ENV === 'production';
+const PORT = process.env.PORT || 3000;
 
-app.use('/users', userRoutes);
-app.use('/image', imageRoutes);
-app.use('/announcements', announcementsRoutes);
-app.use('/fcm', fcmRoutes);
-app.use('/white-list', whiteListRoutes);
-
+app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'ui/index.html'));
+  res.sendFile(path.join(__dirname, 'public/index.html'));
 });
 
-if (prodEnvironment) {
-  Sentry.setupExpressErrorHandler(app);
+applyMiddlewares(app);
 
-  const options = {
+app.use(routes);
+
+if (prod) {
+  Sentry.setupExpressErrorHandler(app);
+  const sslOptions = {
     key: fs.readFileSync(process.env.SSL_KEY_PATH),
     cert: fs.readFileSync(process.env.SSL_CERT_PATH)
   };
-  
-  https.createServer(options, app).listen(3000, () => {
-    d(`Web server started !`);
+
+  https.createServer(sslOptions, app).listen(PORT, () => {
+    d(`✅ HTTPS server started on port ${PORT}`);
   });
 } else {
-  app.listen(3000, () => {
-    d(`Web server started !`);
+  app.listen(PORT, () => {
+    d(`✅ HTTP server started on port ${PORT}`);
   });
 }
 

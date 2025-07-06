@@ -28,6 +28,10 @@ class FirebaseManager {
             .messaging()
             .send(message)
     }
+
+    async verifyAuthIdToken(idToken) {
+        await admin.auth().verifyIdToken(idToken);
+    }
 }
 
 module.exports = FirebaseManager;
