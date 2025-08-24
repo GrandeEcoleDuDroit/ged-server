@@ -26,4 +26,4 @@ class User {
     get profilePictureFileName() { return this.#profilePictureFileName; }
 }
 
-module.exports = User;
+export default User;

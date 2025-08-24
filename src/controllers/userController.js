@@ -1,13 +1,13 @@
-const { e } = require('@utils/logs');
-const User = require('@models/user');
-const UserRepository = require('@repositories/userRepository');
-const WhiteListRepository = require('@repositories/whiteListRepository');
-const formatOracleError = require('@utils/exceptionUtils')
+import { e } from '#utils/logs.js';
+import User from '#models/user.js';
+import UserRepository from '#repositories/userRepository.js';
+import WhiteListRepository from '#repositories/whiteListRepository.js';
+import formatOracleError from '#utils/exceptionUtils.js';
 
 const userRepository = new UserRepository();
 const whiteListRepository = new WhiteListRepository();
 
-const getUser = async (req, res) => {
+export const getUser = async (req, res) => {
     const userId = req.params.userId;
 
     try {
@@ -21,7 +21,7 @@ const getUser = async (req, res) => {
     }
 }
 
-const createUser = async (req, res) => {
+export const createUser = async (req, res) => {
     const {
         USER_ID: id,
         USER_FIRST_NAME: firstName,
@@ -87,7 +87,7 @@ const createUser = async (req, res) => {
     }
 }
 
-const updateProfilePicture = async (req, res) => {
+export const updateProfilePicture = async (req, res) => {
     const {
         USER_ID: userId,
         USER_PROFILE_PICTURE_FILE_NAME: profilePictureFileName
@@ -122,7 +122,7 @@ const updateProfilePicture = async (req, res) => {
     }
 }
 
-const deleteProfilePicture = async (req, res) => {
+export const deleteProfilePicture = async (req, res) => {
     const userId = req.params.userId;
 
     try {
@@ -137,7 +137,7 @@ const deleteProfilePicture = async (req, res) => {
     }
 }
 
-module.exports = {
+export default {
     getUser,
     createUser,
     updateProfilePicture,

@@ -1,10 +1,10 @@
-const OracleDatabaseConnection = require('@config/oracleDatabaseConnection');
-const FirebaseManager = require('@config/firebaseManager');
+import OracleDatabaseConnection from '#config/oracleDatabaseConnection.js';
+import FirebaseManager from '#config/firebaseManager.js';
 
-const oracleDatabaseConnection = new OracleDatabaseConnection();
-const firebaseManager = new FirebaseManager();
+export const oracleDatabaseConnection = new OracleDatabaseConnection();
+export const firebaseManager = await FirebaseManager.getInstance();
 
-module.exports = {
+export default {
     oracleDatabaseConnection,
     firebaseManager
 };

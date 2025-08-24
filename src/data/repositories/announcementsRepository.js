@@ -1,7 +1,6 @@
-const { oracleDatabaseConnection } = require('@config');
+import oracleDatabaseConnection from '#config/oracleDatabaseConnection.js';
 
 class AnnouncementsRepository {
-
     async getAllAnnouncements() {
         let connection;
         try {
@@ -101,4 +100,4 @@ class AnnouncementsRepository {
     }
 }
 
-module.exports = AnnouncementsRepository;
+export default AnnouncementsRepository;

@@ -1,9 +1,10 @@
-const { e } = require('@utils/logs');
-const FcmRepository = require('@repositories/fcmRepository');
-const fcmRepository = new FcmRepository();
-const FCMToken = require('@models/token');
+import { e } from '#utils/logs.js';
+import FcmRepository from '#repositories/fcmRepository.js';
+import FCMToken from '#models/token.js';
 
-const addToken = async (req, res) => {
+const fcmRepository = new FcmRepository();
+
+export const addToken = async (req, res) => {
     const {
         userId: userId,
         token: token
@@ -45,7 +46,7 @@ const addToken = async (req, res) => {
         })
 }
 
-const sendNotification = async (req, res) => {
+export const sendNotification = async (req, res) => {
     let {
         recipientId: recipientId,
         fcmMessage: fcmMessage
@@ -107,7 +108,7 @@ const sendNotification = async (req, res) => {
     }
 }
 
-module.exports = {
+export default {
     addToken,
     sendNotification
 }

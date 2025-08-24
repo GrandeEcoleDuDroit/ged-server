@@ -43,4 +43,4 @@ class FcmToken extends Token {
   }
 }
 
-module.exports = FcmToken;
+export default FcmToken;

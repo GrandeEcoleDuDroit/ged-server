@@ -20,4 +20,4 @@ class Announcement {
     get userId() { return this.#userId; }
 }
 
-module.exports = Announcement;
+export default Announcement;

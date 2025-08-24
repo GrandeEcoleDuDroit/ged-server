@@ -1,7 +1,7 @@
-const express = require('express');
-const tokenMiddleware = require('@middlewares/tokenMiddleware');
+import express from 'express';
+import tokenMiddleware from '#middlewares/tokenMiddleware.js';
 
-module.exports = function applyMiddlewares(app) {
+export default function applyMiddlewares(app) {
     app.use(express.static('public'));
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));

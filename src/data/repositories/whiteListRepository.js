@@ -1,7 +1,6 @@
-const { oracleDatabaseConnection } = require('@config');
+import oracleDatabaseConnection from '#config/oracleDatabaseConnection.js';
 
 class WhiteListRepository {
-
     async checkUserWhiteList(userEmail) {
         let connection;
         try {
@@ -21,4 +20,4 @@ class WhiteListRepository {
     }
 }
 
-module.exports = WhiteListRepository;
+export default WhiteListRepository;

@@ -1,19 +1,21 @@
-require('module-alias/register');
-require('dotenv').config();
-require('./instrument');
+import 'module-alias/register.js';
+import dotenv from 'dotenv';
+dotenv.config();
+import './instrument.js';
+import express from 'express';
+import fs from 'fs';
+import https from 'https';
+import * as Sentry from '@sentry/node';
+import path from "path";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+import applyMiddlewares from '#middlewares/index.js';
+import routes from '#routes/index.js';
+import { d } from '#utils/logs.js';
+import oracleDatabaseConnection from '#config/oracleDatabaseConnection.js';
+import { fileURLToPath } from 'url';
 
-const express = require('express');
-const applyMiddlewares = require('@middlewares');
-const routes = require('@routes');
-
-const fs = require('fs');
-const https = require('https');
-const Sentry = require('@sentry/node');
-const { d } = require('@utils/logs');
-const { oracleDatabaseConnection } = require('@config');
-const path = require("path");
 const app = express();
-
 const prod = process.env.NODE_ENV === 'production';
 const PORT = process.env.PORT || 3000;
 

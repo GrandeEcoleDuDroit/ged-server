@@ -1,21 +1,28 @@
-const admin = require('firebase-admin');
-const serviceAccount = require(process.env.FIREBASE_CREDENTIALS_PATH);
+import dotenv from 'dotenv';
+dotenv.config();
+import admin  from 'firebase-admin';
+import fs from 'fs/promises';
+
+const path = process.env.FIREBASE_CREDENTIALS_PATH;
 
 class FirebaseManager {
     constructor() {
-        if (FirebaseManager.instance) {
-            return FirebaseManager.instance;
+        if (!FirebaseManager.instance) {
+            throw new Error('FirebaseManager not initialized yet use getInstance().');
         }
-
-        FirebaseManager.instance = this;
-        this.initialize();
+        return this;
     }
 
-    initialize() {
+    static async getInstance() {
         if (!this.app) {
+            const jsonString = await fs.readFile(path, 'utf-8');
+            const serviceAccount = JSON.parse(jsonString);
             this.app = admin.initializeApp({
                 credential: admin.credential.cert(serviceAccount)
             });
+
+            FirebaseManager.instance = this;
+            return this;
         }
     }
 
@@ -34,4 +41,4 @@ class FirebaseManager {
     }
 }
 
-module.exports = FirebaseManager;
+export default FirebaseManager;

@@ -1,6 +1,7 @@
-const ociCommon = require('oci-common');
-const ociObjectStorage = require('oci-objectstorage');
-const fs = require('fs');
+import ociCommon from 'oci-common';
+import ociObjectStorage from 'oci-objectstorage';
+import fs from 'fs';
+
 const provider = new ociCommon.ConfigFileAuthenticationDetailsProvider();
 const namespaceName = "ax5bfuffglob";
 const bucketName = "bucket-gedoise";
@@ -47,4 +48,4 @@ class ImageRepository {
     }
 }
 
-module.exports = ImageRepository;
+export default ImageRepository;

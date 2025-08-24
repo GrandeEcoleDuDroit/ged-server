@@ -1,10 +1,10 @@
-const { e } = require('@utils/logs');
-const WhiteListRepository = require('@repositories/whiteListRepository');
-const formatOracleError = require('@utils/exceptionUtils')
+import { e } from '#utils/logs.js';
+import WhiteListRepository from '#repositories/whiteListRepository.js';
+import formatOracleError from '#utils/exceptionUtils.js';
 
 const whiteListRepository = new WhiteListRepository();
 
-const checkUserWhiteList = async (req, res) => {
+export const checkUserWhiteList = async (req, res) => {
     const userEmail = req.body.USER_EMAIL;
 
     try {
@@ -18,6 +18,4 @@ const checkUserWhiteList = async (req, res) => {
     }
 }
 
-module.exports = {
-    checkUserWhiteList
-}
+export default { checkUserWhiteList }

@@ -1,10 +1,10 @@
-const express = require('express');
-const router = express.Router();
+import express from 'express';
+import fcmController from '#controllers/fcmController.js';
 
-const fcmController = require('@controllers/fcmController');
+export const router = express.Router();
 
 router.post('/add-token', fcmController.addToken);
 
 router.post('/send-notification', fcmController.sendNotification);
 
-module.exports = router;
+export default router;

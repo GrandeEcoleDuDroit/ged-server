@@ -1,4 +1,4 @@
-const formatOracleError = function (error, message) {
+export const formatOracleError = function (error, message) {
     const oraCodeMatch = error.message.match(/(ORA-\d{5})/);
     const oraCode = oraCodeMatch ? oraCodeMatch[1] : 'UNKNOWN';
 
@@ -9,4 +9,4 @@ const formatOracleError = function (error, message) {
     };
 }
 
-module.exports = formatOracleError;
+export default formatOracleError;

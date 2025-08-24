@@ -1,5 +1,6 @@
-const winston = require('winston');
-const Sentry = require("@sentry/node");
+import winston from 'winston';
+import * as Sentry from '@sentry/node';
+
 const prodEnvironment = process.env.NODE_ENV === 'production';
 
 const { combine, timestamp, printf, colorize, align, errors } = winston.format;
@@ -20,23 +21,23 @@ const log = winston.createLogger({
    ]
 });
 
-const d = function (message) {
+export const d = function (message) {
     log.debug(message)
 }
 
-const i = function(message) {
+export const i = function(message) {
     log.info(message)
 }
 
-const w = function (message) {
+export const w = function (message) {
     log.warn(message)
 }
 
-const e = function (message, error) {
+export const e = function (message, error) {
     log.error(message, error);
     if (prodEnvironment) {
         Sentry.captureException(e)
     }
 }
 
-module.exports = { d, i, w, e };
+export default { d, i, w, e };

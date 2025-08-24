@@ -1,10 +1,10 @@
-const { e } = require('@utils/logs');
-const { Readable } = require('stream');
-const ImageRepository = require('@repositories/imageRepository');
+import { e } from '#utils/logs.js';
+import { Readable } from 'stream';
+import ImageRepository from '#repositories/imageRepository.js';
 
 const imageRepository = new ImageRepository();
 
-const downloadImage = async (req, res) => {
+export const downloadImage = async (req, res) => {
     const objectName = req.params.filename;
 
     try {
@@ -26,7 +26,7 @@ const downloadImage = async (req, res) => {
     }
 }
 
-const uploadImage = async (req, res) => {
+export const uploadImage = async (req, res) => {
     const imageFile = req.file;
     const objectName = imageFile.originalname;
 
@@ -59,7 +59,7 @@ const uploadImage = async (req, res) => {
     }
 }
 
-const deleteImage = async (req, res) => {
+export const deleteImage = async (req, res) => {
     const objectName = req.params.filename;
 
     try {
@@ -81,7 +81,7 @@ const deleteImage = async (req, res) => {
     }
 }
 
-module.exports = {
+export default {
     downloadImage,
     uploadImage,
     deleteImage

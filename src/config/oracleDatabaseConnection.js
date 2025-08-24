@@ -1,6 +1,7 @@
-const oracledb = require('oracledb');
-const config = require('@root/config.json');
-const { e } = require('@utils/logs');
+import oracledb from 'oracledb';
+import config from '#root/config.json' with { type: 'json' };
+import { e } from '#utils/logs.js';
+
 const oraclePath = process.env.ORACLE_HOME;
 
 class OracleDatabaseConnection {
@@ -52,4 +53,4 @@ class OracleDatabaseConnection {
     }
 }
 
-module.exports = OracleDatabaseConnection;
+export default OracleDatabaseConnection;

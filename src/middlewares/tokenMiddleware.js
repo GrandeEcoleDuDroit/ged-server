@@ -1,8 +1,9 @@
-const FirestoreApi = require('@data/api/firestoreAPI');
-const firestoreAPI = new FirestoreApi();
-const { e } = require('@utils/logs')
+import FirestoreApi from '#data/api/firestoreAPI.js';
+import { e } from '#utils/logs.js';
 
-const verifyAuthIdToken = async (req, res, next) => {
+const firestoreAPI = new FirestoreApi();
+
+export const verifyAuthIdToken = async (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -26,6 +27,4 @@ const verifyAuthIdToken = async (req, res, next) => {
     }
 }
 
-module.exports = {
-    verifyAuthIdToken
-};
+export default { verifyAuthIdToken };

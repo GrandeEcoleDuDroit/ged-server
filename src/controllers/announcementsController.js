@@ -1,11 +1,11 @@
-const { e } = require('@utils/logs');
-const AnnouncementsRepository = require('@repositories/announcementsRepository');
-const Announcement = require("@models/announcement");
-const formatOracleError = require("@utils/exceptionUtils")
+import { e } from '#utils/logs.js';
+import AnnouncementsRepository from '#repositories/announcementsRepository.js';
+import Announcement from "#models/announcement.js";
+import formatOracleError from "#utils/exceptionUtils.js";
 
 const announcementsRepository = new AnnouncementsRepository();
 
-const getAnnouncements = async (req, res) => {
+export const getAnnouncements = async (req, res) => {
     try {
         const result = await announcementsRepository.getAllAnnouncements();
         res.json(result);
@@ -21,7 +21,7 @@ const getAnnouncements = async (req, res) => {
     }
 }
 
-const createAnnouncement = async (req, res) => {
+export const createAnnouncement = async (req, res) => {
     const {
         ANNOUNCEMENT_ID: id,
         ANNOUNCEMENT_TITLE: title,
@@ -64,7 +64,7 @@ const createAnnouncement = async (req, res) => {
     }
 }
 
-const updateAnnouncement = async (req, res) => {
+export const updateAnnouncement = async (req, res) => {
     const {
         ANNOUNCEMENT_ID: id,
         ANNOUNCEMENT_TITLE: title,
@@ -107,7 +107,7 @@ const updateAnnouncement = async (req, res) => {
     }
 }
 
-const deleteAnnouncement = async (req, res) => {
+export const deleteAnnouncement = async (req, res) => {
     const announcementId = req.params.id;
 
     try {
@@ -125,7 +125,7 @@ const deleteAnnouncement = async (req, res) => {
     }
 }
 
-module.exports = {
+export default {
     getAnnouncements,
     createAnnouncement,
     updateAnnouncement,

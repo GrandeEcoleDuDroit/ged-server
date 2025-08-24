@@ -1,10 +1,16 @@
-const express = require('express');
-const router = express.Router();
+import express from 'express';
+import userRoutes from '#routes/userRoutes.js';
+import imageRoutes from '#routes/imageRoutes.js';
+import announcementsRoutes from '#routes/announcementsRoutes.js';
+import fcmRoutes from '#routes/fcmRoutes.js';
+import whiteListRoutes from '#routes/whiteListRoutes.js';
 
-router.use('/users', require('./userRoutes'));
-router.use('/image', require('./imageRoutes'));
-router.use('/announcements', require('./announcementsRoutes'));
-router.use('/fcm', require('./fcmRoutes'));
-router.use('/white-list', require('./whiteListRoutes'));
+export const router = express.Router();
 
-module.exports = router;
+router.use('/users', userRoutes);
+router.use('/image', imageRoutes);
+router.use('/announcements', announcementsRoutes);
+router.use('/fcm', fcmRoutes);
+router.use('/white-list', whiteListRoutes);
+
+export default router;

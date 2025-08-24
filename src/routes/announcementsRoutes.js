@@ -1,6 +1,7 @@
-const express = require('express');
-const router = express.Router();
-const announcementsController = require("@controllers/announcementsController")
+import express from 'express';
+import announcementsController from "#controllers/announcementsController.js";
+
+export const router = express.Router();
 
 router.get('/', announcementsController.getAnnouncements);
 
@@ -10,4 +11,4 @@ router.post('/update', announcementsController.updateAnnouncement);
 
 router.delete('/:id', announcementsController.deleteAnnouncement);
 
-module.exports = router;
+export default router;

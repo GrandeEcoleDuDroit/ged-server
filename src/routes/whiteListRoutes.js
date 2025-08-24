@@ -1,8 +1,8 @@
-const express = require('express');
-const router = express.Router();
+import express from 'express';
+import whiteListController from '#controllers/whiteListController.js';
 
-const whiteListController = require('@controllers/whiteListController');
+export const router = express.Router();
 
 router.post('/user', whiteListController.checkUserWhiteList);
 
-module.exports = router;
+export default router;

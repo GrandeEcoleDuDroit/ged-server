@@ -1,7 +1,6 @@
-const { oracleDatabaseConnection } = require('@config');
+import oracleDatabaseConnection from '#config/oracleDatabaseConnection.js';
 
 class UserRepository {
-
     async getUser(userId) {
         let connection;
         try {
@@ -126,4 +125,4 @@ class UserRepository {
     }
 }
 
-module.exports = UserRepository;
+export default UserRepository;

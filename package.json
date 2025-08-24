@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Serveur web pour l'application Gedoise",
   "main": "app.js",
+  "type": "module",
   "scripts": {
     "start": "nodemon src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -40,5 +41,16 @@
     "@config": "src/config",
     "@utils": "src/utils",
     "@middlewares": "src/middlewares"
+  },
+  "imports": {
+    "#root/*": "./*",
+    "#routes/*": "./src/routes/*",
+    "#data/*": "./src/data/*",
+    "#models/*": "./src/data/models/*",
+    "#repositories/*": "./src/data/repositories/*",
+    "#controllers/*": "./src/controllers/*",
+    "#config/*": "./src/config/*",
+    "#utils/*": "./src/utils/*",
+    "#middlewares/*": "./src/middlewares/*"
   }
 }

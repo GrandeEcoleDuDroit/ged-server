@@ -1,11 +1,12 @@
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
-const FirestoreApi = require('@data/api/firestoreAPI');
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+import FirestoreApi from '#data/api/firestoreAPI.js';
+import FcmToken from '#models/token.js';
+
 const firestoreAPI = new FirestoreApi();
 const homeDir = os.homedir();
 const userDir = path.join(`${homeDir}`, 'gedoise-data', 'users');
-const FcmToken = require('@models/token');
 
 class FcmRepository {
     async upsertToken(token) {
@@ -30,4 +31,4 @@ class FcmRepository {
     }
 }
 
-module.exports = FcmRepository;
+export default FcmRepository;
