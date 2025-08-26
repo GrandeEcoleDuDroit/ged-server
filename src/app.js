@@ -3,7 +3,6 @@ require('dotenv').config();
 require('./instrument');
 
 const express = require('express');
-const applyMiddlewares = require('@middlewares');
 const routes = require('@routes');
 
 const fs = require('fs');
@@ -21,9 +20,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/index.html'));
 });
-
-applyMiddlewares(app);
-
+app.use(express.static('public'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(routes);
 
 if (prod) {
