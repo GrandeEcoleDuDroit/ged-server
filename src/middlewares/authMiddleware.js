@@ -6,7 +6,13 @@ const verifyAuthIdToken = async (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ error: 'Invalid or malformed token.' });
+        const serverResponse = {
+            message: 'Invalid or malformed token',
+            error : "auth header required"
+        };
+
+        e(serverResponse.message);
+        res.status(401).json(serverResponse);
     }
 
     const idToken = authHeader.split('Bearer ')[1];
