@@ -3,8 +3,7 @@ const os = require('os');
 const path = require('path');
 const FirestoreApi = require('@data/api/firestoreAPI');
 const firestoreAPI = new FirestoreApi();
-const homeDir = os.homedir();
-const userDir = path.join(`${homeDir}`, 'gedoise-data', 'users');
+const userDir = path.join(`${os.homedir()}`, 'gedoise-data', 'users');
 const FcmToken = require('@models/token');
 
 class FcmRepository {

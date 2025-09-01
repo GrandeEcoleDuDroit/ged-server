@@ -47,17 +47,18 @@ const addToken = async (req, res) => {
 
 const sendNotification = async (req, res) => {
     let {
+        userId: userId,
         recipientId: recipientId,
-        fcmMessage: fcmMessage
+        fcmMessage: fcmMessageJson
     } = req.body;
 
-    if (!fcmMessage) {
+    if (!fcmMessageJson) {
         const serverResponse = {
             message: "Error to send notification",
             error: `
             Missing field : 
             {
-                fcmMessage: ${fcmMessage},
+                fcmMessage: ${fcmMessageJson},
             }
             `
         };
@@ -68,7 +69,8 @@ const sendNotification = async (req, res) => {
 
     try {
         const fcmToken = await fcmRepository.getTokenValue(recipientId);
-        fcmMessage = JSON.parse(fcmMessage);
+        let fcmMessage = JSON.parse(fcmMessageJson);
+
         const message = {
             data: {
                 type: fcmMessage.data.type,
@@ -76,6 +78,22 @@ const sendNotification = async (req, res) => {
             },
             android: {
                 priority: fcmMessage.android.priority,
+            },
+            apns : {
+                headers: {
+                    "apns-priority": fcmMessage.apns.headers.apnsPriority,
+                    "apns-collapse-id": fcmMessage.apns.headers.apnsCollapseId
+                },
+                payload: {
+                    aps: {
+                        alert : {
+                            title: fcmMessage.apns.payload.aps.alert.title,
+                            body: fcmMessage.apns.payload.aps.alert.body
+                        },
+                        sound: fcmMessage.apns.payload.aps.sound,
+                        badge: fcmMessage.apns.payload.aps.badge,
+                    }
+                }
             },
             token: fcmToken
         };
