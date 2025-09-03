@@ -1,0 +1,14 @@
+import express from 'express';
+import userRoutes from './userRoutes.ts';
+import imageRoutes from './imageRoutes.ts';
+import announcementRoutes from './announcementsRoutes.ts';
+import fcmRoutes from './fcmRoutes.ts';
+import whiteListRoutes from './whiteListRoutes.ts';
+import { verifyAuthIdToken } from "../middlewares/authMiddleware.ts";
+export const router = express.Router();
+router.use('/users', verifyAuthIdToken, userRoutes);
+router.use('/image', verifyAuthIdToken, imageRoutes);
+router.use('/announcements', verifyAuthIdToken, announcementRoutes);
+router.use('/fcm', verifyAuthIdToken, fcmRoutes);
+router.use('/white-list', whiteListRoutes);
+export default router;
