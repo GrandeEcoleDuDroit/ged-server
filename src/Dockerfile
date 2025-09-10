@@ -20,12 +20,9 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
 # Download and configure Oracle Instant client
 RUN wget http://fr.archive.ubuntu.com/ubuntu/pool/main/liba/libaio/libaio1_0.3.112-13build1_amd64.deb && \
     wget https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip && \
-    wget https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-sqlplus-linux.x64-23.5.0.24.07.zip && \
     unzip instantclient-basic-linux.x64-23.5.0.24.07.zip -d /opt/oracle && \
-    unzip instantclient-sqlplus-linux.x64-23.5.0.24.07.zip -d /opt/oracle && \
     dpkg -i libaio1_0.3.112-13build1_amd64.deb && \
     rm -r instantclient-basic-linux.x64-23.5.0.24.07.zip && \
-    rm -r instantclient-sqlplus-linux.x64-23.5.0.24.07.zip && \
     rm -r libaio1_0.3.112-13build1_amd64.deb
 
 # Add Oracle client path to LD_LIBRARY_PATH environment variable
