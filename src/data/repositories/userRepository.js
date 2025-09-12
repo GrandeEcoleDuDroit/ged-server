@@ -107,6 +107,23 @@ class UserRepository {
         }
     }
 
+    async deleteUser(userId) {
+        let connection;
+        try {
+            connection = await oracleDatabaseConnection.getConnection();
+
+            const query = `
+                DELETE FROM USERS
+                WHERE USER_ID = :user_id
+            `;
+
+            const binds = { user_id: userId };
+            await connection.execute(query, binds, { autoCommit: true });
+        } finally {
+            if (connection) await connection.close();
+        }
+    }
+
     async deleteProfilePictureFileName(userId) {
         let connection;
         try {
