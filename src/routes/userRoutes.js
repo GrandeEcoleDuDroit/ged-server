@@ -9,6 +9,8 @@ router.post('/create', userController.createUser);
 
 router.put('/profile-picture-file-name', userController.updateProfilePicture);
 
+router.delete('/:userId', userController.deleteUser);
+
 router.delete('/profile-picture-file-name/:userId', userController.deleteProfilePicture);
 
 module.exports = router;

@@ -122,6 +122,21 @@ const updateProfilePicture = async (req, res) => {
     }
 }
 
+const deleteUser = async (req, res) => {
+    const userId = req.params.userId;
+
+    try {
+        await userRepository.deleteUser(userId);
+        const serverResponse = { message: `User deleted successfully` };
+        res.status(200).json(serverResponse);
+    }
+    catch (error) {
+        const serverResponse = formatOracleError(error, 'Error deleting user');
+        e(serverResponse.message, error);
+        res.status(500).json(serverResponse);
+    }
+}
+
 const deleteProfilePicture = async (req, res) => {
     const userId = req.params.userId;
 
@@ -141,5 +156,6 @@ module.exports = {
     getUser,
     createUser,
     updateProfilePicture,
+    deleteUser,
     deleteProfilePicture,
 }
