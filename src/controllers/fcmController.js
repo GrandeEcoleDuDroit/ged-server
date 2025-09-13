@@ -26,31 +26,32 @@ const addToken = async (req, res) => {
     }
 
     const fcmToken = new FCMToken(userId, token);
-    fcmRepository.upsertToken(fcmToken)
-        .then(_ => {
-            const serverResponse = {
-                message: 'Fcm token added successfully'
-            };
 
-            res.status(201).json(serverResponse);
-        })
-        .catch((error) => {
-            const serverResponse = {
-                message: 'Error adding fcm token',
-                error: error.message
-            };
+    try {
+        await fcmRepository.upsertToken(fcmToken)
+        const serverResponse = {
+            message: 'Fcm token added successfully'
+        };
 
-            e(serverResponse.message, error);
-            res.status(500).json(serverResponse)
-        })
+        res.status(201).json(serverResponse);
+
+    } catch (error) {
+        const serverResponse = {
+            message: 'Error adding fcm token',
+            error: error.message
+        };
+
+        e(serverResponse.message, error);
+        res.status(500).json(serverResponse)
+    }
 }
 
 const sendNotification = async (req, res) => {
-    let {
-        userId: userId,
+    const {
         recipientId: recipientId,
-        fcmMessage: fcmMessageJson
+        notificationGroupId: notificationGroupId
     } = req.body;
+    let { fcmMessage: fcmMessageJson } = req.body;
 
     if (!fcmMessageJson) {
         const serverResponse = {
@@ -98,22 +99,11 @@ const sendNotification = async (req, res) => {
             token: fcmToken
         };
 
-        fcmRepository.sendNotification(message)
-            .then(_ => {
-                const serverResponse = {
-                    message: 'Notification sent successfully',
-                };
-                res.status(201).json(serverResponse);
-            })
-            .catch((error) => {
-                const serverResponse = {
-                    message: 'Error sending notification',
-                    error: error.message
-                };
-
-                e(serverResponse.message, error);
-                res.status(500).json(serverResponse)
-            })
+        await fcmRepository.sendNotification(message, recipientId, notificationGroupId);
+        const serverResponse = {
+            message: 'Notification sent successfully'
+        };
+        res.status(201).json(serverResponse);
     } catch (error) {
         const serverResponse = {
             message: 'Error sending notification',
@@ -125,7 +115,47 @@ const sendNotification = async (req, res) => {
     }
 }
 
+const removeNotification = async (req, res) => {
+    const {
+        userId: userId,
+        notificationGroupId: notificationGroupId
+    } = req.body;
+
+    if (!userId || !notificationGroupId) {
+        const serverResponse = {
+            message: "Error to remove notification",
+            error: `
+            Some missing fields : 
+            {
+                userId: ${userId},
+                notificationGroupId: ${notificationGroupId}
+            }
+            `
+        };
+
+        e(serverResponse.message, new Error(serverResponse.error));
+        return res.status(400).json(serverResponse);
+    }
+
+    try {
+        await fcmRepository.removeNotification(userId, notificationGroupId);
+        const serverResponse = {
+            message: 'Notification removed successfully'
+        };
+        res.status(201).json(serverResponse);
+    } catch (error) {
+        const serverResponse = {
+            message: 'Error removing notification',
+            error: error.message
+        }
+
+        e(serverResponse.message, error);
+        res.status(500).json(serverResponse);
+    }
+}
+
 module.exports = {
     addToken,
-    sendNotification
+    sendNotification,
+    removeNotification
 }

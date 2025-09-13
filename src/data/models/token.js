@@ -1,11 +1,8 @@
-class Token {
+class FcmToken {
   #userId;
   #value;
 
   constructor(userId, value) {
-    if (new.target === Token) {
-      throw new TypeError("Cannot construct Token instances directly");
-    }
     this.#userId = userId;
     this.#value = value;
   }
@@ -16,20 +13,6 @@ class Token {
 
   get value() {
     return this.#value;
-  }
-
-  toJson() {
-    throw new Error("Must implement toJSON method");
-  }
-
-  static fileName() {
-    throw new Error("Must implement getFilename method");
-  }
-}
-
-class FcmToken extends Token {
-  constructor(userId, value) {
-    super(userId, value);
   }
 
   toJson() {
