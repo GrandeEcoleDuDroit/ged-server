@@ -3,6 +3,7 @@ const User = require('@models/user');
 const UserRepository = require('@repositories/userRepository');
 const WhiteListRepository = require('@repositories/whiteListRepository');
 const formatOracleError = require('@utils/exceptionUtils')
+const UserReport = require("@models/userReport");
 
 const userRepository = new UserRepository();
 const whiteListRepository = new WhiteListRepository();
@@ -152,10 +153,57 @@ const deleteProfilePicture = async (req, res) => {
     }
 }
 
+const reportUser = async (req, res) => {
+    const {
+        userId: userId,
+        userInfo: userInfo,
+        reporterInfo: reporterInfo,
+        reason: reason
+    } = req.body;
+
+    if (!userId || !userInfo || !reporterInfo || !reason) {
+        const serverResponse = {
+            message: "Error to report user",
+            error: `
+            Some missing report fields :
+            {
+                userId: ${userId},
+                userInfo: ${userInfo},
+                reporterInfo: ${reporterInfo},
+                reason: ${reason},
+            }
+            `
+        };
+
+        e(serverResponse.message, new Error(serverResponse.error));
+        return res.status(400).json(serverResponse);
+    }
+
+    const report = new UserReport(userId, userInfo, reporterInfo, reason);
+
+    try {
+        await userRepository.reportUser(report);
+        const serverResponse = {
+            message: `User ${userId} has been reported successfully`
+        };
+
+        res.status(200).json(serverResponse);
+    } catch (error) {
+        const serverResponse = {
+            message: 'Error reporting user',
+            error: error.message
+        };
+
+        e(serverResponse.message, error);
+        res.status(500).json(serverResponse);
+    }
+}
+
 module.exports = {
     getUser,
     createUser,
     updateProfilePicture,
     deleteUser,
     deleteProfilePicture,
+    reportUser
 }
