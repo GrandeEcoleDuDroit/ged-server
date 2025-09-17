@@ -1,7 +1,7 @@
 const { oracleDatabaseConnection } = require('@config');
+const { sendMail } = require('@data/api/googleApi');
 
 class AnnouncementsRepository {
-
     async getAllAnnouncements() {
         let connection;
         try {
@@ -98,6 +98,18 @@ class AnnouncementsRepository {
         } finally {
             if (connection) await connection.close();
         }
+    }
+
+    async reportAnnouncement(report) {
+        const subject = `Report Announcement ${report.announcementId}`;
+        const html = `
+           <p>The announcement ${report.announcementId} has been reported</p>
+           <p>Announcement author : ${report.authorInfo.fullName} - <b>${report.authorInfo.email}</b></p>
+           <p>Reported by : ${report.userInfo.fullName} - <b>${report.userInfo.email}</b></p>
+           <p>Reason : ${report.reason}</p>
+         `;
+
+        await sendMail(subject, html);
     }
 }
 

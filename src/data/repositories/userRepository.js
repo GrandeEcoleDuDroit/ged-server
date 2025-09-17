@@ -1,4 +1,5 @@
 const { oracleDatabaseConnection } = require('@config');
+const { sendMail } = require('@data/api/googleApi');
 
 class UserRepository {
 
@@ -107,6 +108,23 @@ class UserRepository {
         }
     }
 
+    async deleteUser(userId) {
+        let connection;
+        try {
+            connection = await oracleDatabaseConnection.getConnection();
+
+            const query = `
+                DELETE FROM USERS
+                WHERE USER_ID = :user_id
+            `;
+
+            const binds = { user_id: userId };
+            await connection.execute(query, binds, { autoCommit: true });
+        } finally {
+            if (connection) await connection.close();
+        }
+    }
+
     async deleteProfilePictureFileName(userId) {
         let connection;
         try {
@@ -123,6 +141,18 @@ class UserRepository {
         } finally {
             if (connection) await connection.close();
         }
+    }
+
+    async reportUser(report) {
+        const subject = `Report User ${report.userId}`;
+        const html = `
+           <p>The user ${report.userId} has been reported</p>
+           <p>User : ${report.userInfo.fullName} - <b>${report.userInfo.email}</b></p>
+           <p>Reporter : ${report.reporterInfo.fullName} - <b>${report.reporterInfo.email}</b></p>
+           <p>Reason : ${report.reason}</p>
+         `;
+
+        await sendMail(subject, html);
     }
 }
 

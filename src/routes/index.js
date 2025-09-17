@@ -7,5 +7,6 @@ router.use('/image', verifyAuthIdToken, require('./imageRoutes'));
 router.use('/announcements', verifyAuthIdToken, require('./announcementsRoutes'));
 router.use('/fcm', verifyAuthIdToken, require('./fcmRoutes'));
 router.use('/white-list', require('./whiteListRoutes'));
+router.use('/messages', verifyAuthIdToken, require('./messageRoutes'));
 
 module.exports = router;

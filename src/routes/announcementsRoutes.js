@@ -10,4 +10,6 @@ router.post('/update', announcementsController.updateAnnouncement);
 
 router.delete('/:id', announcementsController.deleteAnnouncement);
 
+router.post('/report', announcementsController.reportAnnouncement);
+
 module.exports = router;
