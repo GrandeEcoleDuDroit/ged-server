@@ -2,7 +2,6 @@ const { oracleDatabaseConnection } = require('@config');
 const { sendMail } = require('@data/api/googleApi');
 
 class UserRepository {
-
     async getUser(userId) {
         let connection;
         try {
@@ -14,7 +13,7 @@ class UserRepository {
 
             const binds = { user_id: userId };
             const result = await connection.execute(query, binds);
-            return JSON.parse(result.rows[0][0]); // attention, c’est un JSON_OBJECT(*)
+            return JSON.parse(result.rows[0][0]);
         } finally {
             if (connection) await connection.close();
         }
@@ -81,6 +80,40 @@ class UserRepository {
             };
 
             return await connection.execute(query, binds, { autoCommit: true });
+        } finally {
+            if (connection) await connection.close();
+        }
+    }
+
+    async updateUser(user) {
+        let connection;
+        try {
+            connection = await oracleDatabaseConnection.getConnection();
+
+            const query = `
+                UPDATE USERS
+                SET USER_FIRST_NAME = :user_first_name,
+                    USER_LAST_NAME = :user_last_name,
+                    USER_EMAIL = :user_email,
+                    USER_SCHOOL_LEVEL = :user_school_level,
+                    USER_IS_MEMBER = :user_is_member,
+                    USER_PROFILE_PICTURE_FILE_NAME = :user_profile_picture_file_name,
+                    USER_IS_DELETED = :user_is_deleted
+                WHERE USER_ID = :user_id
+            `;
+
+            const binds = {
+                user_first_name: user.firstName,
+                user_last_name: user.lastName,
+                user_email: user.email,
+                user_school_level: user.schoolLevel,
+                user_is_member: user.isMember,
+                user_profile_picture_file_name: user.profilePictureFileName,
+                user_is_deleted: user.isDeleted,
+                user_id: user.id
+            };
+
+            await connection.execute(query, binds, { autoCommit: true });
         } finally {
             if (connection) await connection.close();
         }

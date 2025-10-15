@@ -88,6 +88,71 @@ const createUser = async (req, res) => {
     }
 }
 
+const updateUser = async (req, res) => {
+    const {
+        USER_ID: id,
+        USER_FIRST_NAME: firstName,
+        USER_LAST_NAME: lastName,
+        USER_EMAIL: email,
+        USER_SCHOOL_LEVEL: schoolLevel,
+        USER_IS_MEMBER: isMember,
+        USER_PROFILE_PICTURE_FILE_NAME: profilePictureFileName,
+        USER_IS_DELETED: isDeleted
+    } = req.body;
+
+    if (
+        id == null ||
+        firstName == null ||
+        lastName == null ||
+        email == null ||
+        schoolLevel == null ||
+        isMember == null ||
+        isDeleted == null
+    ) {
+        const serverResponse = {
+            message: 'Error updating user',
+            error: `
+              All user fields are required :
+              {
+                id: ${id},
+                firstName: ${firstName},
+                lastName: ${lastName},
+                email: ${email},
+                schoolLevel: ${schoolLevel},
+                isDeleted: ${isDeleted}
+              }`
+        };
+
+        e(serverResponse.message, new Error(serverResponse.error));
+        return res.status(400).json(serverResponse);
+    }
+
+    try {
+        const user = new User(
+            id,
+            firstName,
+            lastName,
+            email,
+            schoolLevel,
+            isMember,
+            profilePictureFileName,
+            isDeleted
+        );
+
+        await userRepository.updateUser(user);
+        const serverResponse = {
+            message: `User updated successfully`
+        };
+
+        res.status(200).json(serverResponse);
+    }
+    catch (error) {
+        const serverResponse = formatOracleError(error, 'Error updating user');
+        e(serverResponse.message, error);
+        res.status(500).json(serverResponse);
+    }
+}
+
 const updateProfilePicture = async (req, res) => {
     const {
         USER_ID: userId,
@@ -202,6 +267,7 @@ const reportUser = async (req, res) => {
 module.exports = {
     getUser,
     createUser,
+    updateUser,
     updateProfilePicture,
     deleteUser,
     deleteProfilePicture,
