@@ -108,6 +108,24 @@ const updateAnnouncement = async (req, res) => {
     }
 }
 
+const deleteAnnouncements = async (req, res) => {
+    const userId = req.params.userId;
+
+    try {
+        await announcementsRepository.deleteAnnouncements(userId);
+        const serverResponse = {
+            message: `Announcements of ${userId} has been deleted successfully`
+        };
+
+        res.status(200).json(serverResponse);
+    }
+    catch (error) {
+        const serverResponse = formatOracleError(error, 'Error delete announcement');
+        e(serverResponse.message, error);
+        res.status(500).json(serverResponse);
+    }
+}
+
 const deleteAnnouncement = async (req, res) => {
     const announcementId = req.params.id;
 
@@ -177,6 +195,7 @@ module.exports = {
     getAnnouncements,
     createAnnouncement,
     updateAnnouncement,
+    deleteAnnouncements,
     deleteAnnouncement,
     reportAnnouncement
 }

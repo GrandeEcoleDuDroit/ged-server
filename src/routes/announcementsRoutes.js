@@ -8,6 +8,8 @@ router.post('/create', announcementsController.createAnnouncement);
 
 router.post('/update', announcementsController.updateAnnouncement);
 
+router.delete('/user/:userId', announcementsController.deleteAnnouncements);
+
 router.delete('/:id', announcementsController.deleteAnnouncement);
 
 router.post('/report', announcementsController.reportAnnouncement);
