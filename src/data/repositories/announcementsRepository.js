@@ -80,6 +80,26 @@ class AnnouncementsRepository {
         }
     }
 
+    async deleteAnnouncements(userId) {
+        let connection;
+        try {
+            connection = await oracleDatabaseConnection.getConnection();
+
+            const query = `
+                DELETE FROM ANNOUNCEMENTS
+                WHERE USER_ID = :user_id
+            `;
+
+            const binds = {
+                user_id: userId
+            };
+
+            return await connection.execute(query, binds, { autoCommit: true });
+        } finally {
+            if (connection) await connection.close();
+        }
+    }
+
     async deleteAnnouncement(announcementId) {
         let connection;
         try {
