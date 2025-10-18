@@ -25,24 +25,23 @@ const addToken = async (req, res) => {
         return res.status(400).json(serverResponse);
     }
 
-    const fcmToken = new FCMToken(userId, token);
-    fcmRepository.upsertToken(fcmToken)
-        .then(_ => {
-            const serverResponse = {
-                message: 'Fcm token added successfully'
-            };
+    try {
+        const fcmToken = new FCMToken(userId, token);
+        fcmRepository.upsertToken(fcmToken)
+        const serverResponse = {
+            message: 'Fcm token added successfully'
+        };
 
-            res.status(201).json(serverResponse);
-        })
-        .catch((error) => {
-            const serverResponse = {
-                message: 'Error adding fcm token',
-                error: error.message
-            };
+        res.status(201).json(serverResponse);
+    } catch (error) {
+        const serverResponse = {
+            message: 'Error adding fcm token',
+            error: error.message
+        };
 
-            e(serverResponse.message, error);
-            res.status(500).json(serverResponse)
-        })
+        e(serverResponse.message, error);
+        res.status(500).json(serverResponse)
+    }
 }
 
 const sendNotification = async (req, res) => {
@@ -99,21 +98,10 @@ const sendNotification = async (req, res) => {
         };
 
         fcmRepository.sendNotification(message)
-            .then(_ => {
-                const serverResponse = {
-                    message: 'Notification sent successfully',
-                };
-                res.status(201).json(serverResponse);
-            })
-            .catch((error) => {
-                const serverResponse = {
-                    message: 'Error sending notification',
-                    error: error.message
-                };
-
-                e(serverResponse.message, error);
-                res.status(500).json(serverResponse)
-            })
+        const serverResponse = {
+            message: 'Notification sent successfully',
+        };
+        res.status(201).json(serverResponse);
     } catch (error) {
         const serverResponse = {
             message: 'Error sending notification',
