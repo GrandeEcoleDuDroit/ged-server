@@ -35,11 +35,10 @@
   "_moduleAliases": {
     "@root": ".",
     "@routes": "src/routes",
-    "@data": "src/data",
+    "@api": "src/data/api",
     "@models": "src/data/models",
     "@repositories": "src/data/repositories",
     "@controllers": "src/controllers",
-    "@config": "src/config",
     "@utils": "src/utils",
     "@middlewares": "src/middlewares"
   }

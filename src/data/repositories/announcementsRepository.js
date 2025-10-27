@@ -1,123 +1,88 @@
-const { oracleDatabaseConnection } = require('@config');
-const { sendMail } = require('@data/api/googleApi');
+const oracleApi = require('@api/oracleApi');
+const { sendMail } = require('@api/googleApi');
 
 class AnnouncementsRepository {
     async getAllAnnouncements() {
-        let connection;
-        try {
-            connection = await oracleDatabaseConnection.getConnection();
+        const query = `
+            SELECT JSON_OBJECT(*) FROM ANNOUNCEMENTS NATURAL JOIN USERS
+        `;
 
-            const query = `
-                SELECT JSON_OBJECT(*) FROM ANNOUNCEMENTS NATURAL JOIN USERS
-            `;
-
-            const result = await connection.execute(query);
-            return result.rows.map(row => JSON.parse(row[0]));
-        } finally {
-            if (connection) await connection.close();
-        }
+        const result = await oracleApi.execute(query);
+        return result.rows.map(row => JSON.parse(row[0]));
     }
 
     async createAnnouncement(announcement) {
-        let connection;
-        try {
-            connection = await oracleDatabaseConnection.getConnection();
+        const query = `
+            INSERT INTO ANNOUNCEMENTS(
+                ANNOUNCEMENT_ID,
+                ANNOUNCEMENT_TITLE,
+                ANNOUNCEMENT_CONTENT,
+                ANNOUNCEMENT_DATE,
+                USER_ID
+            )
+            VALUES(
+                      :announcement_id,
+                      :announcement_title,
+                      :announcement_content,
+                      :announcement_date,
+                      :user_id
+                  )
+        `;
 
-            const query = `
-                INSERT INTO ANNOUNCEMENTS(
-                    ANNOUNCEMENT_ID,
-                    ANNOUNCEMENT_TITLE,
-                    ANNOUNCEMENT_CONTENT,
-                    ANNOUNCEMENT_DATE,
-                    USER_ID
-                )
-                VALUES(
-                          :announcement_id,
-                          :announcement_title,
-                          :announcement_content,
-                          :announcement_date,
-                          :user_id
-                      )
-            `;
+        const binds = {
+            announcement_id: announcement.id,
+            announcement_title: announcement.title,
+            announcement_content: announcement.content,
+            announcement_date: announcement.date,
+            user_id: announcement.userId
+        };
 
-            const binds = {
-                announcement_id: announcement.id,
-                announcement_title: announcement.title,
-                announcement_content: announcement.content,
-                announcement_date: announcement.date,
-                user_id: announcement.userId
-            };
-
-            return await connection.execute(query, binds, { autoCommit: true });
-        } finally {
-            if (connection) await connection.close();
-        }
+        return await oracleApi.execute(query, binds, { autoCommit: true });
     }
 
     async updateAnnouncement(announcement) {
-        let connection;
-        try {
-            connection = await oracleDatabaseConnection.getConnection();
+        const query = `
+            UPDATE ANNOUNCEMENTS
+            SET ANNOUNCEMENT_TITLE = :announcement_title,
+                ANNOUNCEMENT_CONTENT = :announcement_content,
+                ANNOUNCEMENT_DATE = :announcement_date
+            WHERE ANNOUNCEMENT_ID = :announcement_id
+        `;
 
-            const query = `
-                UPDATE ANNOUNCEMENTS
-                SET ANNOUNCEMENT_TITLE = :announcement_title,
-                    ANNOUNCEMENT_CONTENT = :announcement_content,
-                    ANNOUNCEMENT_DATE = :announcement_date
-                WHERE ANNOUNCEMENT_ID = :announcement_id
-            `;
+        const binds = {
+            announcement_title: announcement.title,
+            announcement_content: announcement.content,
+            announcement_date: announcement.date,
+            announcement_id: announcement.id
+        };
 
-            const binds = {
-                announcement_title: announcement.title,
-                announcement_content: announcement.content,
-                announcement_date: announcement.date,
-                announcement_id: announcement.id
-            };
-
-            return await connection.execute(query, binds, { autoCommit: true });
-        } finally {
-            if (connection) await connection.close();
-        }
+        return await oracleApi.execute(query, binds, { autoCommit: true });
     }
 
     async deleteAnnouncements(userId) {
-        let connection;
-        try {
-            connection = await oracleDatabaseConnection.getConnection();
-
             const query = `
-                DELETE FROM ANNOUNCEMENTS
-                WHERE USER_ID = :user_id
-            `;
+            DELETE FROM ANNOUNCEMENTS
+            WHERE USER_ID = :user_id
+        `;
 
-            const binds = {
-                user_id: userId
-            };
+        const binds = {
+            user_id: userId
+        };
 
-            return await connection.execute(query, binds, { autoCommit: true });
-        } finally {
-            if (connection) await connection.close();
-        }
+        return await oracleApi.execute(query, binds, { autoCommit: true });
     }
 
     async deleteAnnouncement(announcementId) {
-        let connection;
-        try {
-            connection = await oracleDatabaseConnection.getConnection();
+        const query = `
+            DELETE FROM ANNOUNCEMENTS
+            WHERE ANNOUNCEMENT_ID = :announcement_id
+        `;
 
-            const query = `
-                DELETE FROM ANNOUNCEMENTS
-                WHERE ANNOUNCEMENT_ID = :announcement_id
-            `;
+        const binds = {
+            announcement_id: announcementId
+        };
 
-            const binds = {
-                announcement_id: announcementId
-            };
-
-            return await connection.execute(query, binds, { autoCommit: true });
-        } finally {
-            if (connection) await connection.close();
-        }
+        return await oracleApi.execute(query, binds, { autoCommit: true });
     }
 
     async reportAnnouncement(report) {

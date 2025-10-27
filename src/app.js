@@ -9,7 +9,7 @@ const fs = require('fs');
 const https = require('https');
 const Sentry = require('@sentry/node');
 const { d } = require('@utils/logs');
-const { oracleDatabaseConnection } = require('@config');
+const oracleApi = require('@api/oracleApi');
 const path = require("path");
 const app = express();
 
@@ -42,6 +42,6 @@ if (prod) {
 }
 
 process.on('SIGINT', async () => {
-  await oracleDatabaseConnection.closePool();
+  await oracleApi.closePool();
   process.exit(0);
 });
