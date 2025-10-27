@@ -1,10 +1,13 @@
 const oracleApi = require('@api/oracleApi');
 const { sendMail } = require('@api/googleApi');
+const { TABLE_NAME, UserFields } = require('@fields/userFields');
 
 class UserRepository {
     async getUser(userId) {
         const query = `
-            SELECT JSON_OBJECT(*) FROM USERS WHERE USER_ID = :user_id
+            SELECT JSON_OBJECT(*) 
+            FROM ${TABLE_NAME}
+            WHERE ${UserFields.USER_ID} = :user_id
         `;
 
         const binds = { user_id: userId };
@@ -14,7 +17,9 @@ class UserRepository {
 
     async getUserWithEmail(userEmail) {
         const query = `
-            SELECT JSON_OBJECT(*) FROM USERS WHERE USER_EMAIL = :user_email
+            SELECT JSON_OBJECT(*) 
+            FROM ${TABLE_NAME}
+            WHERE ${UserFields.USER_EMAIL} = :user_email
         `;
 
         const binds = { user_email: userEmail };
@@ -24,31 +29,31 @@ class UserRepository {
 
     async createUser(user) {
         const query = `
-            MERGE INTO USERS U
-            USING(SELECT :user_email AS USER_EMAIL FROM dual) SOURCE
-            ON (U.USER_EMAIL = SOURCE.USER_EMAIL)
+            MERGE INTO ${TABLE_NAME} U
+            USING(SELECT :user_email AS ${UserFields.USER_EMAIL} FROM dual) SOURCE
+            ON (U.${UserFields.USER_EMAIL} = SOURCE.${UserFields.USER_EMAIL})
             WHEN MATCHED THEN
                 UPDATE SET
-                    USER_ID = :user_id,
-                    USER_FIRST_NAME = :user_first_name,
-                    USER_LAST_NAME = :user_last_name,
-                    USER_SCHOOL_LEVEL = :user_school_level,
-                    USER_IS_MEMBER = :user_is_member
+                    ${UserFields.USER_ID} = :user_id,
+                    ${UserFields.USER_FIRST_NAME} = :user_first_name,
+                    ${UserFields.USER_LAST_NAME} = :user_last_name,
+                    ${UserFields.USER_SCHOOL_LEVEL} = :user_school_level,
+                    ${UserFields.USER_IS_ADMIN} = :user_is_admin
             WHEN NOT MATCHED THEN 
                 INSERT (
-                    USER_ID,
-                    USER_FIRST_NAME,
-                    USER_LAST_NAME,
-                    USER_EMAIL,
-                    USER_SCHOOL_LEVEL,
-                    USER_IS_MEMBER
+                    ${UserFields.USER_ID},
+                    ${UserFields.USER_FIRST_NAME},
+                    ${UserFields.USER_LAST_NAME},
+                    ${UserFields.USER_EMAIL},
+                    ${UserFields.USER_SCHOOL_LEVEL},
+                    ${UserFields.USER_IS_ADMIN}
                 ) VALUES (
                     :user_id,
                     :user_first_name,
                     :user_last_name,
                     :user_email,
                     :user_school_level,
-                    :user_is_member
+                    :user_is_admin
                 )
         `;
 
@@ -58,7 +63,7 @@ class UserRepository {
             user_last_name: user.lastName,
             user_email: user.email,
             user_school_level: user.schoolLevel,
-            user_is_member: user.isMember
+            user_is_admin: user.isAdmin
         };
 
         return await oracleApi.execute(query, binds, { autoCommit: true });
@@ -66,15 +71,15 @@ class UserRepository {
 
     async updateUser(user) {
         const query = `
-            UPDATE USERS
-            SET USER_FIRST_NAME = :user_first_name,
-                USER_LAST_NAME = :user_last_name,
-                USER_EMAIL = :user_email,
-                USER_SCHOOL_LEVEL = :user_school_level,
-                USER_IS_MEMBER = :user_is_member,
-                USER_PROFILE_PICTURE_FILE_NAME = :user_profile_picture_file_name,
-                USER_IS_DELETED = :user_is_deleted
-            WHERE USER_ID = :user_id
+            UPDATE ${TABLE_NAME}
+            SET ${UserFields.USER_FIRST_NAME} = :user_first_name,
+                ${UserFields.USER_LAST_NAME} = :user_last_name,
+                ${UserFields.USER_EMAIL} = :user_email,
+                ${UserFields.USER_SCHOOL_LEVEL} = :user_school_level,
+                ${UserFields.USER_IS_ADMIN} = :user_is_admin,
+                ${UserFields.USER_PROFILE_PICTURE_FILE_NAME} = :user_profile_picture_file_name,
+                ${UserFields.USER_IS_DELETED} = :user_is_deleted
+            WHERE ${UserFields.USER_ID} = :user_id
         `;
 
         const binds = {
@@ -82,7 +87,7 @@ class UserRepository {
             user_last_name: user.lastName,
             user_email: user.email,
             user_school_level: user.schoolLevel,
-            user_is_member: user.isMember,
+            user_is_admin: user.isAdmin,
             user_profile_picture_file_name: user.profilePictureFileName,
             user_is_deleted: user.isDeleted,
             user_id: user.id
@@ -93,9 +98,9 @@ class UserRepository {
 
     async updateProfilePictureFileName(profilePictureFileName, userId) {
         const query = `
-            UPDATE USERS
-            SET USER_PROFILE_PICTURE_FILE_NAME = :user_profile_picture_file_name
-            WHERE USER_ID = :user_id
+            UPDATE ${TABLE_NAME}
+            SET ${UserFields.USER_PROFILE_PICTURE_FILE_NAME} = :user_profile_picture_file_name
+            WHERE ${UserFields.USER_ID} = :user_id
         `;
 
         const binds = {
@@ -108,8 +113,8 @@ class UserRepository {
 
     async deleteUser(userId) {
         const query = `
-            DELETE FROM USERS
-            WHERE USER_ID = :user_id
+            DELETE FROM ${TABLE_NAME}
+            WHERE ${UserFields.USER_ID} = :user_id
         `;
 
         const binds = { user_id: userId };
@@ -118,9 +123,9 @@ class UserRepository {
 
     async deleteProfilePictureFileName(userId) {
         const query = `
-            UPDATE USERS
-            SET USER_PROFILE_PICTURE_FILE_NAME = NULL
-            WHERE USER_ID = :user_id
+            UPDATE ${TABLE_NAME}
+            SET ${UserFields.USER_PROFILE_PICTURE_FILE_NAME} = NULL
+            WHERE ${UserFields.USER_ID} = :user_id
         `;
 
         const binds = { user_id: userId };
@@ -140,4 +145,4 @@ class UserRepository {
     }
 }
 
-module.exports = UserRepository;
+module.exports = new UserRepository();

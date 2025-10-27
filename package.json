@@ -1,15 +1,14 @@
 {
-  "name": "web_server",
+  "name": "ged-server",
   "version": "1.0.0",
-  "description": "Serveur web pour l'application Gedoise",
+  "description": "Serveur de l'application La Grande Ecole Du Droit",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon src/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon src/app.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gedoiseteam/gedoise_web_server.git"
+    "url": "https://github.com/GrandeEcoleDuDroit/ged-server.git"
   },
   "private": true,
   "dependencies": {
@@ -36,6 +35,7 @@
     "@root": ".",
     "@routes": "src/routes",
     "@api": "src/data/api",
+    "@fields": "src/data/fields",
     "@models": "src/data/models",
     "@repositories": "src/data/repositories",
     "@controllers": "src/controllers",

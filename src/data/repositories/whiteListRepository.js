@@ -1,10 +1,12 @@
 const oracleApi = require('@api/oracleApi');
+const { TABLE_NAME, WhiteListFields } = require('@fields/whiteListFields')
 
 class WhiteListRepository {
-
     async checkUserWhiteList(userEmail) {
         const query = `
-            SELECT COUNT(*) FROM USERS_WHITE_LIST WHERE USER_EMAIL = :user_email
+            SELECT COUNT(*) 
+            FROM ${TABLE_NAME} 
+            WHERE ${WhiteListFields.USER_EMAIL} = :user_email
         `;
 
         const binds = { user_email: userEmail };
@@ -14,4 +16,4 @@ class WhiteListRepository {
     }
 }
 
-module.exports = WhiteListRepository;
+module.exports = new WhiteListRepository();

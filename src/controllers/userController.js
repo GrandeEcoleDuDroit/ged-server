@@ -1,12 +1,9 @@
 const { e } = require('@utils/logs');
 const User = require('@models/user');
-const UserRepository = require('@repositories/userRepository');
-const WhiteListRepository = require('@repositories/whiteListRepository');
-const formatOracleError = require('@utils/exceptionUtils')
 const UserReport = require("@models/userReport");
-
-const userRepository = new UserRepository();
-const whiteListRepository = new WhiteListRepository();
+const userRepository = require('@repositories/userRepository');
+const whiteListRepository = require('@repositories/whiteListRepository');
+const formatOracleError = require('@utils/exceptionUtils')
 
 const getUser = async (req, res) => {
     const userId = req.params.userId;
@@ -28,9 +25,7 @@ const createUser = async (req, res) => {
         USER_FIRST_NAME: firstName,
         USER_LAST_NAME: lastName,
         USER_EMAIL: email,
-        USER_SCHOOL_LEVEL: schoolLevel,
-        USER_IS_MEMBER: isMember,
-        USER_PROFILE_PICTURE_FILE_NAME: profilePictureFileName
+        USER_SCHOOL_LEVEL: schoolLevel
     } = req.body;
 
     if (!id || !firstName || !lastName || !email || !schoolLevel) {
@@ -57,9 +52,7 @@ const createUser = async (req, res) => {
             firstName,
             lastName,
             email,
-            schoolLevel,
-            isMember,
-            profilePictureFileName
+            schoolLevel
         );
 
         const isWhiteListed = await whiteListRepository.checkUserWhiteList(email);
@@ -74,11 +67,9 @@ const createUser = async (req, res) => {
         }
 
         await userRepository.createUser(user);
-
         const serverResponse = {
             message: `User ${user.firstName} ${user.lastName} created successfully.`
         };
-
         res.status(201).json(serverResponse);
     }
     catch (error) {
@@ -95,7 +86,7 @@ const updateUser = async (req, res) => {
         USER_LAST_NAME: lastName,
         USER_EMAIL: email,
         USER_SCHOOL_LEVEL: schoolLevel,
-        USER_IS_MEMBER: isMember,
+        USER_IS_ADMIN: isAdmin,
         USER_PROFILE_PICTURE_FILE_NAME: profilePictureFileName,
         USER_IS_DELETED: isDeleted
     } = req.body;
@@ -106,7 +97,7 @@ const updateUser = async (req, res) => {
         lastName == null ||
         email == null ||
         schoolLevel == null ||
-        isMember == null ||
+        isAdmin == null ||
         isDeleted == null
     ) {
         const serverResponse = {
@@ -134,7 +125,7 @@ const updateUser = async (req, res) => {
             lastName,
             email,
             schoolLevel,
-            isMember,
+            isAdmin,
             profilePictureFileName,
             isDeleted
         );
@@ -178,7 +169,6 @@ const updateProfilePicture = async (req, res) => {
         const serverResponse = {
             message: `Profile picture file name updated successfully`
         };
-
         res.status(200).json(serverResponse);
     }
     catch (error) {
@@ -244,21 +234,18 @@ const reportUser = async (req, res) => {
         return res.status(400).json(serverResponse);
     }
 
-    const report = new UserReport(userId, userInfo, reporterInfo, reason);
-
     try {
+        const report = new UserReport(userId, userInfo, reporterInfo, reason);
         await userRepository.reportUser(report);
         const serverResponse = {
             message: `User ${userId} has been reported successfully`
         };
-
         res.status(200).json(serverResponse);
     } catch (error) {
         const serverResponse = {
             message: 'Error reporting user',
             error: error.message
         };
-
         e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }

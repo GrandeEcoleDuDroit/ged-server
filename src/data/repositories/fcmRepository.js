@@ -3,19 +3,19 @@ const os = require('os');
 const path = require('path');
 const firebaseApi = require('@api/firebaseApi');
 const userDir = path.join(`${os.homedir()}`, 'gedoise-data', 'users');
-const FcmToken = require('@models/token');
+const FcmToken = require('@models/fcmToken');
 
 class FcmRepository {
-    async upsertToken(token) {
-        firebaseApi.upsertToken(token);
-        const dirPath = path.join(userDir, `${token.userId}`);
+    async upsertToken(fcmToken) {
+        firebaseApi.upsertToken(fcmToken);
+        const dirPath = path.join(userDir, `${fcmToken.userId}`);
         const filePath = path.join(`${dirPath}`, FcmToken.fileName());
         
         if (!fs.existsSync(dirPath)) {
             fs.mkdirSync(dirPath, { recursive: true });
         }
 
-        fs.writeFileSync(filePath, token.value, 'utf8');
+        fs.writeFileSync(filePath, fcmToken.value, 'utf8');
     }
 
     async getTokenValue(userId) {
@@ -28,4 +28,4 @@ class FcmRepository {
     }
 }
 
-module.exports = FcmRepository;
+module.exports = new FcmRepository();
