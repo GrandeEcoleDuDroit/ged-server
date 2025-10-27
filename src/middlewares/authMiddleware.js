@@ -1,5 +1,4 @@
-const FirestoreApi = require('@data/api/firestoreAPI');
-const firestoreAPI = new FirestoreApi();
+const firebaseApi = require('@data/api/firebaseApi');
 const { e } = require('@utils/logs')
 
 const verifyAuthIdToken = async (req, res, next) => {
@@ -18,8 +17,7 @@ const verifyAuthIdToken = async (req, res, next) => {
     const idToken = authHeader.split('Bearer ')[1];
 
     try {
-        const decodedToken = await firestoreAPI.verifyAuthIdToken(idToken);
-        req.user = decodedToken;
+        req.user = await firebaseApi.verifyAuthIdToken(idToken);
         next();
     } catch (error) {
         const serverResponse = {
