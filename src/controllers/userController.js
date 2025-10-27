@@ -25,10 +25,10 @@ const createUser = async (req, res) => {
         USER_FIRST_NAME: firstName,
         USER_LAST_NAME: lastName,
         USER_EMAIL: email,
-        USER_SCHOOL_LEVEL: schoolLevel
+        USER_SCHOOL_LEVEL_ID: schoolLevelId
     } = req.body;
 
-    if (!id || !firstName || !lastName || !email || !schoolLevel) {
+    if (!id || !firstName || !lastName || !email || !schoolLevelId) {
         const serverResponse = {
             message: 'Error creating user',
             error: `
@@ -38,7 +38,7 @@ const createUser = async (req, res) => {
                 firstName: ${firstName},
                 lastName: ${lastName},
                 email: ${email},
-                schoolLevel: ${schoolLevel}
+                schoolLevelId: ${schoolLevelId}
               }`
         };
 
@@ -52,7 +52,7 @@ const createUser = async (req, res) => {
             firstName,
             lastName,
             email,
-            schoolLevel
+            schoolLevelId
         );
 
         const isWhiteListed = await whiteListRepository.checkUserWhiteList(email);
@@ -85,7 +85,7 @@ const updateUser = async (req, res) => {
         USER_FIRST_NAME: firstName,
         USER_LAST_NAME: lastName,
         USER_EMAIL: email,
-        USER_SCHOOL_LEVEL: schoolLevel,
+        USER_SCHOOL_LEVEL_ID: schoolLevelId,
         USER_IS_ADMIN: isAdmin,
         USER_PROFILE_PICTURE_FILE_NAME: profilePictureFileName,
         USER_IS_DELETED: isDeleted
@@ -96,7 +96,7 @@ const updateUser = async (req, res) => {
         firstName == null ||
         lastName == null ||
         email == null ||
-        schoolLevel == null ||
+        schoolLevelId == null ||
         isAdmin == null ||
         isDeleted == null
     ) {
@@ -109,7 +109,7 @@ const updateUser = async (req, res) => {
                 firstName: ${firstName},
                 lastName: ${lastName},
                 email: ${email},
-                schoolLevel: ${schoolLevel},
+                schoolLevelId: ${schoolLevelId},
                 isDeleted: ${isDeleted}
               }`
         };
@@ -124,7 +124,7 @@ const updateUser = async (req, res) => {
             firstName,
             lastName,
             email,
-            schoolLevel,
+            schoolLevelId,
             isAdmin,
             profilePictureFileName,
             isDeleted
