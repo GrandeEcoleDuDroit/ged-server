@@ -1,7 +1,6 @@
 const { e } = require('@utils/logs');
-const FcmRepository = require('@repositories/fcmRepository');
-const fcmRepository = new FcmRepository();
-const FCMToken = require('@models/token');
+const fcmRepository = require('@repositories/fcmRepository');
+const FcmToken = require('@models/fcmToken');
 
 const addToken = async (req, res) => {
     const {
@@ -26,7 +25,7 @@ const addToken = async (req, res) => {
     }
 
     try {
-        const fcmToken = new FCMToken(userId, token);
+        const fcmToken = new FcmToken(userId, token);
         fcmRepository.upsertToken(fcmToken)
         const serverResponse = {
             message: 'Fcm token added successfully'

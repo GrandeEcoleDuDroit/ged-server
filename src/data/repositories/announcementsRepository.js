@@ -1,10 +1,13 @@
 const oracleApi = require('@api/oracleApi');
 const { sendMail } = require('@api/googleApi');
-
+const { TABLE_NAME, AnnouncementFields } = require('@fields/announcementFields')
+const { TABLE_NAME: USER_TABLE_NAME } = require('@fields/userFields')
 class AnnouncementsRepository {
     async getAllAnnouncements() {
         const query = `
-            SELECT JSON_OBJECT(*) FROM ANNOUNCEMENTS NATURAL JOIN USERS
+            SELECT JSON_OBJECT(*) 
+            FROM ${TABLE_NAME} 
+            NATURAL JOIN ${USER_TABLE_NAME}
         `;
 
         const result = await oracleApi.execute(query);
@@ -13,20 +16,20 @@ class AnnouncementsRepository {
 
     async createAnnouncement(announcement) {
         const query = `
-            INSERT INTO ANNOUNCEMENTS(
-                ANNOUNCEMENT_ID,
-                ANNOUNCEMENT_TITLE,
-                ANNOUNCEMENT_CONTENT,
-                ANNOUNCEMENT_DATE,
-                USER_ID
+            INSERT INTO ${TABLE_NAME}(
+                ${AnnouncementFields.ANNOUNCEMENT_ID},
+                ${AnnouncementFields.ANNOUNCEMENT_TITLE},
+                ${AnnouncementFields.ANNOUNCEMENT_CONTENT},
+                ${AnnouncementFields.ANNOUNCEMENT_DATE},
+                ${AnnouncementFields.USER_ID}
             )
             VALUES(
-                      :announcement_id,
-                      :announcement_title,
-                      :announcement_content,
-                      :announcement_date,
-                      :user_id
-                  )
+                :announcement_id,
+                :announcement_title,
+                :announcement_content,
+                :announcement_date,
+                :user_id
+            )
         `;
 
         const binds = {
@@ -42,11 +45,11 @@ class AnnouncementsRepository {
 
     async updateAnnouncement(announcement) {
         const query = `
-            UPDATE ANNOUNCEMENTS
-            SET ANNOUNCEMENT_TITLE = :announcement_title,
-                ANNOUNCEMENT_CONTENT = :announcement_content,
-                ANNOUNCEMENT_DATE = :announcement_date
-            WHERE ANNOUNCEMENT_ID = :announcement_id
+            UPDATE ${TABLE_NAME}
+            SET ${AnnouncementFields.ANNOUNCEMENT_ID} = :announcement_title,
+                ${AnnouncementFields.ANNOUNCEMENT_CONTENT} = :announcement_content,
+                ${AnnouncementFields.ANNOUNCEMENT_DATE} = :announcement_date
+            WHERE ${AnnouncementFields.ANNOUNCEMENT_ID} = :announcement_id
         `;
 
         const binds = {
@@ -61,8 +64,8 @@ class AnnouncementsRepository {
 
     async deleteAnnouncements(userId) {
             const query = `
-            DELETE FROM ANNOUNCEMENTS
-            WHERE USER_ID = :user_id
+            DELETE FROM ${TABLE_NAME}
+            WHERE ${AnnouncementFields.USER_ID} = :user_id
         `;
 
         const binds = {
@@ -74,8 +77,8 @@ class AnnouncementsRepository {
 
     async deleteAnnouncement(announcementId) {
         const query = `
-            DELETE FROM ANNOUNCEMENTS
-            WHERE ANNOUNCEMENT_ID = :announcement_id
+            DELETE FROM ${TABLE_NAME}
+            WHERE ${AnnouncementFields.ANNOUNCEMENT_ID} = :announcement_id
         `;
 
         const binds = {
@@ -98,4 +101,4 @@ class AnnouncementsRepository {
     }
 }
 
-module.exports = AnnouncementsRepository;
+module.exports = new AnnouncementsRepository();

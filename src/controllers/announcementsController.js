@@ -1,10 +1,8 @@
 const { e } = require('@utils/logs');
-const AnnouncementsRepository = require('@repositories/announcementsRepository');
 const Announcement = require("@models/announcement");
 const AnnouncementReport = require("@models/announcementReport");
+const announcementsRepository = require('@repositories/announcementsRepository');
 const formatOracleError = require("@utils/exceptionUtils")
-
-const announcementsRepository = new AnnouncementsRepository();
 
 const getAnnouncements = async (req, res) => {
     try {
