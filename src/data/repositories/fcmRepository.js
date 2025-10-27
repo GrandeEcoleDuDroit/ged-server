@@ -1,14 +1,13 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const FirestoreApi = require('@data/api/firestoreAPI');
-const firestoreAPI = new FirestoreApi();
+const firebaseApi = require('@data/api/firebaseApi');
 const userDir = path.join(`${os.homedir()}`, 'gedoise-data', 'users');
 const FcmToken = require('@models/token');
 
 class FcmRepository {
     async upsertToken(token) {
-        firestoreAPI.upsertToken(token);
+        firebaseApi.upsertToken(token);
         const dirPath = path.join(userDir, `${token.userId}`);
         const filePath = path.join(`${dirPath}`, FcmToken.fileName());
         
@@ -25,7 +24,7 @@ class FcmRepository {
     }
 
     async sendNotification(notificationMessage) {
-        await firestoreAPI.sendNotification(notificationMessage);
+        await firebaseApi.sendNotification(notificationMessage);
     }
 }
 
