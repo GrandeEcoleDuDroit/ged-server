@@ -1,4 +1,4 @@
-const firebaseApi = require('@data/api/firebaseApi');
+const firebaseApi = require('@api/firebaseApi');
 const { e } = require('@utils/logs')
 
 const verifyAuthIdToken = async (req, res, next) => {

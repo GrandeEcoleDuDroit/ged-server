@@ -1,4 +1,4 @@
-const { sendMail } = require('@data/api/googleApi');
+const { sendMail } = require('@api/googleApi');
 
 class MessageRepository {
     async reportMessage(report) {

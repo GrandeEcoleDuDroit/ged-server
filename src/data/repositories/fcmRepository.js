@@ -1,7 +1,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const firebaseApi = require('@data/api/firebaseApi');
+const firebaseApi = require('@api/firebaseApi');
 const userDir = path.join(`${os.homedir()}`, 'gedoise-data', 'users');
 const FcmToken = require('@models/token');
 
