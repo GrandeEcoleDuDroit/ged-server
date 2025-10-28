@@ -37,7 +37,7 @@ class UserRepository {
                     ${UserFields.USER_ID} = :user_id,
                     ${UserFields.USER_FIRST_NAME} = :user_first_name,
                     ${UserFields.USER_LAST_NAME} = :user_last_name,
-                    ${UserFields.USER_SCHOOL_LEVEL_ID} = :user_school_level_id,
+                    ${UserFields.USER_SCHOOL_LEVEL} = :user_school_level,
                     ${UserFields.USER_IS_ADMIN} = :user_is_admin
             WHEN NOT MATCHED THEN 
                 INSERT (
@@ -45,14 +45,14 @@ class UserRepository {
                     ${UserFields.USER_FIRST_NAME},
                     ${UserFields.USER_LAST_NAME},
                     ${UserFields.USER_EMAIL},
-                    ${UserFields.USER_SCHOOL_LEVEL_ID},
+                    ${UserFields.USER_SCHOOL_LEVEL},
                     ${UserFields.USER_IS_ADMIN}
                 ) VALUES (
                     :user_id,
                     :user_first_name,
                     :user_last_name,
                     :user_email,
-                    :user_school_level_id,
+                    :user_school_level,
                     :user_is_admin
                 )
         `;
@@ -62,7 +62,7 @@ class UserRepository {
             user_first_name: user.firstName,
             user_last_name: user.lastName,
             user_email: user.email,
-            user_school_level_id: user.schoolLevelId,
+            user_school_level: user.schoolLevel,
             user_is_admin: user.isAdmin
         };
 
@@ -75,7 +75,7 @@ class UserRepository {
             SET ${UserFields.USER_FIRST_NAME} = :user_first_name,
                 ${UserFields.USER_LAST_NAME} = :user_last_name,
                 ${UserFields.USER_EMAIL} = :user_email,
-                ${UserFields.USER_SCHOOL_LEVEL_ID} = :user_school_level_id,
+                ${UserFields.USER_SCHOOL_LEVEL} = :user_school_level,
                 ${UserFields.USER_IS_ADMIN} = :user_is_admin,
                 ${UserFields.USER_PROFILE_PICTURE_FILE_NAME} = :user_profile_picture_file_name,
                 ${UserFields.USER_IS_DELETED} = :user_is_deleted
@@ -86,7 +86,7 @@ class UserRepository {
             user_first_name: user.firstName,
             user_last_name: user.lastName,
             user_email: user.email,
-            user_school_level_id: user.schoolLevelId,
+            user_school_level: user.schoolLevel,
             user_is_admin: user.isAdmin,
             user_profile_picture_file_name: user.profilePictureFileName,
             user_is_deleted: user.isDeleted,

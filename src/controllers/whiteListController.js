@@ -1,8 +1,6 @@
 const { e } = require('@utils/logs');
-const WhiteListRepository = require('@repositories/whiteListRepository');
+const whiteListRepository = require('@repositories/whiteListRepository');
 const formatOracleError = require('@utils/exceptionUtils')
-
-const whiteListRepository = new WhiteListRepository();
 
 const checkUserWhiteList = async (req, res) => {
     const userEmail = req.body.USER_EMAIL;
