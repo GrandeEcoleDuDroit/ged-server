@@ -78,7 +78,8 @@ class UserRepository {
                 ${UserFields.USER_SCHOOL_LEVEL} = :user_school_level,
                 ${UserFields.USER_IS_ADMIN} = :user_is_admin,
                 ${UserFields.USER_PROFILE_PICTURE_FILE_NAME} = :user_profile_picture_file_name,
-                ${UserFields.USER_IS_DELETED} = :user_is_deleted
+                ${UserFields.USER_IS_DELETED} = :user_is_deleted,
+                ${UserFields.USER_TEST} = :user_test
             WHERE ${UserFields.USER_ID} = :user_id
         `;
 
@@ -90,6 +91,7 @@ class UserRepository {
             user_is_admin: user.isAdmin,
             user_profile_picture_file_name: user.profilePictureFileName,
             user_is_deleted: user.isDeleted,
+            user_test: user.test,
             user_id: user.id
         };
 

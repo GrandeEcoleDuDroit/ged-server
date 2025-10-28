@@ -7,6 +7,7 @@ class User {
     #isAdmin;
     #profilePictureFileName;
     #isDeleted;
+    #test;
 
     constructor(
         id,
@@ -16,7 +17,8 @@ class User {
         schoolLevel,
         isAdmin = 0,
         profilePictureFileName = null,
-        isDeleted = 0
+        isDeleted = 0,
+        test = 0
     ) {
         this.#id = id;
         this.#firstName = firstName;
@@ -26,6 +28,7 @@ class User {
         this.#isAdmin = isAdmin;
         this.#profilePictureFileName = profilePictureFileName;
         this.#isDeleted = isDeleted;
+        this.#test = test;
     }
 
     get id() { return this.#id; }
@@ -36,6 +39,7 @@ class User {
     get isAdmin() { return this.#isAdmin; }
     get profilePictureFileName() { return this.#profilePictureFileName; }
     get isDeleted() { return this.#isDeleted; }
+    get test() { return this.#test; }
 }
 
 module.exports = User;
