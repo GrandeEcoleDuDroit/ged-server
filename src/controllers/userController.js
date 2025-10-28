@@ -88,7 +88,8 @@ const updateUser = async (req, res) => {
         USER_SCHOOL_LEVEL: schoolLevel,
         USER_IS_ADMIN: isAdmin,
         USER_PROFILE_PICTURE_FILE_NAME: profilePictureFileName,
-        USER_IS_DELETED: isDeleted
+        USER_IS_DELETED: isDeleted,
+        USER_TEST: test,
     } = req.body;
 
     if (
@@ -98,7 +99,8 @@ const updateUser = async (req, res) => {
         email == null ||
         schoolLevel == null ||
         isAdmin == null ||
-        isDeleted == null
+        isDeleted == null ||
+        test == null
     ) {
         const serverResponse = {
             message: 'Error updating user',
@@ -110,7 +112,9 @@ const updateUser = async (req, res) => {
                 lastName: ${lastName},
                 email: ${email},
                 schoolLevel: ${schoolLevel},
-                isDeleted: ${isDeleted}
+                isAdmin: ${isAdmin},
+                isDeleted: ${isDeleted},
+                test: ${test}
               }`
         };
 
@@ -127,7 +131,8 @@ const updateUser = async (req, res) => {
             schoolLevel,
             isAdmin,
             profilePictureFileName,
-            isDeleted
+            isDeleted,
+            test
         );
 
         await userRepository.updateUser(user);
