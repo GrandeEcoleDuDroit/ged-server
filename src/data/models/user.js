@@ -3,7 +3,7 @@ class User {
     #firstName;
     #lastName;
     #email;
-    #schoolLevelId;
+    #schoolLevel;
     #isAdmin;
     #profilePictureFileName;
     #isDeleted;
@@ -13,7 +13,7 @@ class User {
         firstName,
         lastName,
         email,
-        schoolLevelId,
+        schoolLevel,
         isAdmin = 0,
         profilePictureFileName = null,
         isDeleted = 0
@@ -22,7 +22,7 @@ class User {
         this.#firstName = firstName;
         this.#lastName = lastName;
         this.#email = email;
-        this.#schoolLevelId = schoolLevelId;
+        this.#schoolLevel = schoolLevel;
         this.#isAdmin = isAdmin;
         this.#profilePictureFileName = profilePictureFileName;
         this.#isDeleted = isDeleted;
@@ -32,7 +32,7 @@ class User {
     get firstName() { return this.#firstName; }
     get lastName() { return this.#lastName; }
     get email() { return this.#email; }
-    get schoolLevelId() { return this.#schoolLevelId; }
+    get schoolLevel() { return this.#schoolLevel; }
     get isAdmin() { return this.#isAdmin; }
     get profilePictureFileName() { return this.#profilePictureFileName; }
     get isDeleted() { return this.#isDeleted; }
