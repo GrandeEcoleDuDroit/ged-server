@@ -25,10 +25,11 @@ const createUser = async (req, res) => {
         USER_FIRST_NAME: firstName,
         USER_LAST_NAME: lastName,
         USER_EMAIL: email,
-        USER_SCHOOL_LEVEL: schoolLevel
+        USER_SCHOOL_LEVEL: schoolLevel,
+        USER_STATE: state
     } = req.body;
 
-    if (!id || !firstName || !lastName || !email || !schoolLevel) {
+    if (!id || !firstName || !lastName || !email || !schoolLevel || !state) {
         const serverResponse = {
             message: 'Error creating user',
             error: `
@@ -38,7 +39,8 @@ const createUser = async (req, res) => {
                 firstName: ${firstName},
                 lastName: ${lastName},
                 email: ${email},
-                schoolLevel: ${schoolLevel}
+                schoolLevel: ${schoolLevel},
+                state: ${state}
               }`
         };
 
@@ -52,7 +54,10 @@ const createUser = async (req, res) => {
             firstName,
             lastName,
             email,
-            schoolLevel
+            schoolLevel,
+            0,
+            null,
+            state
         );
 
         const isWhiteListed = await whiteListRepository.checkUserWhiteList(email);
@@ -86,10 +91,10 @@ const updateUser = async (req, res) => {
         USER_LAST_NAME: lastName,
         USER_EMAIL: email,
         USER_SCHOOL_LEVEL: schoolLevel,
-        USER_IS_ADMIN: isAdmin,
+        USER_ADMIN: admin,
         USER_PROFILE_PICTURE_FILE_NAME: profilePictureFileName,
-        USER_IS_DELETED: isDeleted,
-        USER_TEST: test,
+        USER_STATE: state,
+        USER_TESTER: tester,
     } = req.body;
 
     if (
@@ -98,9 +103,9 @@ const updateUser = async (req, res) => {
         lastName == null ||
         email == null ||
         schoolLevel == null ||
-        isAdmin == null ||
-        isDeleted == null ||
-        test == null
+        admin == null ||
+        state == null ||
+        tester == null
     ) {
         const serverResponse = {
             message: 'Error updating user',
@@ -112,9 +117,9 @@ const updateUser = async (req, res) => {
                 lastName: ${lastName},
                 email: ${email},
                 schoolLevel: ${schoolLevel},
-                isAdmin: ${isAdmin},
-                isDeleted: ${isDeleted},
-                test: ${test}
+                admin: ${admin},
+                state: ${state},
+                tester: ${tester}
               }`
         };
 
@@ -129,10 +134,10 @@ const updateUser = async (req, res) => {
             lastName,
             email,
             schoolLevel,
-            isAdmin,
+            admin,
             profilePictureFileName,
-            isDeleted,
-            test
+            state,
+            tester
         );
 
         await userRepository.updateUser(user);

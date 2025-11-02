@@ -15,7 +15,7 @@ class OracleApi {
     }
 
     async #initPool() {
-        if (OracleApi.#pool) {
+        if (this.#pool) {
             return;
         }
 
@@ -28,16 +28,20 @@ class OracleApi {
     }
 
     async execute(sql, params = [], options = {}) {
+        let connection;
         try {
-            if (!OracleApi.#pool) {
+            if (!this.#pool) {
                 await this.#initPool();
             }
-            await this.#pool.execute(sql, params, options);
+            connection = await this.#pool.getConnection();
+            return await connection.execute(sql, params, options);
         } catch (err) {
             e('Error getting connection from pool:', err);
             throw err;
         } finally {
-            await this.closePool();
+            if (connection) {
+                await connection.close();
+            }
         }
     }
 

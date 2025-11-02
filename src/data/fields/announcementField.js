@@ -1,5 +1,5 @@
-const TABLE_NAME = 'ANNOUNCEMENT';
-const AnnouncementFields = Object.freeze({
+const AnnouncementField = Object.freeze({
+    TABLE_NAME: 'ANNOUNCEMENTS',
     ANNOUNCEMENT_ID: 'ANNOUNCEMENT_ID',
     ANNOUNCEMENT_TITLE: 'ANNOUNCEMENT_TITLE',
     ANNOUNCEMENT_CONTENT: 'ANNOUNCEMENT_CONTENT',
@@ -7,4 +7,4 @@ const AnnouncementFields = Object.freeze({
     USER_ID: 'USER_ID'
 });
 
-module.exports = { TABLE_NAME, AnnouncementFields }
+module.exports = AnnouncementField

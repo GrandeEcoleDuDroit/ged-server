@@ -1,13 +1,13 @@
 const oracleApi = require('@api/oracleApi');
 const { sendMail } = require('@api/googleApi');
-const { TABLE_NAME, UserFields } = require('@fields/userFields');
+const UserField = require('@fields/userField');
 
 class UserRepository {
     async getUser(userId) {
         const query = `
             SELECT JSON_OBJECT(*) 
-            FROM ${TABLE_NAME}
-            WHERE ${UserFields.USER_ID} = :user_id
+            FROM ${UserField.TABLE_NAME}
+            WHERE ${UserField.USER_ID} = :user_id
         `;
 
         const binds = { user_id: userId };
@@ -18,8 +18,8 @@ class UserRepository {
     async getUserWithEmail(userEmail) {
         const query = `
             SELECT JSON_OBJECT(*) 
-            FROM ${TABLE_NAME}
-            WHERE ${UserFields.USER_EMAIL} = :user_email
+            FROM ${UserField.TABLE_NAME}
+            WHERE ${UserField.USER_EMAIL} = :user_email
         `;
 
         const binds = { user_email: userEmail };
@@ -29,31 +29,31 @@ class UserRepository {
 
     async createUser(user) {
         const query = `
-            MERGE INTO ${TABLE_NAME} U
-            USING(SELECT :user_email AS ${UserFields.USER_EMAIL} FROM dual) SOURCE
-            ON (U.${UserFields.USER_EMAIL} = SOURCE.${UserFields.USER_EMAIL})
+            MERGE INTO ${UserField.TABLE_NAME} U
+            USING(SELECT :user_email AS ${UserField.USER_EMAIL} FROM dual) SOURCE
+            ON (U.${UserField.USER_EMAIL} = SOURCE.${UserField.USER_EMAIL})
             WHEN MATCHED THEN
                 UPDATE SET
-                    ${UserFields.USER_ID} = :user_id,
-                    ${UserFields.USER_FIRST_NAME} = :user_first_name,
-                    ${UserFields.USER_LAST_NAME} = :user_last_name,
-                    ${UserFields.USER_SCHOOL_LEVEL} = :user_school_level,
-                    ${UserFields.USER_IS_ADMIN} = :user_is_admin
+                    ${UserField.USER_ID} = :user_id,
+                    ${UserField.USER_FIRST_NAME} = :user_first_name,
+                    ${UserField.USER_LAST_NAME} = :user_last_name,
+                    ${UserField.USER_SCHOOL_LEVEL} = :user_school_level,
+                    ${UserField.USER_STATE} = :user_state
             WHEN NOT MATCHED THEN 
                 INSERT (
-                    ${UserFields.USER_ID},
-                    ${UserFields.USER_FIRST_NAME},
-                    ${UserFields.USER_LAST_NAME},
-                    ${UserFields.USER_EMAIL},
-                    ${UserFields.USER_SCHOOL_LEVEL},
-                    ${UserFields.USER_IS_ADMIN}
+                    ${UserField.USER_ID},
+                    ${UserField.USER_FIRST_NAME},
+                    ${UserField.USER_LAST_NAME},
+                    ${UserField.USER_EMAIL},
+                    ${UserField.USER_SCHOOL_LEVEL},
+                    ${UserField.USER_STATE}
                 ) VALUES (
                     :user_id,
                     :user_first_name,
                     :user_last_name,
                     :user_email,
                     :user_school_level,
-                    :user_is_admin
+                    :user_state
                 )
         `;
 
@@ -63,7 +63,7 @@ class UserRepository {
             user_last_name: user.lastName,
             user_email: user.email,
             user_school_level: user.schoolLevel,
-            user_is_admin: user.isAdmin
+            user_state: user.state
         };
 
         return await oracleApi.execute(query, binds, { autoCommit: true });
@@ -71,16 +71,16 @@ class UserRepository {
 
     async updateUser(user) {
         const query = `
-            UPDATE ${TABLE_NAME}
-            SET ${UserFields.USER_FIRST_NAME} = :user_first_name,
-                ${UserFields.USER_LAST_NAME} = :user_last_name,
-                ${UserFields.USER_EMAIL} = :user_email,
-                ${UserFields.USER_SCHOOL_LEVEL} = :user_school_level,
-                ${UserFields.USER_IS_ADMIN} = :user_is_admin,
-                ${UserFields.USER_PROFILE_PICTURE_FILE_NAME} = :user_profile_picture_file_name,
-                ${UserFields.USER_IS_DELETED} = :user_is_deleted,
-                ${UserFields.USER_TEST} = :user_test
-            WHERE ${UserFields.USER_ID} = :user_id
+            UPDATE ${UserField.TABLE_NAME}
+            SET ${UserField.USER_FIRST_NAME} = :user_first_name,
+                ${UserField.USER_LAST_NAME} = :user_last_name,
+                ${UserField.USER_EMAIL} = :user_email,
+                ${UserField.USER_SCHOOL_LEVEL} = :user_school_level,
+                ${UserField.USER_ADMIN} = :user_admin,
+                ${UserField.USER_PROFILE_PICTURE_FILE_NAME} = :user_profile_picture_file_name,
+                ${UserField.USER_STATE} = :user_state,
+                ${UserField.USER_TESTER} = :user_tester
+            WHERE ${UserField.USER_ID} = :user_id
         `;
 
         const binds = {
@@ -88,10 +88,10 @@ class UserRepository {
             user_last_name: user.lastName,
             user_email: user.email,
             user_school_level: user.schoolLevel,
-            user_is_admin: user.isAdmin,
+            user_admin: user.admin,
             user_profile_picture_file_name: user.profilePictureFileName,
-            user_is_deleted: user.isDeleted,
-            user_test: user.test,
+            user_state: user.state,
+            user_tester: user.tester,
             user_id: user.id
         };
 
@@ -100,9 +100,9 @@ class UserRepository {
 
     async updateProfilePictureFileName(profilePictureFileName, userId) {
         const query = `
-            UPDATE ${TABLE_NAME}
-            SET ${UserFields.USER_PROFILE_PICTURE_FILE_NAME} = :user_profile_picture_file_name
-            WHERE ${UserFields.USER_ID} = :user_id
+            UPDATE ${UserField.TABLE_NAME}
+            SET ${UserField.USER_PROFILE_PICTURE_FILE_NAME} = :user_profile_picture_file_name
+            WHERE ${UserField.USER_ID} = :user_id
         `;
 
         const binds = {
@@ -115,8 +115,8 @@ class UserRepository {
 
     async deleteUser(userId) {
         const query = `
-            DELETE FROM ${TABLE_NAME}
-            WHERE ${UserFields.USER_ID} = :user_id
+            DELETE FROM ${UserField.TABLE_NAME}
+            WHERE ${UserField.USER_ID} = :user_id
         `;
 
         const binds = { user_id: userId };
@@ -125,9 +125,9 @@ class UserRepository {
 
     async deleteProfilePictureFileName(userId) {
         const query = `
-            UPDATE ${TABLE_NAME}
-            SET ${UserFields.USER_PROFILE_PICTURE_FILE_NAME} = NULL
-            WHERE ${UserFields.USER_ID} = :user_id
+            UPDATE ${UserField.TABLE_NAME}
+            SET ${UserField.USER_PROFILE_PICTURE_FILE_NAME} = NULL
+            WHERE ${UserField.USER_ID} = :user_id
         `;
 
         const binds = { user_id: userId };

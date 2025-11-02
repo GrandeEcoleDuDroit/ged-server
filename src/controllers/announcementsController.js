@@ -72,12 +72,13 @@ const updateAnnouncement = async (req, res) => {
         USER_ID: userId
     } = req.body;
 
-    if(!content || !date || !userId) {
+    if(!id || !content || !date || !userId) {
         const serverResponse = {
             message: "Error to update announcement",
             error: `
             Some missing announcement fields : 
             {
+                id: ${id},
                 content: ${content},
                 date: ${date},
                 userId: ${userId}

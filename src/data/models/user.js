@@ -4,10 +4,10 @@ class User {
     #lastName;
     #email;
     #schoolLevel;
-    #isAdmin;
+    #admin;
     #profilePictureFileName;
-    #isDeleted;
-    #test;
+    #state;
+    #tester;
 
     constructor(
         id,
@@ -15,20 +15,20 @@ class User {
         lastName,
         email,
         schoolLevel,
-        isAdmin = 0,
+        admin = 0,
         profilePictureFileName = null,
-        isDeleted = 0,
-        test = 0
+        state,
+        tester = 0
     ) {
         this.#id = id;
         this.#firstName = firstName;
         this.#lastName = lastName;
         this.#email = email;
         this.#schoolLevel = schoolLevel;
-        this.#isAdmin = isAdmin;
+        this.#admin = admin;
         this.#profilePictureFileName = profilePictureFileName;
-        this.#isDeleted = isDeleted;
-        this.#test = test;
+        this.#state = state;
+        this.#tester = tester;
     }
 
     get id() { return this.#id; }
@@ -36,10 +36,10 @@ class User {
     get lastName() { return this.#lastName; }
     get email() { return this.#email; }
     get schoolLevel() { return this.#schoolLevel; }
-    get isAdmin() { return this.#isAdmin; }
+    get admin() { return this.#admin; }
     get profilePictureFileName() { return this.#profilePictureFileName; }
-    get isDeleted() { return this.#isDeleted; }
-    get test() { return this.#test; }
+    get state() { return this.#state; }
+    get tester() { return this.#tester; }
 }
 
 module.exports = User;
