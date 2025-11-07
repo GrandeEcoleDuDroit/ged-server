@@ -1,8 +1,6 @@
 const { e } = require('@utils/logs');
 const { Readable } = require('stream');
-const ImageRepository = require('@repositories/imageRepository');
-
-const imageRepository = new ImageRepository();
+const imageRepository = require('@repositories/imageRepository');
 
 const downloadImage = async (req, res) => {
     const objectName = req.params.filename;
@@ -28,19 +26,20 @@ const downloadImage = async (req, res) => {
 
 const uploadImage = async (req, res) => {
     const imageFile = req.file;
+
+    if (!imageFile) {
+        const serverResponse = {
+            message: `Error to upload image`,
+            error: 'No image file found'
+        };
+
+        e(serverResponse.message, new Error(serverResponse.error));
+        return res.status(400).json(serverResponse);
+    }
+
     const objectName = imageFile.originalname;
 
     try {
-        if (!imageFile) {
-            const serverResponse = {
-                message: `Error to upload image : ${objectName}`,
-                error: 'No image file found'
-            };
-
-            e(serverResponse.message, new Error(serverResponse.error));
-            return res.status(400).json(serverResponse);
-        }
-
         await imageRepository.uploadImage(imageFile.path, objectName);
         const serverResponse = {
             message: `Image uploaded successfully`

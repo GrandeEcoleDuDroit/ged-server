@@ -8,5 +8,6 @@ router.use('/announcements', verifyAuthIdToken, require('./announcementsRoutes')
 router.use('/fcm', verifyAuthIdToken, require('./fcmRoutes'));
 router.use('/white-list', require('./whiteListRoutes'));
 router.use('/messages', verifyAuthIdToken, require('./messageRoutes'));
+router.use('/missions', verifyAuthIdToken, require('./missionRoutes'));
 
 module.exports = router;

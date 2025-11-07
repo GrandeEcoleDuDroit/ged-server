@@ -36,7 +36,25 @@ class OracleApi {
             connection = await this.#pool.getConnection();
             return await connection.execute(sql, params, options);
         } catch (err) {
-            e('Error getting connection from pool:', err);
+            e('Error execute oracle query:', err);
+            throw err;
+        } finally {
+            if (connection) {
+                await connection.close();
+            }
+        }
+    }
+
+    async executeMany(sql, params = [], options = {}) {
+        let connection;
+        try {
+            if (!this.#pool) {
+                await this.#initPool();
+            }
+            connection = await this.#pool.getConnection();
+            return await connection.executeMany(sql, params, options);
+        } catch (err) {
+            e('Error execute many oracle query:', err);
             throw err;
         } finally {
             if (connection) {
