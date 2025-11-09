@@ -6,5 +6,6 @@ const upload = multer({ dest: 'uploads/missions/' });
 const missionController = require('@controllers/missionController');
 
 router.post('/create', upload.single('image'), missionController.createMission);
+router.put('/:missionId', upload.single('image'), missionController.updateMission);
 
 module.exports = router;
