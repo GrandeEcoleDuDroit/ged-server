@@ -89,7 +89,7 @@ class AnnouncementsRepository {
     }
 
     async reportAnnouncement(report) {
-        const subject = `Report Announcement ${report.announcementId}`;
+        const subject = `Announcement report: ${report.announcementId}`;
         const html = `
            <p>The announcement ${report.announcementId} has been reported</p>
            <p>Announcement author : ${report.authorInfo.fullName} - <b>${report.authorInfo.email}</b></p>

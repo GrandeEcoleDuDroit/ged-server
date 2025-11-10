@@ -1,6 +1,7 @@
 const { e } = require('@utils/logs');
 const Mission = require('@models/mission');
 const MissionTask = require('@models/missionTask');
+const MissionReport = require('@models/missionReport');
 const missionRepository = require("@repositories/missionRepository");
 const imageRepository = require("@repositories/imageRepository");
 const formatOracleError = require("@utils/exceptionUtils")
@@ -221,9 +222,55 @@ const deleteMission = async (req, res) => {
     }
 }
 
+const reportMission = async (req, res) => {
+    const {
+        missionId: missionId,
+        userInfo: userInfo,
+        reason: reason
+    } = req.body;
+
+    if(!missionId || !userInfo || !reason) {
+        const serverResponse = {
+            message: "Error to report announcement",
+            error: `
+            Some missing report fields :
+            {
+                missionId: ${missionId},
+                userInfo: ${userInfo},
+                reason: ${reason},
+            }
+            `
+        };
+
+        e(serverResponse.message, new Error(serverResponse.error));
+        return res.status(400).json(serverResponse);
+    }
+
+    const report = new MissionReport(missionId, userInfo, reason);
+
+    try {
+        await missionRepository.reportMission(report);
+        const serverResponse = {
+            message: `Mission ${missionId} reported successfully`
+        };
+
+        res.status(200).json(serverResponse);
+    }
+    catch (error) {
+        const serverResponse = {
+            message: 'Error reporting mission',
+            error: error.message
+        };
+
+        e(serverResponse.message, error);
+        res.status(500).json(serverResponse);
+    }
+}
+
 module.exports = {
     getMissions,
     createMission,
     updateMission,
-    deleteMission
+    deleteMission,
+    reportMission
 }

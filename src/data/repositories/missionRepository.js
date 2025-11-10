@@ -3,6 +3,7 @@ const getMissionQueries = require('@queries/mission/getMissionQueries');
 const createMissionQuery = require('@queries/mission/createMissionQueries');
 const updateMissionQueries = require('@queries/mission/updateMissionQueries');
 const deleteMissionQueries = require('@queries/mission/deleteMissionQueries');
+const { sendMail } = require('@api/googleApi');
 
 class MissionRepository {
     async getMissions() {
@@ -72,6 +73,17 @@ class MissionRepository {
             deleteMissionQueries.missionBinds(missionId),
             { autoCommit: true }
         );
+    }
+
+    async reportMission(report) {
+        const subject = `Mission report: ${report.missionId}`;
+        const html = `
+           <p>The mission ${report.missionId} has been reported</p>
+           <p>Reported by : ${report.userInfo.fullName} - <b>${report.userInfo.email}</b></p>
+           <p>Reason: ${report.reason}</p>
+         `;
+
+        await sendMail(subject, html);
     }
 }
 

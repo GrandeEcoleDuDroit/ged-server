@@ -135,12 +135,12 @@ class UserRepository {
     }
 
     async reportUser(report) {
-        const subject = `Report User ${report.userId}`;
+        const subject = `User report: ${report.userId}`;
         const html = `
            <p>The user ${report.userId} has been reported</p>
            <p>User : ${report.userInfo.fullName} - <b>${report.userInfo.email}</b></p>
            <p>Reporter : ${report.reporterInfo.fullName} - <b>${report.reporterInfo.email}</b></p>
-           <p>Reason : ${report.reason}</p>
+           <p>Reason: ${report.reason}</p>
          `;
 
         await sendMail(subject, html);
