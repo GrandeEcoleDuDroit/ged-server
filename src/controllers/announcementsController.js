@@ -6,12 +6,12 @@ const formatOracleError = require("@utils/exceptionUtils")
 
 const getAnnouncements = async (req, res) => {
     try {
-        const result = await announcementsRepository.getAllAnnouncements();
+        const result = await announcementsRepository.getAnnouncements();
         res.json(result);
     }
     catch (error) {
         const serverResponse = {
-            message: 'Error to get all announcements',
+            message: 'Error to get announcements',
             error : error.message
         };
 
@@ -107,11 +107,11 @@ const updateAnnouncement = async (req, res) => {
     }
 }
 
-const deleteAnnouncements = async (req, res) => {
+const deleteUserAnnouncements = async (req, res) => {
     const userId = req.params.userId;
 
     try {
-        await announcementsRepository.deleteAnnouncements(userId);
+        await announcementsRepository.deleteUserAnnouncements(userId);
         const serverResponse = {
             message: `Announcements of ${userId} has been deleted successfully`
         };
@@ -126,7 +126,7 @@ const deleteAnnouncements = async (req, res) => {
 }
 
 const deleteAnnouncement = async (req, res) => {
-    const announcementId = req.params.id;
+    const announcementId = req.params.announcementId;
 
     try {
         await announcementsRepository.deleteAnnouncement(announcementId);
@@ -194,7 +194,7 @@ module.exports = {
     getAnnouncements,
     createAnnouncement,
     updateAnnouncement,
-    deleteAnnouncements,
+    deleteUserAnnouncements,
     deleteAnnouncement,
     reportAnnouncement
 }

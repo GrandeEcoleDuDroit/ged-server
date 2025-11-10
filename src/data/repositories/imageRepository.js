@@ -47,4 +47,4 @@ class ImageRepository {
     }
 }
 
-module.exports = ImageRepository;
+module.exports = new ImageRepository();
