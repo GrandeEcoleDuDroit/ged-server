@@ -202,8 +202,6 @@ const deleteMission = async (req, res) => {
 
     try {
         await missionRepository.deleteMission(missionId);
-        let result = await missionRepository.getMissions();
-        console.log(result);
         if (missionImageFileName) {
             try {
                 await imageRepository.deleteImage(missionImageFileName);
