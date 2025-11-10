@@ -38,6 +38,7 @@
     "@fields": "src/data/fields",
     "@models": "src/data/models",
     "@repositories": "src/data/repositories",
+    "@queries": "src/data/queries",
     "@controllers": "src/controllers",
     "@utils": "src/utils",
     "@middlewares": "src/middlewares"

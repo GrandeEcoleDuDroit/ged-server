@@ -3,7 +3,7 @@ const { sendMail } = require('@api/googleApi');
 const AnnouncementField = require('@fields/announcementField')
 const UserField = require('@fields/userField')
 class AnnouncementsRepository {
-    async getAllAnnouncements() {
+    async getAnnouncements() {
         const query = `
             SELECT JSON_OBJECT(*) 
             FROM ${AnnouncementField.TABLE_NAME} 
@@ -62,7 +62,7 @@ class AnnouncementsRepository {
         return await oracleApi.execute(query, binds, { autoCommit: true });
     }
 
-    async deleteAnnouncements(userId) {
+    async deleteUserAnnouncements(userId) {
             const query = `
             DELETE FROM ${AnnouncementField.TABLE_NAME}
             WHERE ${AnnouncementField.USER_ID} = :user_id

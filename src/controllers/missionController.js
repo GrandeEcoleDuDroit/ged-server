@@ -1,8 +1,25 @@
 const { e } = require('@utils/logs');
 const Mission = require('@models/mission');
+const MissionTask = require('@models/missionTask');
 const missionRepository = require("@repositories/missionRepository");
 const imageRepository = require("@repositories/imageRepository");
 const formatOracleError = require("@utils/exceptionUtils")
+
+const getMissions = async (req, res) => {
+    try {
+        const result = await missionRepository.getMissions();
+        res.json(result);
+    }
+    catch (error) {
+        const serverResponse = {
+            message: 'Error to get missions',
+            error : error.message
+        };
+
+        e(serverResponse.message, error);
+        res.status(500).json(serverResponse);
+    }
+}
 
 const createMission = async (req, res) => {
     const missionJson = req.body.mission;
@@ -65,10 +82,15 @@ const createMission = async (req, res) => {
             managerIds,
             '[]',
             maxParticipants,
-            tasks,
+            tasks || '[]',
             imageFileName || null
         );
-        const missionTasks = JSON.parse(tasks || '[]');
+        const missionTasks = JSON.parse(tasks).map(task =>
+            new MissionTask(
+                task.MISSION_TASK_ID,
+                task.MISSION_TASK_VALUE
+            )
+        );
         const missionManagerIds = JSON.parse(managerIds);
         await missionRepository.createMission(mission, missionManagerIds, missionTasks);
         if (imageFile) {
@@ -115,7 +137,7 @@ const updateMission = async (req, res) => {
         !maxParticipants
     ) {
         const serverResponse = {
-            message: "Error to create mission",
+            message: "Error to update mission",
             error: `
             Some missing mission fields : 
             {
@@ -146,10 +168,15 @@ const updateMission = async (req, res) => {
             managerIds,
             '[]',
             maxParticipants,
-            tasks,
+            tasks || '[]',
             imageFileName || null
         );
-        const missionTasks = JSON.parse(tasks || '[]');
+        const missionTasks = JSON.parse(tasks).map(task =>
+            new MissionTask(
+                task.MISSION_TASK_ID,
+                task.MISSION_TASK_VALUE
+            )
+        );
         const missionManagerIds = JSON.parse(managerIds);
         await missionRepository.updateMission(mission, missionManagerIds, missionTasks);
         if (imageFile) {
@@ -168,7 +195,35 @@ const updateMission = async (req, res) => {
     }
 }
 
+const deleteMission = async (req, res) => {
+    const missionId = req.body.missionId;
+    const missionImageFileName = req.body.imageFileName;
+
+    try {
+        await missionRepository.deleteMission(missionId);
+        let result = await missionRepository.getMissions();
+        console.log(result);
+        if (missionImageFileName) {
+            try {
+                await imageRepository.deleteImage(missionImageFileName);
+            } catch (imageError) {
+                console.error(`Erreur lors de la suppression de l'image: ${missionImageFileName}`, imageError);
+            }
+        }
+        const serverResponse = {
+            message: `Mission ${missionId} deleted successfully`
+        };
+        res.status(200).json(serverResponse);
+    } catch (error) {
+        const serverResponse = formatOracleError(error, 'Error delete mission');
+        e(serverResponse.message, error);
+        res.status(500).json(serverResponse);
+    }
+}
+
 module.exports = {
+    getMissions,
     createMission,
-    updateMission
+    updateMission,
+    deleteMission
 }
