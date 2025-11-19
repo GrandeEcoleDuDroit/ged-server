@@ -1,0 +1,10 @@
+export const formatOracleError = function (error: any, message: string) {
+    const oraCodeMatch = error.message.match(/(ORA-\d{5})/);
+    const oraCode = oraCodeMatch ? oraCodeMatch[1] : 'UNKNOWN';
+
+    return {
+        message: message,
+        code: oraCode,
+        error: error.message
+    };
+}

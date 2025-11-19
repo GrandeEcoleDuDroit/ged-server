@@ -4,13 +4,16 @@
   "description": "Serveur de l'application La Grande Ecole Du Droit",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon src/app.js"
+    "start": "node dist/app.js",
+    "build": "tsc",
+    "dev": "tsc --noEmit && tsx src/app.ts"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/GrandeEcoleDuDroit/ged-server.git"
   },
   "private": true,
+  "type": "module",
   "dependencies": {
     "@logtail/winston": "^0.5.2",
     "@sentry/cli": "^2.43.0",
@@ -24,7 +27,6 @@
     "module-alias": "^2.2.3",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^7.0.6",
-    "nodemon": "^3.1.10",
     "oci-common": "^2.89.4",
     "oci-objectstorage": "^2.89.4",
     "oci-sdk": "^2.89.2",
@@ -42,5 +44,15 @@
     "@controllers": "src/controllers",
     "@utils": "src/utils",
     "@middlewares": "src/middlewares"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.5",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^24.10.1",
+    "@types/nodemailer": "^7.0.4",
+    "@types/oracledb": "^6.10.0",
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
   }
 }
