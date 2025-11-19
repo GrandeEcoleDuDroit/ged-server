@@ -33,7 +33,7 @@ const getMissionsQuery = `
           SELECT JSON_ARRAYAGG(
                 JSON_OBJECT(
                    '${UserField.USER_ID}': ${UserField.USER_ID},
-                   '${UserField.USER_FIRST_NAME}': ${UserField.USER_ID},
+                   '${UserField.USER_FIRST_NAME}': ${UserField.USER_FIRST_NAME},
                    '${UserField.USER_LAST_NAME}': ${UserField.USER_LAST_NAME},
                    '${UserField.USER_EMAIL}': ${UserField.USER_EMAIL},
                    '${UserField.USER_SCHOOL_LEVEL}': ${UserField.USER_SCHOOL_LEVEL},
