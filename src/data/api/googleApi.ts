@@ -1,19 +1,20 @@
 import { createTransport, TransportOptions } from 'nodemailer';
 import { google } from 'googleapis';
-
-const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
-const REFRESH_TOKEN = process.env.GOOGLE_REFRESH_TOKEN;
-const EMAIL_ADDRESS = process.env.EMAIL_ADDRESS;
+import {
+    GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET,
+    GOOGLE_REDIRECT_URI,
+    GOOGLE_REFRESH_TOKEN,
+    EMAIL_ADDRESS
+} from '@root/src/env'
 
 const oAuth2Client = new google.auth.OAuth2(
-    CLIENT_ID,
-    CLIENT_SECRET,
-    REDIRECT_URI
+    GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET,
+    GOOGLE_REDIRECT_URI
 );
 
-oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
+oAuth2Client.setCredentials({ refresh_token: GOOGLE_REFRESH_TOKEN });
 
 export async function sendMail(subject: string, html: string) {
     const accessToken = await oAuth2Client.getAccessToken();
@@ -23,9 +24,9 @@ export async function sendMail(subject: string, html: string) {
         auth: {
             type: 'OAuth2',
             user: EMAIL_ADDRESS,
-            clientId: CLIENT_ID,
-            clientSecret: CLIENT_SECRET,
-            refreshToken: REFRESH_TOKEN,
+            clientId: GOOGLE_CLIENT_ID,
+            clientSecret: GOOGLE_CLIENT_SECRET,
+            refreshToken: GOOGLE_REFRESH_TOKEN,
             accessToken: accessToken,
         },
     } as TransportOptions);

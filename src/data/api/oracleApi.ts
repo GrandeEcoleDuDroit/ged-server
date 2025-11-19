@@ -1,6 +1,6 @@
 import { BindParameters, ExecuteOptions, Pool } from 'oracledb';
 import oracledb from 'oracledb';
-import config from '@root/config.json';
+import dbConfig from '@root/dbConfig.json';
 import { e } from '@utils/logs';
 
 oracledb.initOracleClient({ libDir: process.env.ORACLE_HOME });
@@ -17,7 +17,7 @@ export default class OracleApi {
 
     private async pool(): Promise<Pool> {
         if (!this._pool) {
-            const pool = await oracledb.createPool(config.dbConfig);
+            const pool = await oracledb.createPool(dbConfig);
             this._pool = pool;
             return pool;
         } else {

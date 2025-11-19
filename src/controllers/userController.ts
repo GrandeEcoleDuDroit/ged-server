@@ -155,7 +155,7 @@ export const updateUser = async (req: Request, res: Response) => {
     }
 }
 
-export const updateProfilePicture = async (req: Request, res: Response) => {
+export const updateProfilePictureFileName = async (req: Request, res: Response) => {
     const {
         USER_ID: userId,
         USER_PROFILE_PICTURE_FILE_NAME: profilePictureFileName

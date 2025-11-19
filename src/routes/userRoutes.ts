@@ -9,7 +9,7 @@ router.post('/create', userController.createUser);
 
 router.put('/:userId', userController.updateUser);
 
-router.patch('/profile-picture-file-name', userController.updateProfilePicture);
+router.patch('/profile-picture-file-name', userController.updateProfilePictureFileName);
 
 router.delete('/:userId', userController.deleteUser);
 

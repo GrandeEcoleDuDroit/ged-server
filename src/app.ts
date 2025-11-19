@@ -1,4 +1,3 @@
-import dotenv from 'dotenv';
 import './instrument.js'
 import express from 'express';
 import type { Request, Response } from 'express';
@@ -11,18 +10,15 @@ import { d } from '@utils/logs';
 import OracleApi from '@api/oracleApi';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { PORT, NODE_ENV, SSL_KEY_PATH, SSL_CERT_PATH } from './env'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const oracleApi = OracleApi.instance;
 
-dotenv.config();
 const app = express();
 
-const productionEnvironment = process.env.NODE_ENV == 'production';
-const PORT = process.env.PORT || 3000;
-const sslKeyPath = process.env.SSL_KEY_PATH as string;
-const sslCertPath = process.env.SSL_CERT_PATH as string;
+const productionEnvironment = NODE_ENV == 'production';
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (_: Request, res: Response) => {
@@ -36,8 +32,8 @@ app.use(routes);
 if (productionEnvironment) {
     setupExpressErrorHandler(app);
     const sslOptions = {
-        key: fs.readFileSync(sslKeyPath),
-        cert: fs.readFileSync(sslCertPath)
+        key: fs.readFileSync(SSL_KEY_PATH as string),
+        cert: fs.readFileSync(SSL_CERT_PATH as string)
     };
 
     https.createServer(sslOptions, app).listen(PORT, () => {

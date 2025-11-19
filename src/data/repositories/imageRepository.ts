@@ -2,19 +2,19 @@ import ociCommon from 'oci-common';
 import ociObjectStorage from 'oci-objectstorage';
 import {GetObjectRequest, PutObjectRequest} from "oci-objectstorage/lib/request";
 import {Readable} from "stream";
+import { OBJECT_STORAGE_NAMESPACE, OBJECT_STORAGE_BUCKET_NAME } from '@root/src/env';
 
 const provider = new ociCommon.ConfigFileAuthenticationDetailsProvider();
-const namespaceName = process.env.OBJECT_STORAGE_NAMESPACE;
-const bucketName = process.env.OBJECT_STORAGE_BUCKET_NAME;
+
 const client = new ociObjectStorage.ObjectStorageClient({
     authenticationDetailsProvider: provider
 });
 
 export default class ImageRepository {
-    async downloadImage(fileName: string){
+    async downloadImage(fileName: string) {
         const request = {
-            namespaceName: namespaceName,
-            bucketName: bucketName,
+            namespaceName: OBJECT_STORAGE_NAMESPACE,
+            bucketName: OBJECT_STORAGE_BUCKET_NAME,
             objectName: fileName
         };
 
@@ -23,8 +23,8 @@ export default class ImageRepository {
 
     async deleteImage(fileName: string) {
         const request = {
-            namespaceName: namespaceName,
-            bucketName: bucketName,
+            namespaceName: OBJECT_STORAGE_NAMESPACE,
+            bucketName: OBJECT_STORAGE_BUCKET_NAME,
             objectName: fileName
         };
 
@@ -33,8 +33,8 @@ export default class ImageRepository {
 
     async uploadImage(fileStream: Readable, fileName: string, contentLength: number) {
         const request = {
-            namespaceName: namespaceName,
-            bucketName: bucketName,
+            namespaceName: OBJECT_STORAGE_NAMESPACE,
+            bucketName: OBJECT_STORAGE_BUCKET_NAME,
             objectName: fileName,
             putObjectBody: fileStream,
             contentLength: contentLength

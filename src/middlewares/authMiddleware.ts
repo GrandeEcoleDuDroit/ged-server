@@ -7,7 +7,7 @@ const firebaseApi = new FirebaseApi();
 export const verifyAuthIdToken = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
 
-    if (authHeader != null || !authHeader!!.startsWith('Bearer ')) {
+    if (authHeader == null || !authHeader!!.startsWith('Bearer ')) {
         const serverResponse = {
             message: 'Invalid or malformed token',
             error : "Auth header required"

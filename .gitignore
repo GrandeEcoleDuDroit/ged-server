@@ -1,5 +1,5 @@
 node_modules/
-config.json
+dbConfig.json
 .env
 firebase_staging_key.json
 firebase_credentials.json
