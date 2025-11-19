@@ -3,6 +3,8 @@ const getMissionQueries = require('@queries/mission/getMissionQueries');
 const createMissionQuery = require('@queries/mission/createMissionQueries');
 const updateMissionQueries = require('@queries/mission/updateMissionQueries');
 const deleteMissionQueries = require('@queries/mission/deleteMissionQueries');
+const addParticipantMissionQueries = require('@queries/mission/addParticipantMissionQueries');
+const removeParticipantQueries = require('@queries/mission/removeParticipantQueries');
 const { sendMail } = require('@api/googleApi');
 
 class MissionRepository {
@@ -84,6 +86,22 @@ class MissionRepository {
          `;
 
         await sendMail(subject, html);
+    }
+
+    async addParticipant(missionId, userId) {
+        await oracleApi.execute(
+            addParticipantMissionQueries.participantQuery,
+            addParticipantMissionQueries.participantBinds(missionId, userId),
+            { autoCommit: true }
+        );
+    }
+
+    async removeParticipant(missionId, userId) {
+        await oracleApi.execute(
+            removeParticipantQueries.participantQuery,
+            removeParticipantQueries.participantBinds(missionId, userId),
+            { autoCommit: true }
+        );
     }
 }
 

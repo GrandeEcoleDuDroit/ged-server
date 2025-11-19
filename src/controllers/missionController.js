@@ -1,7 +1,7 @@
 const { e } = require('@utils/logs');
-const Mission = require('@models/mission');
-const MissionTask = require('@models/missionTask');
-const MissionReport = require('@models/missionReport');
+const Mission = require('@models/missions/mission');
+const MissionTask = require('@models/missions/missionTask');
+const MissionReport = require('@models/missions/missionReport');
 const missionRepository = require("@repositories/missionRepository");
 const imageRepository = require("@repositories/imageRepository");
 const formatOracleError = require("@utils/exceptionUtils")
@@ -197,8 +197,8 @@ const updateMission = async (req, res) => {
 }
 
 const deleteMission = async (req, res) => {
-    const missionId = req.body.missionId;
-    const missionImageFileName = req.body.imageFileName;
+    const missionId = req.body.MISSION_ID;
+    const missionImageFileName = req.body.MISSION_IMAGE_FILE_NAME;
 
     try {
         await missionRepository.deleteMission(missionId);
@@ -253,10 +253,57 @@ const reportMission = async (req, res) => {
         };
 
         res.status(200).json(serverResponse);
-    }
-    catch (error) {
+    } catch (error) {
         const serverResponse = {
             message: 'Error reporting mission',
+            error: error.message
+        };
+
+        e(serverResponse.message, error);
+        res.status(500).json(serverResponse);
+    }
+}
+
+const addParticipant = async (req, res) => {
+    const {
+        MISSION_ID: missionId,
+        USER_ID: userId
+    } = req.body;
+
+    try {
+        await missionRepository.addParticipant(missionId, userId);
+        const serverResponse = {
+            message: `Participant has been added successfully`
+        };
+
+        res.status(200).json(serverResponse);
+    } catch (error) {
+        const serverResponse = {
+            message: 'Error adding participant to mission',
+            error: error.message
+        };
+
+        e(serverResponse.message, error);
+        res.status(500).json(serverResponse);
+    }
+}
+
+const removeParticipant = async (req, res) => {
+    const {
+        MISSION_ID: missionId,
+        USER_ID: userId
+    } = req.body;
+
+    try {
+        await missionRepository.removeParticipant(missionId, userId);
+        const serverResponse = {
+            message: `Participant has been removed successfully`
+        };
+
+        res.status(200).json(serverResponse);
+    } catch (error) {
+        const serverResponse = {
+            message: 'Error removing participant from mission',
             error: error.message
         };
 
@@ -270,5 +317,7 @@ module.exports = {
     createMission,
     updateMission,
     deleteMission,
-    reportMission
+    reportMission,
+    addParticipant,
+    removeParticipant
 }
