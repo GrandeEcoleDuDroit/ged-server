@@ -202,6 +202,20 @@ export const deleteMission = async (req: Request, res: Response) => {
     const missionId = req.body.MISSION_ID;
     const missionImageFileName = req.body.MISSION_IMAGE_FILE_NAME;
 
+    if(!missionId) {
+        const serverResponse = {
+            message: "Error to delete mission",
+            error: `
+            Some missing mission fields : 
+            {
+                missionId: ${missionId},
+            `
+        };
+
+        e(serverResponse.message, new Error(serverResponse.error));
+        return res.status(400).json(serverResponse);
+    }
+
     try {
         await missionRepository.deleteMission(missionId);
         if (missionImageFileName) {

@@ -80,6 +80,18 @@ export default class MissionRepository {
             deleteMissionQueries.deleteMissionBinds(missionId),
             { autoCommit: true }
         );
+
+        await oracleApi.execute(
+            updateMissionQueries.deleteMissionManagerQuery,
+            updateMissionQueries.deleteMissionManagerBinds(missionId),
+            { autoCommit: true }
+        );
+
+        await oracleApi.execute(
+            updateMissionQueries.deleteMissionTaskQuery,
+            updateMissionQueries.deleteMissionTaskBinds(missionId),
+            { autoCommit: true }
+        );
     }
 
     async reportMission(report: MissionReport) {
