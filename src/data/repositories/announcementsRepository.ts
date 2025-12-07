@@ -98,8 +98,8 @@ export default class AnnouncementsRepository {
         const subject = `Announcement report: ${report.announcementId}`;
         const html = `
            <p>The announcement ${report.announcementId} has been reported</p>
-           <p>Announcement author: ${report.authorInfo.fullName} - <b>${report.authorInfo.email}</b></p>
-           <p>Reported by: ${report.userInfo.fullName} - <b>${report.userInfo.email}</b></p>
+           <p>Announcement author: ${report.author.fullName} - <b>${report.author.email}</b></p>
+           <p>Reported by: ${report.reporter.fullName} - <b>${report.reporter.email}</b></p>
            <p>Reason: ${report.reason}</p>
          `;
 

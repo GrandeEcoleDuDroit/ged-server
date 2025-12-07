@@ -9,6 +9,6 @@ router.get('/:fileName', imageController.downloadImage);
 
 router.post('/upload', upload.single('image'), imageController.uploadImage);
 
-router.delete('/:fileName', imageController.deleteImage);
+router.post('/delete', imageController.deleteImage);
 
 export default router;

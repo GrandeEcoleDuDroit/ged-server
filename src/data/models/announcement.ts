@@ -8,12 +8,17 @@ export type Announcement = {
 
 export type AnnouncementReport = {
     readonly announcementId: string;
-    readonly authorInfo: UserInfo;
-    readonly userInfo: UserInfo;
+    readonly author: Author;
+    readonly reporter: Reporter;
     readonly reason: string;
 }
 
-type UserInfo = {
+type Author = {
+    readonly fullName: string,
+    readonly email: string
+}
+
+type Reporter = {
     readonly fullName: string,
     readonly email: string
 }

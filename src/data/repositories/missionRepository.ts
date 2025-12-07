@@ -98,7 +98,7 @@ export default class MissionRepository {
         const subject = `Mission report: ${report.missionId}`;
         const html = `
            <p>The mission ${report.missionId} has been reported</p>
-           <p>Reported by: ${report.userInfo.fullName} - <b>${report.userInfo.email}</b></p>
+           <p>Reported by: ${report.reporter.fullName} - <b>${report.reporter.email}</b></p>
            <p>Reason: ${report.reason}</p>
          `;
 

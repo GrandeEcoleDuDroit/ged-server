@@ -1,11 +1,11 @@
 export type MessageReport = {
     readonly conversationId: string;
     readonly messageId: string;
-    readonly recipientInfo: UserInfo;
+    readonly recipient: Recipient;
     readonly reason: string;
 }
 
-type UserInfo = {
+type Recipient = {
     readonly fullName: string,
     readonly email: string
 }

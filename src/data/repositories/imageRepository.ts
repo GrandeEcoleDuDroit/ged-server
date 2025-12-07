@@ -11,31 +11,31 @@ const client = new ociObjectStorage.ObjectStorageClient({
 });
 
 export default class ImageRepository {
-    async downloadImage(fileName: string) {
+    async downloadImage(imagePath: string) {
         const request = {
             namespaceName: OBJECT_STORAGE_NAMESPACE,
             bucketName: OBJECT_STORAGE_BUCKET_NAME,
-            objectName: fileName
+            objectName: imagePath
         };
 
         return await client.getObject(request as GetObjectRequest);
     }
 
-    async deleteImage(fileName: string) {
+    async deleteImage(imagePath: string) {
         const request = {
             namespaceName: OBJECT_STORAGE_NAMESPACE,
             bucketName: OBJECT_STORAGE_BUCKET_NAME,
-            objectName: fileName
+            objectName: imagePath
         };
 
         return await client.deleteObject(request as GetObjectRequest);
     }
 
-    async uploadImage(fileStream: Readable, fileName: string, contentLength: number) {
+    async uploadImage(fileStream: Readable, imagePath: string, contentLength: number) {
         const request = {
             namespaceName: OBJECT_STORAGE_NAMESPACE,
             bucketName: OBJECT_STORAGE_BUCKET_NAME,
-            objectName: fileName,
+            objectName: imagePath,
             putObjectBody: fileStream,
             contentLength: contentLength
         };

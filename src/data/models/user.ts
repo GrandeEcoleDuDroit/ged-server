@@ -11,13 +11,18 @@ export type User = {
 }
 
 export type UserReport = {
-    readonly userId: string;
-    readonly userInfo: UserInfo;
-    readonly reporterInfo: UserInfo;
+    readonly reportedUser: ReportedUser;
+    readonly reporter: Reporter;
     readonly reason: string;
 }
 
-type UserInfo = {
+type ReportedUser = {
+    readonly id: string;
+    readonly fullName: string,
+    readonly email: string
+}
+
+type Reporter = {
     readonly fullName: string,
     readonly email: string
 }

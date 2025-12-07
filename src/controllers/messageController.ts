@@ -7,13 +7,13 @@ const messageRepository = new MessageRepository();
 
 export const reportMessage = async (req: Request, res: Response) => {
     const {
-        conversationId,
-        messageId,
-        recipientInfo,
-        reason
+        conversationId: conversationId,
+        messageId: messageId,
+        recipient: recipient,
+        reason: reason
     } = req.body;
 
-    if (!conversationId || !messageId || !recipientInfo || !reason) {
+    if (!conversationId || !messageId || !recipient || !reason) {
         const serverResponse = {
             message: "Error reporting message",
             error: `
@@ -21,7 +21,7 @@ export const reportMessage = async (req: Request, res: Response) => {
             {
                 conversationId: ${conversationId},
                 messageId: ${messageId},
-                recipientInfo: ${recipientInfo},
+                recipient: ${recipient},
                 reason: ${reason},
             }
             `
@@ -32,12 +32,17 @@ export const reportMessage = async (req: Request, res: Response) => {
         return;
     }
 
-    const report: MessageReport = { conversationId, messageId, recipientInfo, reason };
+    const report: MessageReport = {
+        conversationId: conversationId,
+        messageId: messageId,
+        recipient: recipient,
+        reason: reason
+    };
 
     try {
         await messageRepository.reportMessage(report);
         const serverResponse = {
-            message: `Message ${messageId} of ${recipientInfo.fullName} has been reported successfully`
+            message: `Message ${messageId} of ${report.recipient.fullName} has been reported successfully`
         };
 
         res.status(200).json(serverResponse);

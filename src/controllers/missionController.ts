@@ -26,6 +26,7 @@ export const getMissions = async (_: Request, res: Response) => {
 
 export const createMission = async (req: Request, res: Response) => {
     const missionJson = req.body.mission;
+    const imagePath = req.body.imagePath;
     const imageFile = req.file;
     const {
         MISSION_ID: id,
@@ -92,10 +93,10 @@ export const createMission = async (req: Request, res: Response) => {
         const missionManagerIds: string[] = JSON.parse(managerIds);
 
         await missionRepository.createMission(mission, missionManagerIds, missionTasks);
-        if (imageFile) {
+        if (imageFile && imagePath) {
             await imageRepository.uploadImage(
                 Readable.from(imageFile.buffer),
-                imageFile.originalname,
+                imagePath,
                 imageFile.size
             );
         }
@@ -114,6 +115,7 @@ export const createMission = async (req: Request, res: Response) => {
 
 export const updateMission = async (req: Request, res: Response) => {
     const missionJson = req.body.mission;
+    const imagePath = req.body.imagePath;
     const imageFile = req.file;
     const {
         MISSION_ID: id,
@@ -178,10 +180,10 @@ export const updateMission = async (req: Request, res: Response) => {
         const missionManagerIds: string[] = JSON.parse(managerIds);
 
         await missionRepository.updateMission(mission, missionManagerIds, missionTasks);
-        if (imageFile) {
+        if (imageFile && imagePath) {
             await imageRepository.uploadImage(
                 Readable.from(imageFile.buffer),
-                imageFile.originalname,
+                imagePath,
                 imageFile.size
             );
         }
@@ -200,7 +202,7 @@ export const updateMission = async (req: Request, res: Response) => {
 
 export const deleteMission = async (req: Request, res: Response) => {
     const missionId = req.body.MISSION_ID;
-    const missionImageFileName = req.body.MISSION_IMAGE_FILE_NAME;
+    const imagePath = req.body.imagePath;
 
     if(!missionId) {
         const serverResponse = {
@@ -218,11 +220,11 @@ export const deleteMission = async (req: Request, res: Response) => {
 
     try {
         await missionRepository.deleteMission(missionId);
-        if (missionImageFileName) {
+        if (imagePath) {
             try {
-                await imageRepository.deleteImage(missionImageFileName);
+                await imageRepository.deleteImage(imagePath);
             } catch (imageError) {
-                console.error(`Erreur lors de la suppression de l'image: ${missionImageFileName}`, imageError);
+                console.error(`Failed to delete image: ${imagePath}`, imageError);
             }
         }
         const serverResponse = {
@@ -239,18 +241,18 @@ export const deleteMission = async (req: Request, res: Response) => {
 export const reportMission = async (req: Request, res: Response) => {
     const {
         missionId: missionId,
-        userInfo: userInfo,
+        reporter: reporter,
         reason: reason
     } = req.body;
 
-    if(!missionId || !userInfo || !reason) {
+    if(!missionId || !reporter || !reason) {
         const serverResponse = {
             message: "Error to report announcement",
             error: `
             Some missing report fields :
             {
                 missionId: ${missionId},
-                userInfo: ${userInfo},
+                reporter: ${reporter},
                 reason: ${reason},
             }
             `
@@ -260,7 +262,11 @@ export const reportMission = async (req: Request, res: Response) => {
         return res.status(400).json(serverResponse);
     }
 
-    const report: MissionReport = { missionId, userInfo, reason };
+    const report: MissionReport = {
+        missionId: missionId,
+        reporter: reporter,
+        reason: reason
+    };
 
     try {
         await missionRepository.reportMission(report);

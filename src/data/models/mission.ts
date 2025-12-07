@@ -18,7 +18,7 @@ export type MissionTask = {
 
 export type MissionReport = {
     readonly missionId: string;
-    readonly userInfo: UserInfo;
+    readonly reporter: UserInfo;
     readonly reason: string;
 }
 

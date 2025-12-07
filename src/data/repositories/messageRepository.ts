@@ -6,7 +6,7 @@ export default class MessageRepository {
         const subject = `Message report: ${report.messageId}`;
         const html = `
            <p>The message ${report.messageId} of conversation ${report.conversationId} has been reported</p>
-           <p>Message author: ${report.recipientInfo.fullName} - <b>${report.recipientInfo.email}</b></p>
+           <p>Message author: ${report.recipient.fullName} - <b>${report.recipient.email}</b></p>
            <p>Reason: ${report.reason}</p>
          `;
 

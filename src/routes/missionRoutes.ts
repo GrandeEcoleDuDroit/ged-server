@@ -11,7 +11,7 @@ router.get('/', missionController.getMissions);
 
 router.post('/create', upload.single('image'), missionController.createMission);
 
-router.put('/:missionId', upload.single('image'), missionController.updateMission);
+router.post('/update', upload.single('image'), missionController.updateMission);
 
 router.post('/delete', missionController.deleteMission);
 

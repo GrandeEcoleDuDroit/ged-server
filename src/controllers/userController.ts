@@ -218,21 +218,19 @@ export const deleteProfilePicture = async (req: Request, res: Response) => {
 
 export const reportUser = async (req: Request, res: Response) => {
     const {
-        userId: userId,
-        userInfo: userInfo,
-        reporterInfo: reporterInfo,
+        reportedUser: reportedUser,
+        reporter: reporter,
         reason: reason
     } = req.body;
 
-    if (!userId || !userInfo || !reporterInfo || !reason) {
+    if (!reportedUser || !reporter || !reason) {
         const serverResponse = {
             message: "Error to report user",
             error: `
             Some missing report fields :
             {
-                userId: ${userId},
-                userInfo: ${userInfo},
-                reporterInfo: ${reporterInfo},
+                reportedUser: ${reportedUser},
+                reporter: ${reporter},
                 reason: ${reason},
             }
             `
@@ -244,14 +242,13 @@ export const reportUser = async (req: Request, res: Response) => {
 
     try {
         const report: UserReport = {
-            userId: userId,
-            userInfo: userInfo,
-            reporterInfo: reporterInfo,
+            reportedUser: reportedUser,
+            reporter: reporter,
             reason: reason
         };
         await userRepository.reportUser(report);
         const serverResponse = {
-            message: `User ${userId} has been reported successfully`
+            message: `User ${report.reportedUser.id} has been reported successfully`
         };
         res.status(200).json(serverResponse);
     } catch (error: any) {

@@ -126,17 +126,22 @@ export const deleteAnnouncement = async (req: Request, res: Response) => {
 };
 
 export const reportAnnouncement = async (req: Request, res: Response) => {
-    const { announcementId, authorInfo, userInfo, reason } = req.body;
+    const {
+        announcementId: announcementId,
+        author: author,
+        reporter: reporter,
+        reason: reason
+    } = req.body;
 
-    if (!announcementId || !authorInfo || !userInfo || !reason) {
+    if (!announcementId || !author || !reporter || !reason) {
         const serverResponse = {
             message: "Error to report announcement",
             error: `
             Some missing report fields:
             {
                 announcementId: ${announcementId},
-                authorInfo: ${authorInfo},
-                userInfo: ${userInfo},
+                author: ${author},
+                reporter: ${reporter},
                 reason: ${reason}
             }
             `
@@ -147,7 +152,12 @@ export const reportAnnouncement = async (req: Request, res: Response) => {
         return;
     }
 
-    const report: AnnouncementReport = { announcementId, authorInfo, userInfo, reason };
+    const report: AnnouncementReport = {
+        announcementId: announcementId,
+        author: author,
+        reporter: reporter,
+        reason: reason
+    };
 
     try {
         await announcementsRepository.reportAnnouncement(report);

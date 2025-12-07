@@ -6,13 +6,13 @@ import ImageRepository from '@repositories/imageRepository';
 const imageRepository = new ImageRepository();
 
 export const downloadImage = async (req: Request, res: Response) => {
-    const fileName = req.params.fileName;
+    const objectName = req.params.path;
 
     try {
-        const response = await imageRepository.downloadImage(fileName);
+        const response = await imageRepository.downloadImage(objectName);
         res.set({
             "Content-Type": response.contentType ?? "application/octet-stream",
-            "Content-Disposition": `attachment; filename="${fileName}"`,
+            "Content-Disposition": `attachment; filename="${objectName}"`,
             "Content-Length": response.contentLength ?? undefined,
             "Cache-Control": "no-store",
         });
@@ -20,7 +20,7 @@ export const downloadImage = async (req: Request, res: Response) => {
         (response.value as Readable).pipe(res);
     } catch (error: any) {
         const serverResponse = {
-            message: `Error downloading image ${fileName}`,
+            message: `Error downloading image ${objectName}`,
             error: error.message
         };
 
@@ -31,6 +31,7 @@ export const downloadImage = async (req: Request, res: Response) => {
 
 export const uploadImage = async (req: Request, res: Response) => {
     const imageFile = req.file;
+    const imagePath = req.body.imagePath;
 
     if (!imageFile) {
         const serverResponse = {
@@ -43,11 +44,10 @@ export const uploadImage = async (req: Request, res: Response) => {
         return;
     }
 
-    const fileName = imageFile.originalname;
     const fileStream = Readable.from(imageFile.buffer);
 
     try {
-        await imageRepository.uploadImage(fileStream, fileName, imageFile.size);
+        await imageRepository.uploadImage(fileStream, imagePath, imageFile.size);
         const serverResponse = {
             message: `Image uploaded successfully`
         };
@@ -55,7 +55,7 @@ export const uploadImage = async (req: Request, res: Response) => {
         res.status(200).json(serverResponse);
     } catch (error: any) {
         const serverResponse = {
-            message: `Error uploading image ${fileName}`,
+            message: `Error uploading image ${imageFile.originalname}`,
             error: error.message
         };
 
@@ -65,10 +65,10 @@ export const uploadImage = async (req: Request, res: Response) => {
 };
 
 export const deleteImage = async (req: Request, res: Response) => {
-    const fileName = req.params.fileName;
+    const imagePath = req.body.imagePath;
 
     try {
-        await imageRepository.deleteImage(fileName);
+        await imageRepository.deleteImage(imagePath);
         const serverResponse = {
             message: `Image deleted successfully`
         };
@@ -76,7 +76,7 @@ export const deleteImage = async (req: Request, res: Response) => {
         res.status(200).json(serverResponse);
     } catch (error: any) {
         const serverResponse = {
-            message: `Error deleting image ${fileName}`,
+            message: `Error deleting image ${imagePath}`,
             error: error.message
         };
 
