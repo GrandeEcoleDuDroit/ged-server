@@ -137,13 +137,13 @@ export const deleteUserAnnouncements = async (req: Request, res: Response) => {
 
 export const deleteAnnouncement = async (req: Request, res: Response) => {
     const {
-        announcementId: announcementId,
-        authorId: authorId
+        ANNOUNCEMENT_ID: announcementId,
+        USER_ID: userId
     } = req.body;
 
     const uid = req.uid
 
-    if (authorId != uid) {
+    if (userId != uid) {
         const serverResponse = {
             message: 'Error deleting announcement',
             error: 'You are not authorized to perform this action.'
@@ -154,7 +154,7 @@ export const deleteAnnouncement = async (req: Request, res: Response) => {
     }
 
     try {
-        await announcementsRepository.deleteAnnouncement(announcementId, authorId);
+        await announcementsRepository.deleteAnnouncement(announcementId, userId);
         res.status(200).json({ message: `Announcement ${announcementId} deleted successfully` });
     } catch (error: any) {
         const serverResponse = formatOracleError(error, 'Error deleting announcement');
