@@ -1,16 +1,32 @@
 import express from 'express';
 const router = express.Router();
 import * as announcementsController from '@controllers/announcementsController';
+import {propagateCustomClaims, verifyAuthIdToken, verifyCustomClaims} from "@middlewares/authMiddleware";
 
-router.get('/', announcementsController.getAnnouncements);
+router.get('/', verifyAuthIdToken, propagateCustomClaims, announcementsController.getAnnouncements);
 
-router.post('/create', announcementsController.createAnnouncement);
+router.post('/create', verifyCustomClaims((claims) => claims.admin == true), announcementsController.createAnnouncement);
 
-router.post('/update', announcementsController.updateAnnouncement);
+router.post(
+    '/update',
+    verifyCustomClaims((claims) => claims.admin == true),
+    propagateCustomClaims,
+    announcementsController.updateAnnouncement
+);
 
-router.delete('/user/:userId', announcementsController.deleteUserAnnouncements);
+router.delete(
+    '/user/:userId',
+    verifyCustomClaims((claims) => claims.admin == true),
+    propagateCustomClaims,
+    announcementsController.deleteUserAnnouncements
+);
 
-router.delete('/:id', announcementsController.deleteAnnouncement);
+router.delete(
+    "/",
+    verifyCustomClaims((claims) => claims.admin == true),
+    propagateCustomClaims,
+    announcementsController.deleteAnnouncement
+);
 
 router.post('/report', announcementsController.reportAnnouncement);
 
