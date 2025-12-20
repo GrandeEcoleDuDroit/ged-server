@@ -1,9 +1,12 @@
 import express from 'express';
 const router = express.Router();
+import {verifyAuthIdToken, propagateCustomClaims} from '@middlewares/authMiddleware';
 
 import * as userController from '@controllers/userController';
 
-router.get('/:userId', userController.getUser);
+router.get('/', propagateCustomClaims, userController.getUsers);
+
+router.get('/:userId', propagateCustomClaims, userController.getUser);
 
 router.post('/create', userController.createUser);
 

@@ -7,14 +7,33 @@ import {Result} from "oracledb";
 const oracleApi = OracleApi.instance;
 
 export default class UserRepository {
-    async getUser(userId: string): Promise<User | null> {
+    async getUsers(tester: boolean): Promise<User[]> {
+        const testerSqlValue = tester ? 1 : 0;
+
         const query = `
             SELECT JSON_OBJECT(*) 
             FROM ${UserField.TABLE_NAME}
-            WHERE ${UserField.USER_ID} = :user_id
+            WHERE ${UserField.USER_TESTER} = :testerSqlValue
         `;
 
-        const binds = { user_id: userId };
+        const binds = { testerSqlValue: testerSqlValue };
+        const result = await oracleApi.execute(query, binds);
+        return result.rows?.map(row =>
+            JSON.parse(row as [string][0]) as User
+        ) ?? [];
+    }
+
+    async getUser(userId: string, tester: boolean): Promise<User | null> {
+        const testerSqlValue = tester ? 1 : 0;
+
+        const query = `
+            SELECT JSON_OBJECT(*) 
+            FROM ${UserField.TABLE_NAME}
+            WHERE ${UserField.USER_ID} = :user_id 
+              AND ${UserField.USER_TESTER} = :testerSqlValue
+        `;
+
+        const binds = { user_id: userId, testerSqlValue: testerSqlValue };
         const result = await oracleApi.execute(query, binds) as Result<string[]>;
         return JSON.parse(result.rows?.[0]?.[0] ?? '');
     }
