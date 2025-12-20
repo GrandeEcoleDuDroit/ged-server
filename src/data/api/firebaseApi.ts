@@ -3,6 +3,7 @@ import {Message} from "firebase-admin/messaging";
 import type FcmToken from '@models/fcmToken';
 import {FcmMessage} from "@models/fcmMessage";
 import serviceAccount from '@root/firebase_credentials.json';
+import {Auth} from "firebase-admin/auth";
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount as ServiceAccount)
@@ -53,9 +54,7 @@ export default class FirebaseApi {
             .send(message)
     }
 
-    async verifyAuthIdToken(token: string) {
-        await admin
-            .auth()
-            .verifyIdToken(token);
+    getAuth(): Auth {
+        return admin.auth()
     }
 }

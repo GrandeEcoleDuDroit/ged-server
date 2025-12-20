@@ -8,11 +8,25 @@ import { formatOracleError } from '@utils/exceptionUtils';
 const userRepository = new UserRepository();
 const whiteListRepository = new WhiteListRepository();
 
-export const getUser = async (req: Request, res: Response) => {
-    const userId = req.params.userId;
+export const getUsers = async (req: Request, res: Response) => {
+    const tester = req.claims?.tester ?? false;
 
     try {
-        const user = await userRepository.getUser(userId);
+        const user = await userRepository.getUsers(tester);
+        res.status(200).json(user);
+    } catch (error: any) {
+        const serverResponse = formatOracleError(error, 'Error getting users');
+        e(serverResponse.message, error);
+        res.status(500).json(serverResponse);
+    }
+}
+
+export const getUser = async (req: Request, res: Response) => {
+    const userId = req.body.userId;
+    const tester = req.claims?.tester ?? false;
+
+    try {
+        const user = await userRepository.getUser(userId, tester);
         res.status(200).json(user);
     } catch (error: any) {
         const serverResponse = formatOracleError(error, 'Error getting user');
@@ -96,7 +110,7 @@ export const updateUser = async (req: Request, res: Response) => {
         USER_ADMIN: admin,
         USER_PROFILE_PICTURE_FILE_NAME: profilePictureFileName,
         USER_STATE: state,
-        USER_TESTER: tester,
+        USER_TESTER: tester
     } = req.body;
 
     if (
