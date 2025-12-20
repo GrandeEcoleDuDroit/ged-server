@@ -81,14 +81,16 @@ export default class AnnouncementsRepository {
         return await oracleApi.execute(query, binds, { autoCommit: true });
     }
 
-    async deleteAnnouncement(announcementId: string) {
+    async deleteAnnouncement(announcementId: string, userId: string) {
         const query = `
             DELETE FROM ${AnnouncementField.TABLE_NAME}
-            WHERE ${AnnouncementField.ANNOUNCEMENT_ID} = :announcement_id
+            WHERE ${AnnouncementField.ANNOUNCEMENT_ID} = :announcement_id 
+              AND ${AnnouncementField.USER_ID} = :user_id
         `;
 
         const binds = {
-            announcement_id: announcementId
+            announcement_id: announcementId,
+            user_id: userId
         };
 
         return await oracleApi.execute(query, binds, { autoCommit: true });

@@ -154,7 +154,7 @@ export const deleteAnnouncement = async (req: Request, res: Response) => {
     }
 
     try {
-        await announcementsRepository.deleteAnnouncement(announcementId);
+        await announcementsRepository.deleteAnnouncement(announcementId, authorId);
         res.status(200).json({ message: `Announcement ${announcementId} deleted successfully` });
     } catch (error: any) {
         const serverResponse = formatOracleError(error, 'Error deleting announcement');
