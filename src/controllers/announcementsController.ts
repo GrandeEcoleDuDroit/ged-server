@@ -69,6 +69,18 @@ export const updateAnnouncement = async (req: Request, res: Response) => {
         USER_ID: userId
     } = req.body;
 
+    const uid = req.uid
+
+    if (userId != uid) {
+        const serverResponse = {
+            message: 'Error updating announcement',
+            error: 'You are not authorized to perform this action.'
+        };
+
+        e(serverResponse.message, new Error(serverResponse.error));
+        return res.status(403).json(serverResponse);
+    }
+
     if (!id || !content || !date || !userId) {
         const serverResponse = {
             message: "Error to update announcement",
@@ -101,6 +113,17 @@ export const updateAnnouncement = async (req: Request, res: Response) => {
 
 export const deleteUserAnnouncements = async (req: Request, res: Response) => {
     const userId = req.params.userId;
+    const uid = req.uid
+
+    if (userId != uid) {
+        const serverResponse = {
+            message: 'Error deleting user announcement',
+            error: 'You are not authorized to perform this action.'
+        };
+
+        e(serverResponse.message, new Error(serverResponse.error));
+        return res.status(403).json(serverResponse);
+    }
 
     try {
         await announcementsRepository.deleteUserAnnouncements(userId);
@@ -113,7 +136,22 @@ export const deleteUserAnnouncements = async (req: Request, res: Response) => {
 };
 
 export const deleteAnnouncement = async (req: Request, res: Response) => {
-    const announcementId = req.params.announcementId;
+    const {
+        announcementId: announcementId,
+        authorId: authorId
+    } = req.body;
+
+    const uid = req.uid
+
+    if (authorId != uid) {
+        const serverResponse = {
+            message: 'Error deleting announcement',
+            error: 'You are not authorized to perform this action.'
+        };
+
+        e(serverResponse.message, new Error(serverResponse.error));
+        return res.status(403).json(serverResponse);
+    }
 
     try {
         await announcementsRepository.deleteAnnouncement(announcementId);
