@@ -5,7 +5,11 @@ import {propagateCustomClaims, verifyAuthIdToken, verifyCustomClaims} from "@mid
 
 router.get('/', verifyAuthIdToken, propagateCustomClaims, announcementsController.getAnnouncements);
 
-router.post('/create', verifyCustomClaims((claims) => claims.admin == true), announcementsController.createAnnouncement);
+router.post(
+    '/create',
+    verifyCustomClaims((claims) => claims.admin == true),
+    announcementsController.createAnnouncement
+);
 
 router.post(
     '/update',
@@ -21,8 +25,8 @@ router.delete(
     announcementsController.deleteUserAnnouncements
 );
 
-router.delete(
-    "/",
+router.post(
+    "/delete",
     verifyCustomClaims((claims) => claims.admin == true),
     propagateCustomClaims,
     announcementsController.deleteAnnouncement
