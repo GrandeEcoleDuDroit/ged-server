@@ -1,7 +1,8 @@
 import express from 'express';
-const router = express.Router();
 import * as announcementsController from '@controllers/announcementsController';
 import {propagateCustomClaims, verifyAuthIdToken, verifyCustomClaims} from "@middlewares/authMiddleware";
+
+const router = express.Router();
 
 router.get('/', verifyAuthIdToken, propagateCustomClaims, announcementsController.getAnnouncements);
 
