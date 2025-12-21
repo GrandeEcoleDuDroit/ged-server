@@ -17,6 +17,6 @@ router.use('/announcements', announcementsRoutes);
 router.use('/fcm', verifyAuthIdToken, fcmRoutes);
 router.use('/white-list', whiteListRoutes);
 router.use('/messages', verifyAuthIdToken, messageRoutes);
-router.use('/missions', verifyAuthIdToken, missionRoutes);
+router.use('/missions', missionRoutes);
 
 export default router;

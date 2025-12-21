@@ -63,3 +63,38 @@ export const verifyAddParticipantValidity = (req: Request, res: Response, next: 
 
     next();
 }
+
+export const verifyRemoveParticipantValidity = (req: Request, res: Response, next: NextFunction) => {
+    const {
+        MISSION_ID: missionId,
+        USER_ID: userId
+    } = req.body;
+
+    if (!missionId || !userId) {
+        const serverResponse = {
+            message: "Error removing participant from mission",
+            error: `
+            Some missing register fields :
+            {
+                missionId: ${missionId},
+                userId: ${userId}
+            }
+            `
+        }
+
+        e(serverResponse.message, new Error(serverResponse.error));
+        return res.status(400).json(serverResponse);
+    }
+
+    if (userId == req.uid || req.claims?.admin == true) {
+        next();
+    } else {
+        const serverResponse = {
+            message: 'You are not authorized to perform this action.',
+            error : 'Error removing participant'
+        };
+
+        e(serverResponse.message, new Error(serverResponse.error));
+        return res.status(400).json(serverResponse);
+    }
+}
