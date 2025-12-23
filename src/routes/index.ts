@@ -11,7 +11,7 @@ import missionRoutes from '@routes/missionRoutes';
 
 const router = express.Router();
 
-router.use('/users', verifyAuthIdToken, userRoutes);
+router.use('/users', userRoutes);
 router.use('/image', verifyAuthIdToken, imageRoutes);
 router.use('/announcements', announcementsRoutes);
 router.use('/fcm', verifyAuthIdToken, fcmRoutes);

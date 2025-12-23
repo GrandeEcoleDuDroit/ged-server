@@ -22,7 +22,7 @@ export const getUsers = async (req: Request, res: Response) => {
 }
 
 export const getUser = async (req: Request, res: Response) => {
-    const userId = req.body.userId;
+    const userId = req.params.userId;
     const tester = req.claims?.tester ?? false;
 
     try {
@@ -45,16 +45,6 @@ export const createUser = async (req: Request, res: Response) => {
         USER_STATE: state
     } = req.body;
 
-    if (id != req.uid) {
-        const serverResponse = {
-            message: 'Error creating user',
-            error: 'You are not authorized to perform this action.'
-        };
-
-        e(serverResponse.message, new Error(serverResponse.error));
-        return res.status(403).json(serverResponse);
-    }
-
     if (!id || !firstName || !lastName || !email || !schoolLevel || !state) {
         const serverResponse = {
             message: 'Error creating user',
@@ -76,7 +66,7 @@ export const createUser = async (req: Request, res: Response) => {
 
     try {
         const user: User = {
-            id: id,
+            userId: id,
             firstName: firstName,
             lastName: lastName,
             email: email,
@@ -100,7 +90,7 @@ export const createUser = async (req: Request, res: Response) => {
 
         await userRepository.createUser(user);
         const serverResponse = {
-            message: `User ${user.firstName} ${user.lastName} created successfully.`
+            message: `User ${user.firstName} ${user.lastName} has been created successfully.`
         };
         res.status(201).json(serverResponse);
     } catch (error: any) {
@@ -122,16 +112,6 @@ export const updateUser = async (req: Request, res: Response) => {
         USER_STATE: state,
         USER_TESTER: tester
     } = req.body;
-
-    if (id != req.uid) {
-        const serverResponse = {
-            message: 'Error updating user',
-            error: 'You are not authorized to perform this action.'
-        };
-
-        e(serverResponse.message, new Error(serverResponse.error));
-        return res.status(403).json(serverResponse);
-    }
 
     if (
         id == null ||
@@ -165,7 +145,7 @@ export const updateUser = async (req: Request, res: Response) => {
 
     try {
         const user: User = {
-            id: id,
+            userId: id,
             firstName: firstName,
             lastName: lastName,
             email: email,
@@ -195,16 +175,6 @@ export const updateProfilePictureFileName = async (req: Request, res: Response) 
         USER_PROFILE_PICTURE_FILE_NAME: profilePictureFileName
     } = req.body;
 
-    if(userId != req.uid) {
-        const serverResponse = {
-            message: 'Error updating profile picture file name',
-            error: `You are not authorized to perform this action.`
-        };
-
-        e(serverResponse.message, new Error(serverResponse.error));
-        return res.status(403).json(serverResponse);
-    }
-
     if(!profilePictureFileName && !userId) {
         const serverResponse = {
             message: 'Error updating profile picture file name',
@@ -232,31 +202,7 @@ export const updateProfilePictureFileName = async (req: Request, res: Response) 
     }
 }
 
-export const deleteUser = async (req: Request, res: Response) => {
-    const userId = req.params.userId;
-
-    if(userId != req.uid) {
-        const serverResponse = {
-            message: 'Error deleting user',
-            error: 'You are not authorized to perform this action.'
-        };
-
-        e(serverResponse.message, new Error(serverResponse.error));
-        return res.status(403).json(serverResponse);
-    }
-
-    try {
-        await userRepository.deleteUser(userId);
-        const serverResponse = { message: `User deleted successfully` };
-        res.status(200).json(serverResponse);
-    } catch (error: any) {
-        const serverResponse = formatOracleError(error, 'Error deleting user');
-        e(serverResponse.message, error);
-        res.status(500).json(serverResponse);
-    }
-}
-
-export const deleteProfilePicture = async (req: Request, res: Response) => {
+export const deleteProfilePictureFileName = async (req: Request, res: Response) => {
     const userId = req.params.userId;
 
     try {

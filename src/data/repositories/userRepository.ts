@@ -1,22 +1,26 @@
 import OracleApi from '@api/oracleApi';
 import { sendMail } from '@api/googleApi';
-import UserField from '@fields/userField';
 import type { User, UserReport } from '@models/user';
 import {Result} from "oracledb";
+import FirebaseApi from "@api/firebaseApi";
+import * as getUsersQuery from '@queries/user/getUsersQuery';
+import * as getUserQuery from '@queries/user/getUserQuery';
+import * as createUserQuery from '@queries/user/createUserQuery';
+import * as updateUserQuery from '@queries/user/updateUserQuery';
+import * as updateProfilePictureFileNameQuery from '@queries/user/updateProfilePictureFileNameQuery';
+import * as deleteProfilePictureFileNameQuery from '@queries/user/deleteProfilePictureFileNameQuery';
+import {FieldValue} from 'firebase-admin/firestore';
+import {toFirestoreUser} from "@data/mappers/userMapper";
 
 const oracleApi = OracleApi.instance;
+const firebaseApi = new FirebaseApi();
+
+const userCollection = 'users';
 
 export default class UserRepository {
     async getUsers(tester: boolean): Promise<User[]> {
-        const testerSqlValue = tester ? 1 : 0;
-
-        const query = `
-            SELECT JSON_OBJECT(*) 
-            FROM ${UserField.TABLE_NAME}
-            WHERE ${UserField.USER_TESTER} = :testerSqlValue
-        `;
-
-        const binds = { testerSqlValue: testerSqlValue };
+        const query = getUsersQuery.query;
+        const binds = getUsersQuery.binds(tester ? 1 : 0)
         const result = await oracleApi.execute(query, binds);
         return result.rows?.map(row =>
             JSON.parse(row as [string][0]) as User
@@ -24,125 +28,56 @@ export default class UserRepository {
     }
 
     async getUser(userId: string, tester: boolean): Promise<User | null> {
-        const testerSqlValue = tester ? 1 : 0;
-
-        const query = `
-            SELECT JSON_OBJECT(*) 
-            FROM ${UserField.TABLE_NAME}
-            WHERE ${UserField.USER_ID} = :user_id 
-              AND ${UserField.USER_TESTER} = :testerSqlValue
-        `;
-
-        const binds = { user_id: userId, testerSqlValue: testerSqlValue };
+        const query = getUserQuery.query;
+        const binds = getUserQuery.binds(userId, tester ? 1 : 0);
         const result = await oracleApi.execute(query, binds) as Result<string[]>;
         return JSON.parse(result.rows?.[0]?.[0] ?? '');
     }
 
     async createUser(user: User) {
-        const query = `
-            MERGE INTO ${UserField.TABLE_NAME} U
-            USING(SELECT :user_email AS ${UserField.USER_EMAIL} FROM dual) SOURCE
-            ON (U.${UserField.USER_EMAIL} = SOURCE.${UserField.USER_EMAIL})
-            WHEN MATCHED THEN
-                UPDATE SET
-                    ${UserField.USER_ID} = :user_id,
-                    ${UserField.USER_FIRST_NAME} = :user_first_name,
-                    ${UserField.USER_LAST_NAME} = :user_last_name,
-                    ${UserField.USER_SCHOOL_LEVEL} = :user_school_level,
-                    ${UserField.USER_STATE} = :user_state
-            WHEN NOT MATCHED THEN 
-                INSERT (
-                    ${UserField.USER_ID},
-                    ${UserField.USER_FIRST_NAME},
-                    ${UserField.USER_LAST_NAME},
-                    ${UserField.USER_EMAIL},
-                    ${UserField.USER_SCHOOL_LEVEL},
-                    ${UserField.USER_STATE}
-                ) VALUES (
-                    :user_id,
-                    :user_first_name,
-                    :user_last_name,
-                    :user_email,
-                    :user_school_level,
-                    :user_state
-                )
-        `;
+        const query = createUserQuery.query;
+        const binds = createUserQuery.binds(user);
+        const firestoreUser = toFirestoreUser(user);
 
-        const binds = {
-            user_id: user.id,
-            user_first_name: user.firstName,
-            user_last_name: user.lastName,
-            user_email: user.email,
-            user_school_level: user.schoolLevel,
-            user_state: user.state
-        };
-
-        return await oracleApi.execute(query, binds, { autoCommit: true });
+        await oracleApi.execute(query, binds, { autoCommit: true });
+        await firebaseApi.getFirestore()
+            .collection(userCollection)
+            .doc(firestoreUser.userId)
+            .set(firestoreUser);
     }
 
     async updateUser(user: User) {
-        const query = `
-            UPDATE ${UserField.TABLE_NAME}
-            SET ${UserField.USER_FIRST_NAME} = :user_first_name,
-                ${UserField.USER_LAST_NAME} = :user_last_name,
-                ${UserField.USER_EMAIL} = :user_email,
-                ${UserField.USER_SCHOOL_LEVEL} = :user_school_level,
-                ${UserField.USER_ADMIN} = :user_admin,
-                ${UserField.USER_PROFILE_PICTURE_FILE_NAME} = :user_profile_picture_file_name,
-                ${UserField.USER_STATE} = :user_state,
-                ${UserField.USER_TESTER} = :user_tester
-            WHERE ${UserField.USER_ID} = :user_id
-        `;
-
-        const binds = {
-            user_first_name: user.firstName,
-            user_last_name: user.lastName,
-            user_email: user.email,
-            user_school_level: user.schoolLevel,
-            user_admin: user.admin,
-            user_profile_picture_file_name: user.profilePictureFileName,
-            user_state: user.state,
-            user_tester: user.tester,
-            user_id: user.id
-        };
+        const query = updateUserQuery.query;
+        const binds = updateUserQuery.binds(user);
+        const firestoreUser = toFirestoreUser(user);
 
         await oracleApi.execute(query, binds, { autoCommit: true });
+        await firebaseApi.getFirestore()
+            .collection(userCollection)
+            .doc(firestoreUser.userId)
+            .set(firestoreUser, { merge: true });
     }
 
     async updateProfilePictureFileName(profilePictureFileName: string, userId: string) {
-        const query = `
-            UPDATE ${UserField.TABLE_NAME}
-            SET ${UserField.USER_PROFILE_PICTURE_FILE_NAME} = :user_profile_picture_file_name
-            WHERE ${UserField.USER_ID} = :user_id
-        `;
-
-        const binds = {
-            user_profile_picture_file_name: profilePictureFileName,
-            user_id: userId
-        };
+        const query = updateProfilePictureFileNameQuery.query;
+        const binds = updateProfilePictureFileNameQuery.binds(profilePictureFileName, userId);
 
         await oracleApi.execute(query, binds, { autoCommit: true });
-    }
-
-    async deleteUser(userId: string) {
-        const query = `
-            DELETE FROM ${UserField.TABLE_NAME}
-            WHERE ${UserField.USER_ID} = :user_id
-        `;
-
-        const binds = { user_id: userId };
-        await oracleApi.execute(query, binds, { autoCommit: true });
+        await firebaseApi.getFirestore()
+            .collection(userCollection)
+            .doc(userId)
+            .update({ profilePictureFileName: profilePictureFileName });
     }
 
     async deleteProfilePictureFileName(userId: string) {
-        const query = `
-            UPDATE ${UserField.TABLE_NAME}
-            SET ${UserField.USER_PROFILE_PICTURE_FILE_NAME} = NULL
-            WHERE ${UserField.USER_ID} = :user_id
-        `;
+        const query = deleteProfilePictureFileNameQuery.query;
+        const binds = deleteProfilePictureFileNameQuery.binds(userId);
 
-        const binds = { user_id: userId };
         await oracleApi.execute(query, binds, { autoCommit: true });
+        await firebaseApi.getFirestore()
+            .collection(userCollection)
+            .doc(userId)
+            .update({ profilePictureFileName: FieldValue.delete() });
     }
 
     async reportUser(report: UserReport) {
