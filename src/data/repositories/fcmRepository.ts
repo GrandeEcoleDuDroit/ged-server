@@ -10,7 +10,10 @@ const userDir = path.join(os.homedir(), 'gedoise-data', 'users');
 
 export default class FcmRepository {
     async upsertToken(fcmToken: FcmToken)  {
-        await firebaseApi.upsertToken(fcmToken);
+        await firebaseApi.getFirestore()
+            .collection('credentials')
+            .doc(fcmToken.userId)
+            .set(fcmToken.toJson(), { merge: true });
 
         const dirPath = path.join(userDir, `${fcmToken.userId}`);
         const filePath = path.join(dirPath, FcmToken.fileName());

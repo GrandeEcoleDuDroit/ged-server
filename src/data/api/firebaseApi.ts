@@ -1,6 +1,5 @@
 import admin, {ServiceAccount} from 'firebase-admin';
 import {Message} from "firebase-admin/messaging";
-import type FcmToken from '@models/fcmToken';
 import {FcmMessage} from "@models/fcmMessage";
 import serviceAccount from '@root/firebase_credentials.json';
 import {Auth} from "firebase-admin/auth";
@@ -10,11 +9,12 @@ admin.initializeApp({
 });
 
 export default class FirebaseApi {
-    async upsertToken(token: FcmToken) {
-        await admin.firestore()
-            .collection('credentials')
-            .doc(token.userId)
-            .set(token.toJson(), { merge: true });
+    getAuth(): Auth {
+        return admin.auth()
+    }
+
+    getFirestore(): FirebaseFirestore.Firestore {
+        return admin.firestore()
     }
 
     async sendNotification(fcmMessage: FcmMessage) {
@@ -52,9 +52,5 @@ export default class FirebaseApi {
         await admin
             .messaging()
             .send(message)
-    }
-
-    getAuth(): Auth {
-        return admin.auth()
     }
 }

@@ -3,21 +3,29 @@ const router = express.Router();
 import {verifyAuthIdToken, propagateCustomClaims} from '@middlewares/authMiddleware';
 
 import * as userController from '@controllers/userController';
+import {
+    createUserMiddleware,
+    updateProfilePictureFileNameMiddleware,
+    updateUserMiddleware
+} from "@middlewares/userMiddleware";
 
-router.get('/', propagateCustomClaims, userController.getUsers);
+router.get('/', verifyAuthIdToken, propagateCustomClaims, userController.getUsers);
 
-router.get('/:userId', propagateCustomClaims, userController.getUser);
+router.get('/:userId', verifyAuthIdToken, propagateCustomClaims, userController.getUser);
 
-router.post('/create', userController.createUser);
+router.post('/create', verifyAuthIdToken, createUserMiddleware, userController.createUser);
 
-router.put('/:userId', userController.updateUser);
+router.put('/:userId', verifyAuthIdToken, updateUserMiddleware, userController.updateUser);
 
-router.patch('/profile-picture-file-name', userController.updateProfilePictureFileName);
+router.patch(
+    '/profile-picture-file-name',
+    verifyAuthIdToken,
+    updateProfilePictureFileNameMiddleware,
+    userController.updateProfilePictureFileName
+);
 
-router.delete('/:userId', userController.deleteUser);
+router.delete('/profile-picture-file-name/:userId', verifyAuthIdToken, userController.deleteProfilePictureFileName);
 
-router.delete('/profile-picture-file-name/:userId', userController.deleteProfilePicture);
-
-router.post('/report', userController.reportUser);
+router.post('/report', verifyAuthIdToken, userController.reportUser);
 
 export default router;

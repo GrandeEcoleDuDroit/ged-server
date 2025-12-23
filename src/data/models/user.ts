@@ -1,5 +1,5 @@
-export type User = {
-    readonly id: string;
+export interface User {
+    readonly userId: string;
     readonly firstName: string;
     readonly lastName: string;
     readonly email: string;
@@ -10,19 +10,31 @@ export type User = {
     readonly tester: number;
 }
 
-export type UserReport = {
+export interface FirestoreUser {
+    readonly userId: string;
+    readonly firstName: string;
+    readonly lastName: string;
+    readonly email: string;
+    readonly schoolLevel: number;
+    readonly admin: boolean;
+    readonly profilePictureFileName: string | null;
+    readonly state: string;
+    readonly tester: boolean;
+}
+
+export interface UserReport {
     readonly reportedUser: ReportedUser;
     readonly reporter: Reporter;
     readonly reason: string;
 }
 
-type ReportedUser = {
+interface ReportedUser {
     readonly id: string;
     readonly fullName: string,
     readonly email: string
 }
 
-type Reporter = {
+interface Reporter {
     readonly fullName: string,
     readonly email: string
 }

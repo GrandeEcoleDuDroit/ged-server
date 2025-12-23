@@ -1,4 +1,4 @@
-export type Mission = {
+export interface Mission  {
     readonly id: string;
     readonly title: string;
     readonly description: string;
@@ -11,18 +11,18 @@ export type Mission = {
     readonly imageFileName: string | null;
 }
 
-export type MissionTask = {
+export interface MissionTask {
     readonly id: string;
     readonly value: string;
 }
 
-export type MissionReport = {
+export interface MissionReport {
     readonly missionId: string;
     readonly reporter: UserInfo;
     readonly reason: string;
 }
 
-type UserInfo = {
+interface UserInfo {
     readonly fullName: string,
     readonly email: string
 }
