@@ -1,32 +1,32 @@
 import { Request, Response, NextFunction } from 'express';
 import { e } from '@utils/logs';
 
-export const verifyAddParticipantValidity = (req: Request, res: Response, next: NextFunction) => {
+export const addParticipantMiddleware = (req: Request, res: Response, next: NextFunction) => {
+    const tester = req.claims?.tester ?? false;
     const {
         MISSION_ID: missionId,
         MISSION_PARTICIPANTS_NUMBER: participantsNumber,
         MISSION_MAX_PARTICIPANTS: maxParticipants,
+        MISSION_TEST: missionTest,
         USER_ID: userId,
         USER_SCHOOL_LEVEL: userSchoolLevel
     } = req.body;
-
-    let {
-        MISSION_SCHOOL_LEVELS: schoolLevels
-    } = req.body;
+    let { MISSION_SCHOOL_LEVELS: schoolLevels } = req.body;
 
     schoolLevels = schoolLevels || [];
 
     if (
         !missionId ||
+        !missionTest ||
         maxParticipants === null ||
         participantsNumber === null ||
         !userId ||
         !userSchoolLevel
     ) {
         const serverResponse = {
-            message: "Error adding participant to mission",
+            message: 'Error adding participant to mission',
             error: `
-            Some missing register fields :
+            Some missing fields :
             {
                 missionId: ${missionId},
                 maxParticipants: ${maxParticipants},
@@ -35,6 +35,16 @@ export const verifyAddParticipantValidity = (req: Request, res: Response, next: 
                 userSchoolLevel: ${userSchoolLevel}
             }
             `
+        };
+
+        e(serverResponse.message, new Error(serverResponse.error));
+        return res.status(400).json(serverResponse);
+    }
+
+    if (tester != missionTest) {
+        const serverResponse = {
+            message: 'Error adding participant to mission',
+            error : 'You are not authorized to perform this action.'
         };
 
         e(serverResponse.message, new Error(serverResponse.error));
@@ -64,23 +74,39 @@ export const verifyAddParticipantValidity = (req: Request, res: Response, next: 
     next();
 }
 
-export const verifyRemoveParticipantValidity = (req: Request, res: Response, next: NextFunction) => {
+export const removeParticipantMiddleware = (req: Request, res: Response, next: NextFunction) => {
+    const tester = req.claims?.tester ?? false;
     const {
         MISSION_ID: missionId,
+        MISSION_TEST: missionTest,
         USER_ID: userId
     } = req.body;
 
-    if (!missionId || !userId) {
+    if (
+        !missionId ||
+        !missionTest ||
+        !userId
+    ) {
         const serverResponse = {
             message: "Error removing participant from mission",
             error: `
-            Some missing register fields :
+            Some missing fields :
             {
                 missionId: ${missionId},
                 userId: ${userId}
             }
             `
         }
+
+        e(serverResponse.message, new Error(serverResponse.error));
+        return res.status(400).json(serverResponse);
+    }
+
+    if (tester != missionTest) {
+        const serverResponse = {
+            message: 'Error removing participant from mission',
+            error : 'You are not authorized to perform this action.'
+        };
 
         e(serverResponse.message, new Error(serverResponse.error));
         return res.status(400).json(serverResponse);

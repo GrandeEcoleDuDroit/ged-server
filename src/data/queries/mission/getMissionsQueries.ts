@@ -60,5 +60,10 @@ export const getMissionsQuery = `
        ),
        '${MissionField.MISSION_IMAGE_FILE_NAME}': M.MISSION_IMAGE_FILE_NAME
     ) AS MISSIONS_JSON
-    FROM ${MissionField.TABLE_NAME} M;
+    FROM ${MissionField.TABLE_NAME} M
+    WHERE ${MissionField.MISSION_TEST} = :mission_test;
 `;
+
+export const getMissionsBinds = (missionTest: boolean) => ({
+    mission_test: missionTest ? 1 : 0
+});

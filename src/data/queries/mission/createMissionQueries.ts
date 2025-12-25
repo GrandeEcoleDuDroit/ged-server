@@ -12,7 +12,8 @@ export const insertMissionQuery = `
         ${MissionField.MISSION_END_DATE},
         ${MissionField.MISSION_DURATION},
         ${MissionField.MISSION_MAX_PARTICIPANTS},
-        ${MissionField.MISSION_IMAGE_FILE_NAME}
+        ${MissionField.MISSION_IMAGE_FILE_NAME},
+        ${MissionField.MISSION_TEST}
     ) VALUES(
         :mission_id,
         :mission_title,
@@ -23,7 +24,8 @@ export const insertMissionQuery = `
         :mission_end_date,
         :mission_duration,
         :mission_max_participants,
-        :mission_image_file_name
+        :mission_image_file_name,
+        :mission_test
     )
 `;
 
@@ -37,7 +39,8 @@ export const insertMissionBinds = (mission: Mission) => ({
     mission_end_date: mission.endDate,
     mission_duration: mission.duration,
     mission_max_participants: mission.maxParticipants,
-    mission_image_file_name: mission.imageFileName
+    mission_image_file_name: mission.imageFileName,
+    mission_test: mission.test ? 1 : 0
 });
 
 export const insertMissionManagerQuery = `

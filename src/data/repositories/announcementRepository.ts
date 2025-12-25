@@ -7,14 +7,16 @@ import type { Announcement, AnnouncementReport } from '@models/announcement';
 const oracleApi = OracleApi.instance;
 
 export default class AnnouncementRepository {
-    async getAnnouncements(): Promise<Announcement[]> {
+    async getAnnouncements(announcementTest: boolean): Promise<Announcement[]> {
         const query = `
             SELECT JSON_OBJECT(*) 
             FROM ${AnnouncementField.TABLE_NAME} 
             NATURAL JOIN ${UserField.TABLE_NAME}
+            WHERE ${AnnouncementField.ANNOUNCEMENT_TEST} = :announcement_test
         `;
+        const binds = { announcement_test: announcementTest ? 1 : 0 };
 
-        const result = await oracleApi.execute(query);
+        const result = await oracleApi.execute(query, binds);
         return result.rows?.map(row =>
             JSON.parse(row as [string][0]) as Announcement
         ) ?? [];
@@ -27,6 +29,7 @@ export default class AnnouncementRepository {
                 ${AnnouncementField.ANNOUNCEMENT_TITLE},
                 ${AnnouncementField.ANNOUNCEMENT_CONTENT},
                 ${AnnouncementField.ANNOUNCEMENT_DATE},
+                ${AnnouncementField.ANNOUNCEMENT_TEST},
                 ${AnnouncementField.USER_ID}
             )
             VALUES(
@@ -34,6 +37,7 @@ export default class AnnouncementRepository {
                 :announcement_title,
                 :announcement_content,
                 :announcement_date,
+                :announcement_test,
                 :user_id
             )
         `;
@@ -43,6 +47,7 @@ export default class AnnouncementRepository {
             announcement_title: announcement.title,
             announcement_content: announcement.content,
             announcement_date: announcement.date,
+            announcement_test: announcement.test ? 1 : 0,
             user_id: announcement.userId
         };
 
@@ -53,43 +58,47 @@ export default class AnnouncementRepository {
         const query = `
             UPDATE ${AnnouncementField.TABLE_NAME}
             SET ${AnnouncementField.ANNOUNCEMENT_TITLE} = :announcement_title,
-                ${AnnouncementField.ANNOUNCEMENT_CONTENT} = :announcement_content,
-                ${AnnouncementField.ANNOUNCEMENT_DATE} = :announcement_date
+                ${AnnouncementField.ANNOUNCEMENT_CONTENT} = :announcement_content
             WHERE ${AnnouncementField.ANNOUNCEMENT_ID} = :announcement_id
+              AND ${AnnouncementField.ANNOUNCEMENT_TEST} = :announcement_test 
         `;
 
         const binds = {
             announcement_title: announcement.title,
             announcement_content: announcement.content,
-            announcement_date: announcement.date,
-            announcement_id: announcement.id
+            announcement_id: announcement.id,
+            announcement_test: announcement.test ? 1 : 0
         };
 
         return await oracleApi.execute(query, binds, { autoCommit: true });
     }
 
-    async deleteUserAnnouncements(userId: string) {
-            const query = `
+    async deleteUserAnnouncements(userId: string, announcementTest: boolean) {
+        const query = `
             DELETE FROM ${AnnouncementField.TABLE_NAME}
-            WHERE ${AnnouncementField.USER_ID} = :user_id
+            WHERE ${AnnouncementField.USER_ID} = :user_id 
+              AND ${AnnouncementField.ANNOUNCEMENT_TEST} = :announcement_test 
         `;
 
         const binds = {
-            user_id: userId
+            user_id: userId,
+            announcement_test: announcementTest ? 1 : 0
         };
 
         return await oracleApi.execute(query, binds, { autoCommit: true });
     }
 
-    async deleteAnnouncement(announcementId: string, userId: string) {
+    async deleteAnnouncement(announcementId: string, announcementTest: boolean, userId: string) {
         const query = `
             DELETE FROM ${AnnouncementField.TABLE_NAME}
             WHERE ${AnnouncementField.ANNOUNCEMENT_ID} = :announcement_id 
               AND ${AnnouncementField.USER_ID} = :user_id
+              AND ${AnnouncementField.ANNOUNCEMENT_TEST} = :announcement_test
         `;
 
         const binds = {
             announcement_id: announcementId,
+            announcement_test: announcementTest ? 1 : 0,
             user_id: userId
         };
 

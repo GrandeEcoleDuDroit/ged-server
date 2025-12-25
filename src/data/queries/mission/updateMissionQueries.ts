@@ -13,6 +13,7 @@ export const updateMissionQuery = `
         ${MissionField.MISSION_MAX_PARTICIPANTS} = :mission_max_participants,
         ${MissionField.MISSION_IMAGE_FILE_NAME} = :mission_image_file_name
     WHERE ${MissionField.MISSION_ID} = :mission_id
+    AND ${MissionField.MISSION_TEST} = :mission_test
 `;
 
 export const updateMissionBinds = (mission: Mission) => ({
@@ -24,7 +25,8 @@ export const updateMissionBinds = (mission: Mission) => ({
     mission_end_date: mission.endDate,
     mission_duration: mission.duration,
     mission_max_participants: mission.maxParticipants,
-    mission_image_file_name: mission.imageFileName
+    mission_image_file_name: mission.imageFileName,
+    mission_test: mission.test ? 1 : 0
 });
 
 export const deleteMissionManagerQuery = `

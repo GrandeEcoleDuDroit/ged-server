@@ -1,5 +1,7 @@
 import OracleApi from '@api/oracleApi';
 import { sendMail } from '@api/googleApi';
+import {toMission} from "@data/mappers/missionMapper";
+import {Result} from "oracledb";
 import type {Mission, MissionTask, MissionReport, OracleMission} from "@models/mission";
 import * as getMissionsQueries from '@queries/mission/getMissionsQueries';
 import * as getMissionQueries from '@queries/mission/getMissionQueries';
@@ -8,14 +10,15 @@ import * as updateMissionQueries from '@queries/mission/updateMissionQueries';
 import * as deleteMissionQueries from '@queries/mission/deleteMissionQueries';
 import * as addParticipantMissionQueries from '@queries/mission/addParticipantMissionQueries';
 import * as removeParticipantQueries from '@queries/mission/removeParticipantQueries';
-import {toMission} from "@data/mappers/missionMapper";
-import {Result} from "oracledb";
 
 const oracleApi = OracleApi.instance;
 
 export default class MissionRepository {
-    async getMissions() {
-        const result = await oracleApi.execute(getMissionsQueries.getMissionsQuery);
+    async getMissions(missionTest: boolean) {
+        const result = await oracleApi.execute(
+            getMissionsQueries.getMissionsQuery,
+            getMissionsQueries.getMissionsBinds(missionTest)
+        );
         return result.rows?.map(row =>
             JSON.parse(row as [string][0]) as Mission
         ) ?? [];
@@ -54,11 +57,15 @@ export default class MissionRepository {
     }
 
     async updateMission(mission: Mission, managerIds: string[], tasks: MissionTask[]) {
-        await oracleApi.execute(
+        const updateMissionResult = await oracleApi.execute(
             updateMissionQueries.updateMissionQuery,
             updateMissionQueries.updateMissionBinds(mission),
             { autoCommit: true }
         );
+
+        if (updateMissionResult.rowsAffected == 0) {
+            throw new Error('Mission not found');
+        }
 
         await oracleApi.execute(
             updateMissionQueries.deleteMissionManagerQuery,
@@ -87,12 +94,16 @@ export default class MissionRepository {
         }
     }
 
-    async deleteMission(missionId: string) {
-        await oracleApi.execute(
+    async deleteMission(missionId: string, missionTest: boolean) {
+        const deleteMissionResult = await oracleApi.execute(
             deleteMissionQueries.deleteMissionQuery,
-            deleteMissionQueries.deleteMissionBinds(missionId),
+            deleteMissionQueries.deleteMissionBinds(missionId, missionTest),
             { autoCommit: true }
         );
+
+        if (deleteMissionResult.rowsAffected == 0) {
+            throw new Error('Mission not found');
+        }
 
         await oracleApi.execute(
             updateMissionQueries.deleteMissionManagerQuery,

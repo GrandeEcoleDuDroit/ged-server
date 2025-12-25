@@ -7,12 +7,18 @@ import {propagateCustomClaims, verifyAuthIdToken, verifyCustomClaims} from "@mid
 const upload = multer({ storage: multer.memoryStorage() });
 const router = express.Router();
 
-router.get('/', missionController.getMissions);
+router.get(
+    '/',
+    verifyAuthIdToken,
+    propagateCustomClaims,
+    missionController.getMissions
+);
 
 router.post(
     '/create',
     verifyCustomClaims((claims) => claims.admin == true),
     upload.single('image'),
+    propagateCustomClaims,
     missionController.createMission
 );
 
@@ -20,21 +26,28 @@ router.post(
     '/update',
     verifyCustomClaims((claims) => claims.admin == true),
     upload.single('image'),
+    propagateCustomClaims,
     missionController.updateMission
 );
 
 router.post(
     '/delete',
     verifyCustomClaims((claims) => claims.admin == true),
+    propagateCustomClaims,
     missionController.deleteMission
 );
 
-router.post('/report', missionController.reportMission);
+router.post(
+    '/report',
+    verifyAuthIdToken,
+    missionController.reportMission
+);
 
 router.post(
     '/add-participant',
     verifyAuthIdToken,
-    missionMiddleware.verifyAddParticipantValidity,
+    propagateCustomClaims,
+    missionMiddleware.addParticipantMiddleware,
     missionController.addParticipant
 );
 
@@ -42,7 +55,7 @@ router.post(
     '/remove-participant',
     verifyAuthIdToken,
     propagateCustomClaims,
-    missionMiddleware.verifyRemoveParticipantValidity,
+    missionMiddleware.removeParticipantMiddleware,
     missionController.removeParticipant
 );
 
