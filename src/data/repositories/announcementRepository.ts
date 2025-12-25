@@ -6,7 +6,7 @@ import type { Announcement, AnnouncementReport } from '@models/announcement';
 
 const oracleApi = OracleApi.instance;
 
-export default class AnnouncementsRepository {
+export default class AnnouncementRepository {
     async getAnnouncements(): Promise<Announcement[]> {
         const query = `
             SELECT JSON_OBJECT(*) 

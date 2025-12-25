@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { e } from '@utils/logs';
-import type { Mission, MissionTask, MissionReport } from '@models/mission';
+import type {Mission, MissionTask, MissionReport, OracleMission} from '@models/mission';
 import MissionRepository from '@repositories/missionRepository';
 import ImageRepository from '@repositories/imageRepository';
 import { formatOracleError } from '@utils/exceptionUtils';
@@ -26,7 +26,6 @@ export const getMissions = async (_: Request, res: Response) => {
 
 export const createMission = async (req: Request, res: Response) => {
     const missionJson = req.body.mission;
-    const imagePath = req.body.imagePath;
     const imageFile = req.file;
     const {
         MISSION_ID: id,
@@ -93,10 +92,10 @@ export const createMission = async (req: Request, res: Response) => {
         const missionManagerIds: string[] = JSON.parse(managerIds);
 
         await missionRepository.createMission(mission, missionManagerIds, missionTasks);
-        if (imageFile && imagePath) {
+        if (imageFile) {
             await imageRepository.uploadImage(
                 Readable.from(imageFile.buffer),
-                imagePath,
+                getImagePath(imageFile.originalname),
                 imageFile.size
             );
         }
@@ -115,7 +114,6 @@ export const createMission = async (req: Request, res: Response) => {
 
 export const updateMission = async (req: Request, res: Response) => {
     const missionJson = req.body.mission;
-    const imagePath = req.body.imagePath;
     const imageFile = req.file;
     const {
         MISSION_ID: id,
@@ -160,19 +158,33 @@ export const updateMission = async (req: Request, res: Response) => {
         return res.status(400).json(serverResponse);
     }
 
+    const mission: Mission = {
+        id: id,
+        title: title,
+        description: description,
+        schoolLevels: schoolLevels || '[]',
+        date: date,
+        startDate: startDate,
+        endDate: endDate,
+        duration: duration,
+        maxParticipants: maxParticipants,
+        imageFileName: imageFileName
+    };
+
     try {
-        const mission: Mission = {
-            id: id,
-            title: title,
-            description: description,
-            schoolLevels: schoolLevels || '[]',
-            date: date,
-            startDate: startDate,
-            endDate: endDate,
-            duration: duration,
-            maxParticipants: maxParticipants,
-            imageFileName: imageFileName
-        };
+        const currentMission = await missionRepository.getMission(mission.id)
+        const imageFileName = currentMission?.imageFileName;
+        if (
+            imageFileName &&
+            imageFileName != mission.imageFileName
+        ) {
+            await imageRepository.deleteImage(getImagePath(imageFileName));
+        }
+    } catch (error: any) {
+        e(`Failed to delete previous mission image ${mission.id}`, error);
+    }
+
+    try {
         const missionTasks: MissionTask[] = JSON.parse(tasks).map((task: any) => ({
             id: task.MISSION_TASK_ID,
             value: task.MISSION_TASK_VALUE
@@ -180,10 +192,10 @@ export const updateMission = async (req: Request, res: Response) => {
         const missionManagerIds: string[] = JSON.parse(managerIds);
 
         await missionRepository.updateMission(mission, missionManagerIds, missionTasks);
-        if (imageFile && imagePath) {
+        if (imageFile) {
             await imageRepository.uploadImage(
                 Readable.from(imageFile.buffer),
-                imagePath,
+                getImagePath(imageFile.originalname),
                 imageFile.size
             );
         }
@@ -201,8 +213,10 @@ export const updateMission = async (req: Request, res: Response) => {
 }
 
 export const deleteMission = async (req: Request, res: Response) => {
-    const missionId = req.body.MISSION_ID;
-    const imagePath = req.body.imagePath;
+    const {
+        MISSION_ID: missionId,
+        MISSION_IMAGE_FILE_NAME: imageFileName
+    } = req.body;
 
     if(!missionId) {
         const serverResponse = {
@@ -210,7 +224,8 @@ export const deleteMission = async (req: Request, res: Response) => {
             error: `
             Some missing mission fields : 
             {
-                missionId: ${missionId},
+                missionId: ${missionId}
+            }
             `
         };
 
@@ -220,11 +235,11 @@ export const deleteMission = async (req: Request, res: Response) => {
 
     try {
         await missionRepository.deleteMission(missionId);
-        if (imagePath) {
+        if (imageFileName) {
             try {
-                await imageRepository.deleteImage(imagePath);
+                await imageRepository.deleteImage(getImagePath(imageFileName));
             } catch (imageError) {
-                console.error(`Failed to delete image: ${imagePath}`, imageError);
+                console.error(`Failed to delete image: ${imageFileName}`, imageError);
             }
         }
         const serverResponse = {
@@ -332,4 +347,9 @@ export const removeParticipant = async (req: Request, res: Response) => {
         e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
+}
+
+function getImagePath (fileName: string): string {
+    const imageFolder = 'MissionImages';
+    return `${imageFolder}/${fileName}`;
 }

@@ -1,10 +1,10 @@
 import type { Request, Response } from 'express';
 import { e } from '@utils/logs';
 import type { Announcement, AnnouncementReport } from '@models/announcement';
-import AnnouncementsRepository from '@repositories/announcementsRepository';
+import AnnouncementRepository from '@repositories/announcementRepository';
 import { formatOracleError } from '@utils/exceptionUtils';
 
-const announcementsRepository = new AnnouncementsRepository();
+const announcementsRepository = new AnnouncementRepository();
 
 export const getAnnouncements = async (_: Request, res: Response) => {
     try {

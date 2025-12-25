@@ -1,21 +1,34 @@
 import OracleApi from '@api/oracleApi';
 import { sendMail } from '@api/googleApi';
+import type {Mission, MissionTask, MissionReport, OracleMission} from "@models/mission";
+import * as getMissionsQueries from '@queries/mission/getMissionsQueries';
 import * as getMissionQueries from '@queries/mission/getMissionQueries';
 import * as createMissionQueries from '@queries/mission/createMissionQueries';
 import * as updateMissionQueries from '@queries/mission/updateMissionQueries';
 import * as deleteMissionQueries from '@queries/mission/deleteMissionQueries';
 import * as addParticipantMissionQueries from '@queries/mission/addParticipantMissionQueries';
 import * as removeParticipantQueries from '@queries/mission/removeParticipantQueries';
-import type { Mission, MissionTask, MissionReport } from "@models/mission";
+import {toMission} from "@data/mappers/missionMapper";
+import {Result} from "oracledb";
 
 const oracleApi = OracleApi.instance;
 
 export default class MissionRepository {
     async getMissions() {
-        const result = await oracleApi.execute(getMissionQueries.getMissionsQuery);
+        const result = await oracleApi.execute(getMissionsQueries.getMissionsQuery);
         return result.rows?.map(row =>
             JSON.parse(row as [string][0]) as Mission
         ) ?? [];
+    }
+
+    async getMission(missionId: string) {
+        const result = await oracleApi.execute(
+            getMissionQueries.getMissionQuery,
+            getMissionQueries.getMissionBinds(missionId)
+        ) as Result<string[]>;
+
+        const oracleMission = JSON.parse(result.rows?.[0]?.[0] ?? '') as OracleMission;
+        return toMission(oracleMission)
     }
 
     async createMission(mission: Mission, managerIds: string[], tasks: MissionTask[]) {

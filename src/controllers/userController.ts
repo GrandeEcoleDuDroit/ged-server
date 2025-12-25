@@ -1,12 +1,19 @@
 import { Request, Response } from 'express';
 import { e } from '@utils/logs';
+import { formatOracleError } from '@utils/exceptionUtils';
 import type { User, UserReport } from '@models/user';
 import UserRepository from '@repositories/userRepository';
 import WhiteListRepository from '@repositories/whiteListRepository';
-import { formatOracleError } from '@utils/exceptionUtils';
+import {Readable} from "stream";
+import ImageRepository from "@repositories/imageRepository";
+import AnnouncementRepository from "@repositories/announcementRepository";
+import FirebaseApi from "@api/firebaseApi";
 
 const userRepository = new UserRepository();
 const whiteListRepository = new WhiteListRepository();
+const imageRepository = new ImageRepository();
+const announcementRepository = new AnnouncementRepository();
+const firebaseApi = new FirebaseApi();
 
 export const getUsers = async (req: Request, res: Response) => {
     const tester = req.claims?.tester ?? false;
@@ -169,18 +176,19 @@ export const updateUser = async (req: Request, res: Response) => {
     }
 }
 
-export const updateProfilePictureFileName = async (req: Request, res: Response) => {
+export const updateProfilePicture = async (req: Request, res: Response) => {
     const {
         USER_ID: userId,
-        USER_PROFILE_PICTURE_FILE_NAME: profilePictureFileName
+        USER_PROFILE_PICTURE_FILE_NAME: oldProfilePictureFileName
     } = req.body;
+    const imageFile = req.file;
 
-    if(!profilePictureFileName && !userId) {
+    if(!imageFile || !userId) {
         const serverResponse = {
-            message: 'Error updating profile picture file name',
+            message: 'Error updating profile picture',
             error: `Missing fields : 
             { 
-                profilePictureFileName: ${profilePictureFileName},
+                imageFile, 
                 userId: ${userId}
             }`
         };
@@ -190,27 +198,139 @@ export const updateProfilePictureFileName = async (req: Request, res: Response) 
     }
 
     try {
-        await userRepository.updateProfilePictureFileName(profilePictureFileName, userId);
-        const serverResponse = {
-            message: `Profile picture file name updated successfully`
-        };
+        await imageRepository.uploadImage(
+            Readable.from(imageFile.buffer),
+            getProfilePicturePath(imageFile.originalname),
+            imageFile.size
+        )
+        await userRepository.updateProfilePictureFileName(imageFile.originalname, userId);
+
+        if (oldProfilePictureFileName) {
+            try {
+                await imageRepository.deleteImage(getProfilePicturePath(oldProfilePictureFileName))
+            } catch (error) {
+                e(`Failed to delete old profile picture of ${userId}`, error);
+            }
+        }
+
+        const serverResponse = { message: `Profile picture file name updated successfully` };
         res.status(200).json(serverResponse);
     } catch (error: any) {
-        const serverResponse = formatOracleError(error, 'Error updating profile picture file name');
+        const serverResponse = formatOracleError(error, 'Error updating profile picture');
         e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
 }
 
-export const deleteProfilePictureFileName = async (req: Request, res: Response) => {
-    const userId = req.params.userId;
+export const deleteUser = async (req: Request, res: Response) => {
+    const {
+        USER_ID: userId,
+        USER_FIRST_NAME: firstName,
+        USER_LAST_NAME: lastName,
+        USER_EMAIL: email,
+        USER_SCHOOL_LEVEL: schoolLevel,
+        USER_ADMIN: admin,
+        USER_PROFILE_PICTURE_FILE_NAME: profilePictureFileName,
+        USER_STATE: state,
+        USER_TESTER: tester
+    } = req.body;
+
+    if (
+        userId == null ||
+        firstName == null ||
+        lastName == null ||
+        email == null ||
+        schoolLevel == null ||
+        admin == null ||
+        state == null ||
+        tester == null
+    ) {
+        const serverResponse = {
+            message: 'Error updating user',
+            error: `
+              All user fields are required :
+              {
+                userId: ${userId},
+                firstName: ${firstName},
+                lastName: ${lastName},
+                email: ${email},
+                schoolLevel: ${schoolLevel},
+                admin: ${admin},
+                state: ${state},
+                tester: ${tester}
+              }`
+        };
+
+        e(serverResponse.message, new Error(serverResponse.error));
+        return res.status(400).json(serverResponse);
+    }
+
+    try {
+        let deletedUser: User = {
+            userId: userId,
+            firstName: firstName,
+            lastName: lastName,
+            email: `${userId}@deleted.com`,
+            schoolLevel: schoolLevel,
+            admin: admin,
+            profilePictureFileName: null,
+            state: "deleted",
+            tester: tester
+        }
+
+        await userRepository.updateUser(deletedUser);
+        await announcementRepository.deleteUserAnnouncements(userId)
+        if (req.uid != null) {
+            await firebaseApi
+                .getAuth()
+                .deleteUser(req.uid);
+        }
+
+        if (profilePictureFileName) {
+            try {
+                await imageRepository.deleteImage(getProfilePicturePath(profilePictureFileName))
+            } catch (error) {
+                e(`Failed to delete profile picture of ${userId}`, error);
+            }
+        }
+
+        const serverResponse = { message: `User deleted successfully` };
+        res.status(200).json(serverResponse);
+    } catch (error: any) {
+        const serverResponse = formatOracleError(error, 'Error deleting profile picture');
+        e(serverResponse.message, error);
+        res.status(500).json(serverResponse);
+    }
+}
+
+export const deleteProfilePicture = async (req: Request, res: Response) => {
+    const {
+        USER_ID: userId,
+        USER_PROFILE_PICTURE_FILE_NAME: profilePictureFileName
+    } = req.body;
+
+    if(!userId || !profilePictureFileName) {
+        const serverResponse = {
+            message: 'Error updating profile picture',
+            error: `Missing fields : 
+            { 
+                userId: ${userId},
+                profilePictureFileName: ${profilePictureFileName},
+            }`
+        };
+
+        e(serverResponse.message, new Error(serverResponse.error));
+        return res.status(400).json(serverResponse);
+    }
 
     try {
         await userRepository.deleteProfilePictureFileName(userId);
-        const serverResponse = { message: `Profile picture file name deleted successfully` };
+        await imageRepository.deleteImage(getProfilePicturePath(profilePictureFileName))
+
+        const serverResponse = { message: `Profile picture deleted successfully` };
         res.status(200).json(serverResponse);
     } catch (error: any) {
-        const serverResponse = formatOracleError(error, 'Error deleting profile picture file name');
+        const serverResponse = formatOracleError(error, 'Error deleting profile picture');
         e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
@@ -259,4 +379,9 @@ export const reportUser = async (req: Request, res: Response) => {
         e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
+}
+
+function getProfilePicturePath(fileName: string) {
+    const profilePictureFolder = 'UserProfilePictures';
+    return `${profilePictureFolder}/${fileName}`;
 }
