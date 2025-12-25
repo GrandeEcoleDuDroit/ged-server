@@ -33,7 +33,7 @@ export const w = function (message: string) {
 }
 
 export const e = function (message: string, error: any) {
-    log.error(message, error);
+    log.error(error, message);
     if (productionEnvironment) {
         captureException(e)
     }

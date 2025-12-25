@@ -10,5 +10,6 @@ export const toMission = (oracleMission: OracleMission): Mission => ({
     endDate: oracleMission.MISSION_END_DATE,
     duration: oracleMission.MISSION_DURATION,
     maxParticipants: oracleMission.MISSION_MAX_PARTICIPANTS,
-    imageFileName: oracleMission.MISSION_IMAGE_FILE_NAME
+    imageFileName: oracleMission.MISSION_IMAGE_FILE_NAME,
+    test: oracleMission.MISSION_TEST == 1
 });

@@ -6,9 +6,11 @@ import { formatOracleError } from '@utils/exceptionUtils';
 
 const announcementsRepository = new AnnouncementRepository();
 
-export const getAnnouncements = async (_: Request, res: Response) => {
+export const getAnnouncements = async (req: Request, res: Response) => {
+    const announcementTest = req.claims?.tester ?? false;
+
     try {
-        const result = await announcementsRepository.getAnnouncements();
+        const result = await announcementsRepository.getAnnouncements(announcementTest);
         res.json(result);
     } catch (error: any) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -23,6 +25,7 @@ export const getAnnouncements = async (_: Request, res: Response) => {
 };
 
 export const createAnnouncement = async (req: Request, res: Response) => {
+    const announcementTest = req.claims?.tester ?? false;
     const {
         ANNOUNCEMENT_ID: id,
         ANNOUNCEMENT_TITLE: title,
@@ -50,7 +53,14 @@ export const createAnnouncement = async (req: Request, res: Response) => {
     }
 
     try {
-        const announcement: Announcement = { id, title, content, date, userId };
+        const announcement: Announcement = {
+            id: id,
+            title: title,
+            content: content,
+            date: date,
+            test: announcementTest,
+            userId: userId
+        };
         await announcementsRepository.createAnnouncement(announcement);
         res.status(201).json({ message: 'Announcement created successfully' });
     } catch (error: any) {
@@ -61,6 +71,7 @@ export const createAnnouncement = async (req: Request, res: Response) => {
 };
 
 export const updateAnnouncement = async (req: Request, res: Response) => {
+    const announcementTest = req.claims?.tester ?? false;
     const {
         ANNOUNCEMENT_ID: id,
         ANNOUNCEMENT_TITLE: title,
@@ -68,18 +79,6 @@ export const updateAnnouncement = async (req: Request, res: Response) => {
         ANNOUNCEMENT_DATE: date,
         USER_ID: userId
     } = req.body;
-
-    const uid = req.uid
-
-    if (userId != uid) {
-        const serverResponse = {
-            message: 'Error updating announcement',
-            error: 'You are not authorized to perform this action.'
-        };
-
-        e(serverResponse.message, new Error(serverResponse.error));
-        return res.status(403).json(serverResponse);
-    }
 
     if (!id || !content || !date || !userId) {
         const serverResponse = {
@@ -101,7 +100,14 @@ export const updateAnnouncement = async (req: Request, res: Response) => {
     }
 
     try {
-        const announcement: Announcement = { id, title, content, date, userId };
+        const announcement: Announcement = {
+            id: id,
+            title: title,
+            content: content,
+            date: date,
+            test: announcementTest,
+            userId: userId
+        };
         await announcementsRepository.updateAnnouncement(announcement);
         res.status(201).json({ message: `Announcement ${announcement.id} updated successfully` });
     } catch (error: any) {
@@ -112,21 +118,11 @@ export const updateAnnouncement = async (req: Request, res: Response) => {
 };
 
 export const deleteUserAnnouncements = async (req: Request, res: Response) => {
+    const announcementTest = req.claims?.tester ?? false;
     const userId = req.params.userId;
-    const uid = req.uid
-
-    if (userId != uid) {
-        const serverResponse = {
-            message: 'Error deleting user announcement',
-            error: 'You are not authorized to perform this action.'
-        };
-
-        e(serverResponse.message, new Error(serverResponse.error));
-        return res.status(403).json(serverResponse);
-    }
 
     try {
-        await announcementsRepository.deleteUserAnnouncements(userId);
+        await announcementsRepository.deleteUserAnnouncements(userId, announcementTest);
         res.status(200).json({ message: `Announcements of ${userId} have been deleted successfully` });
     } catch (error) {
         const serverResponse = formatOracleError(error, 'Error deleting announcements');
@@ -136,25 +132,14 @@ export const deleteUserAnnouncements = async (req: Request, res: Response) => {
 };
 
 export const deleteAnnouncement = async (req: Request, res: Response) => {
+    const announcementTest = req.claims?.tester ?? false;
     const {
         ANNOUNCEMENT_ID: announcementId,
         USER_ID: userId
     } = req.body;
 
-    const uid = req.uid
-
-    if (userId != uid) {
-        const serverResponse = {
-            message: 'Error deleting announcement',
-            error: 'You are not authorized to perform this action.'
-        };
-
-        e(serverResponse.message, new Error(serverResponse.error));
-        return res.status(403).json(serverResponse);
-    }
-
     try {
-        await announcementsRepository.deleteAnnouncement(announcementId, userId);
+        await announcementsRepository.deleteAnnouncement(announcementId, announcementTest, userId);
         res.status(200).json({ message: `Announcement ${announcementId} deleted successfully` });
     } catch (error: any) {
         const serverResponse = formatOracleError(error, 'Error deleting announcement');

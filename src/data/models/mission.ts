@@ -9,6 +9,7 @@ export interface Mission  {
     readonly duration: string | null;
     readonly maxParticipants: number;
     readonly imageFileName: string | null;
+    readonly test: boolean;
 }
 
 export interface MissionTask {
@@ -38,4 +39,5 @@ export interface OracleMission {
     readonly MISSION_DURATION: string | null;
     readonly MISSION_MAX_PARTICIPANTS: number;
     readonly MISSION_IMAGE_FILE_NAME: string | null;
+    readonly MISSION_TEST: number;
 }

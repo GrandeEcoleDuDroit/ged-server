@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { e } from '@utils/logs';
-import type {Mission, MissionTask, MissionReport, OracleMission} from '@models/mission';
+import type {Mission, MissionTask, MissionReport} from '@models/mission';
 import MissionRepository from '@repositories/missionRepository';
 import ImageRepository from '@repositories/imageRepository';
 import { formatOracleError } from '@utils/exceptionUtils';
@@ -9,9 +9,11 @@ import {Readable} from "stream";
 const missionRepository = new MissionRepository();
 const imageRepository = new ImageRepository();
 
-export const getMissions = async (_: Request, res: Response) => {
+export const getMissions = async (req: Request, res: Response) => {
+    const missionTest = req.claims?.tester ?? false;
+
     try {
-        const result = await missionRepository.getMissions();
+        const result = await missionRepository.getMissions(missionTest);
         res.json(result);
     } catch (error: any) {
         const serverResponse = {
@@ -25,6 +27,7 @@ export const getMissions = async (_: Request, res: Response) => {
 }
 
 export const createMission = async (req: Request, res: Response) => {
+    const missionTest = req.claims?.tester ?? false;
     const missionJson = req.body.mission;
     const imageFile = req.file;
     const {
@@ -83,7 +86,8 @@ export const createMission = async (req: Request, res: Response) => {
             endDate: endDate,
             duration: duration,
             maxParticipants: maxParticipants,
-            imageFileName: imageFileName
+            imageFileName: imageFileName,
+            test: missionTest
         };
         const missionTasks: MissionTask[] = JSON.parse(tasks).map((task: any) => ({
             id: task.MISSION_TASK_ID,
@@ -113,6 +117,7 @@ export const createMission = async (req: Request, res: Response) => {
 }
 
 export const updateMission = async (req: Request, res: Response) => {
+    const missionTest = req.claims?.tester ?? false;
     const missionJson = req.body.mission;
     const imageFile = req.file;
     const {
@@ -168,7 +173,8 @@ export const updateMission = async (req: Request, res: Response) => {
         endDate: endDate,
         duration: duration,
         maxParticipants: maxParticipants,
-        imageFileName: imageFileName
+        imageFileName: imageFileName,
+        test: missionTest
     };
 
     try {
@@ -213,6 +219,7 @@ export const updateMission = async (req: Request, res: Response) => {
 }
 
 export const deleteMission = async (req: Request, res: Response) => {
+    const missionTest = req.claims?.tester ?? false;
     const {
         MISSION_ID: missionId,
         MISSION_IMAGE_FILE_NAME: imageFileName
@@ -234,7 +241,7 @@ export const deleteMission = async (req: Request, res: Response) => {
     }
 
     try {
-        await missionRepository.deleteMission(missionId);
+        await missionRepository.deleteMission(missionId, missionTest);
         if (imageFileName) {
             try {
                 await imageRepository.deleteImage(getImagePath(imageFileName));

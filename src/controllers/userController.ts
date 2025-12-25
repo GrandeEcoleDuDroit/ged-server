@@ -279,7 +279,7 @@ export const deleteUser = async (req: Request, res: Response) => {
         }
 
         await userRepository.updateUser(deletedUser);
-        await announcementRepository.deleteUserAnnouncements(userId)
+        await announcementRepository.deleteUserAnnouncements(userId, tester)
         if (req.uid != null) {
             await firebaseApi
                 .getAuth()

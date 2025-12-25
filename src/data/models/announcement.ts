@@ -1,24 +1,25 @@
-export type Announcement = {
+export interface Announcement {
     readonly id: string;
     readonly title: string;
     readonly content: string;
     readonly date: string;
+    readonly test: boolean;
     readonly userId: string;
 }
 
-export type AnnouncementReport = {
+export interface AnnouncementReport {
     readonly announcementId: string;
     readonly author: Author;
     readonly reporter: Reporter;
     readonly reason: string;
 }
 
-type Author = {
+interface Author {
     readonly fullName: string,
     readonly email: string
 }
 
-type Reporter = {
+interface Reporter {
     readonly fullName: string,
     readonly email: string
 }
