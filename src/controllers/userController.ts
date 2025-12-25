@@ -274,7 +274,7 @@ export const deleteUser = async (req: Request, res: Response) => {
             schoolLevel: schoolLevel,
             admin: admin,
             profilePictureFileName: null,
-            state: "deleted",
+            state: 2,
             tester: tester
         }
 

@@ -6,7 +6,7 @@ export interface User {
     readonly schoolLevel: number;
     readonly admin: number;
     readonly profilePictureFileName: string | null;
-    readonly state: string;
+    readonly state: number;
     readonly tester: number;
 }
 
@@ -18,7 +18,7 @@ export interface FirestoreUser {
     readonly schoolLevel: number;
     readonly admin: boolean;
     readonly profilePictureFileName: string | null;
-    readonly state: string;
+    readonly state: number;
     readonly tester: boolean;
 }
 
