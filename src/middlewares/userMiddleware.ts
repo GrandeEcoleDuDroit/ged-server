@@ -6,8 +6,8 @@ export const createUserMiddleware = (req: Request, res: Response, next: NextFunc
 
     if (userId != req.uid) {
         const serverResponse = {
-            message: 'Error creating user',
-            error: 'You are not authorized to perform this action.'
+            message: 'You are not authorized to perform this action.',
+            error: 'Error updating user'
         };
 
         e(serverResponse.message, new Error(serverResponse.error));
@@ -22,8 +22,8 @@ export const updateUserMiddleware = (req: Request, res: Response, next: NextFunc
 
     if (userId != req.uid) {
         const serverResponse = {
-            message: 'Error updating user',
-            error: 'You are not authorized to perform this action.'
+            message: 'You are not authorized to perform this action.',
+            error: 'Error updating user'
         };
 
         e(serverResponse.message, new Error(serverResponse.error));
@@ -32,13 +32,13 @@ export const updateUserMiddleware = (req: Request, res: Response, next: NextFunc
         next();
     }
 }
-export const updateProfilePictureFileNameMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    const { USER_ID: userId } = req.body;
+export const updateProfilePictureMiddleware = (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.body.USER_ID;
 
     if (userId != req.uid) {
         const serverResponse = {
-            message: 'Error updating user',
-            error: 'You are not authorized to perform this action.'
+            message: 'You are not authorized to perform this action.',
+            error: 'Error updating user'
         };
 
         e(serverResponse.message, new Error(serverResponse.error));

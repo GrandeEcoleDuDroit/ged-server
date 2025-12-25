@@ -1,13 +1,15 @@
 import express from 'express';
-const router = express.Router();
 import {verifyAuthIdToken, propagateCustomClaims} from '@middlewares/authMiddleware';
-
 import * as userController from '@controllers/userController';
 import {
     createUserMiddleware,
-    updateProfilePictureFileNameMiddleware,
+    updateProfilePictureMiddleware,
     updateUserMiddleware
 } from "@middlewares/userMiddleware";
+import multer from "multer";
+
+const upload = multer({ storage: multer.memoryStorage() });
+const router = express.Router();
 
 router.get('/', verifyAuthIdToken, propagateCustomClaims, userController.getUsers);
 
@@ -17,14 +19,17 @@ router.post('/create', verifyAuthIdToken, createUserMiddleware, userController.c
 
 router.put('/:userId', verifyAuthIdToken, updateUserMiddleware, userController.updateUser);
 
-router.patch(
-    '/profile-picture-file-name',
+router.post('/delete', verifyAuthIdToken, userController.deleteUser);
+
+router.post(
+    '/profile-picture/update',
     verifyAuthIdToken,
-    updateProfilePictureFileNameMiddleware,
-    userController.updateProfilePictureFileName
+    upload.single('image'),
+    updateProfilePictureMiddleware,
+    userController.updateProfilePicture
 );
 
-router.delete('/profile-picture-file-name/:userId', verifyAuthIdToken, userController.deleteProfilePictureFileName);
+router.post('/profile-picture/delete', verifyAuthIdToken, userController.deleteProfilePicture);
 
 router.post('/report', verifyAuthIdToken, userController.reportUser);
 

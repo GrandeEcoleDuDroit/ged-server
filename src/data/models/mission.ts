@@ -26,3 +26,16 @@ interface UserInfo {
     readonly fullName: string,
     readonly email: string
 }
+
+export interface OracleMission {
+    readonly MISSION_ID: string;
+    readonly MISSION_TITLE: string;
+    readonly MISSION_DESCRIPTION: string;
+    readonly MISSION_SCHOOL_LEVELS: string;
+    readonly MISSION_DATE: number;
+    readonly MISSION_START_DATE: number;
+    readonly MISSION_END_DATE: number;
+    readonly MISSION_DURATION: string | null;
+    readonly MISSION_MAX_PARTICIPANTS: number;
+    readonly MISSION_IMAGE_FILE_NAME: string | null;
+}

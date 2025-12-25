@@ -63,7 +63,8 @@ export default class UserRepository {
         const binds = updateProfilePictureFileNameQuery.binds(profilePictureFileName, userId);
 
         await oracleApi.execute(query, binds, { autoCommit: true });
-        await firebaseApi.getFirestore()
+        await firebaseApi
+            .getFirestore()
             .collection(userCollection)
             .doc(userId)
             .update({ profilePictureFileName: profilePictureFileName });

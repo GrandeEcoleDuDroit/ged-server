@@ -1,4 +1,4 @@
-import type {User, FirestoreUser} from "@models/user";
+import type {User, FirestoreUser} from '@models/user';
 
 export const toFirestoreUser = (user: User): FirestoreUser => ({
     userId: user.userId,
