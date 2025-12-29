@@ -1,9 +1,10 @@
 import express from "express";
 import {verifyAuthIdToken} from "@middlewares/authMiddleware";
 import * as blockedUserController from "@controllers/blockedUserController";
+
 const router = express.Router();
 
-router.get('/', verifyAuthIdToken, blockedUserController.getBlockedUsers);
+router.get('/', verifyAuthIdToken, blockedUserController.getBlockedUserIds);
 
 router.post('/create', verifyAuthIdToken, blockedUserController.addBlockedUser);
 

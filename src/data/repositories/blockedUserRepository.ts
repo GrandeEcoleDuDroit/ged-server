@@ -1,19 +1,16 @@
 import OracleApi from '@api/oracleApi';
-import type { User } from '@models/user';
-import * as getBlockedUsersQuery from '@queries/blockedUser/getBlockedUsersQuery';
+import * as getBlockedUserIdsQuery from '@queries/blockedUser/getBlockedUserIdsQuery';
 import * as addBlockedUserQuery from '@queries/blockedUser/addBlockedUserQuery';
 import * as removeBlockedUserQuery from '@queries/blockedUser/removeBlockedUserQuery';
 
 const oracleApi = OracleApi.instance;
 
 export default class BlockedUserRepository {
-    async getBlockedUsers(userId: string) {
-        const query = getBlockedUsersQuery.query;
-        const binds = getBlockedUsersQuery.binds(userId);
+    async getBlockedUserIds(userId: string) {
+        const query = getBlockedUserIdsQuery.query;
+        const binds = getBlockedUserIdsQuery.binds(userId);
         const result = await oracleApi.execute(query, binds);
-        return result.rows?.map(row =>
-            JSON.parse(row as [string][0]) as User
-        ) ?? [];
+        return result.rows?.map(row  => (row as string[])[0]) ?? [];
     }
 
     async addBlockedUser(userId: string, blockedUserId: string) {

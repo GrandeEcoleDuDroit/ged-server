@@ -5,11 +5,11 @@ import BlockedUserRepository from '@repositories/blockedUserRepository';
 
 const blockedUserRepository = new BlockedUserRepository();
 
-export const getBlockedUsers = async (req: Request, res: Response) => {
+export const getBlockedUserIds = async (req: Request, res: Response) => {
     const userId = req.uid;
     if (!userId) {
         const serverResponse = {
-            message: "Error getting blocked users",
+            message: "Error getting blocked user ids",
             error: `
             Some missing fields :
             {
@@ -23,10 +23,10 @@ export const getBlockedUsers = async (req: Request, res: Response) => {
     }
 
     try {
-        const users = await blockedUserRepository.getBlockedUsers(userId)
-        res.status(200).json(users);
+        const userIds = await blockedUserRepository.getBlockedUserIds(userId)
+        res.status(200).json(userIds);
     } catch (error: any) {
-        const serverResponse = formatOracleError(error, 'Error getting blocked users');
+        const serverResponse = formatOracleError(error, 'Error getting blocked user ids');
         e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
