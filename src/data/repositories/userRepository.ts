@@ -18,7 +18,7 @@ const firebaseApi = new FirebaseApi();
 const userCollection = 'users';
 
 export default class UserRepository {
-    async getUsers(tester: boolean): Promise<User[]> {
+    async getUsers(tester: boolean) {
         const query = getUsersQuery.query;
         const binds = getUsersQuery.binds(tester ? 1 : 0)
         const result = await oracleApi.execute(query, binds);

@@ -1,5 +1,5 @@
 import { MissionField, MissionManagerField, MissionParticipantField, MissionTaskField } from '@fields/missionField';
-import UserField from '@fields/userField';
+import {UserField} from '@fields/userField';
 
 export const getMissionsQuery = `
     SELECT JSON_OBJECT(
