@@ -31,7 +31,8 @@ export default class UserRepository {
         const query = getUserQuery.query;
         const binds = getUserQuery.binds(userId, tester ? 1 : 0);
         const result = await oracleApi.execute(query, binds) as Result<string[]>;
-        return JSON.parse(result.rows?.[0]?.[0] ?? '');
+        const userJson = result.rows?.[0]?.[0];
+        return userJson ? JSON.parse(userJson) : null;
     }
 
     async createUser(user: User) {

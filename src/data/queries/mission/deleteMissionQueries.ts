@@ -3,7 +3,7 @@ import {MissionField, MissionManagerField, MissionTaskField} from '@fields/missi
 export const deleteMissionQuery = `
     DELETE FROM ${MissionField.TABLE_NAME}
     WHERE ${MissionField.MISSION_ID} = :mission_id 
-      AND ${MissionField.MISSION_TEST} = :nmission_test
+      AND ${MissionField.MISSION_TEST} = :mission_test
 `;
 
 export const deleteMissionBinds = (missionId: string, missionTest: boolean) => ({
