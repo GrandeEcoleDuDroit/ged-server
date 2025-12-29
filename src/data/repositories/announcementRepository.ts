@@ -1,7 +1,7 @@
 import OracleApi from '@api/oracleApi';
 import { sendMail } from '@api/googleApi';
 import AnnouncementField from '@fields/announcementField';
-import UserField from '@fields/userField';
+import {UserField} from '@fields/userField';
 import type { Announcement, AnnouncementReport } from '@models/announcement';
 
 const oracleApi = OracleApi.instance;

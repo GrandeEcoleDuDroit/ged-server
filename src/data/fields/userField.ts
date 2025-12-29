@@ -1,4 +1,4 @@
-const UserField = Object.freeze({
+export const UserField = Object.freeze({
     TABLE_NAME: 'USERS',
     USER_ID: 'USER_ID',
     USER_FIRST_NAME: 'USER_FIRST_NAME',
@@ -11,4 +11,8 @@ const UserField = Object.freeze({
     USER_TESTER: 'USER_TESTER'
 });
 
-export default UserField;
+export const BlockedUserField = Object.freeze({
+    TABLE_NAME: 'BLOCKED_USERS',
+    USER_ID: 'USER_ID',
+    BLOCKED_USER_ID: 'BLOCKED_USER_ID'
+})

@@ -1,4 +1,4 @@
-import UserField from "@fields/userField";
+import {UserField} from "@fields/userField";
 import type {User} from "@models/user";
 
 export const query = `
