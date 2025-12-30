@@ -5,32 +5,64 @@ import {
     createUserMiddleware,
     updateProfilePictureMiddleware,
     updateUserMiddleware
-} from "@middlewares/userMiddleware";
-import multer from "multer";
+} from '@middlewares/userMiddleware';
+import multer from 'multer';
 
 const upload = multer({ storage: multer.memoryStorage() });
 const router = express.Router();
 
-router.get('/', verifyAuthIdToken, propagateCustomClaims, userController.getUsers);
+router.get(
+    '/',
+    verifyAuthIdToken('Error getting users'),
+    propagateCustomClaims('Error getting users'),
+    userController.getUsers
+);
 
-router.get('/:userId', verifyAuthIdToken, propagateCustomClaims, userController.getUser);
+router.get(
+    '/:userId',
+    verifyAuthIdToken('Error getting user'),
+    propagateCustomClaims('Error getting user'),
+    userController.getUser
+);
 
-router.post('/create', verifyAuthIdToken, createUserMiddleware, userController.createUser);
+router.post(
+    '/create',
+    verifyAuthIdToken('Error creating user'),
+    createUserMiddleware,
+    userController.createUser
+);
 
-router.put('/:userId', verifyAuthIdToken, updateUserMiddleware, userController.updateUser);
+router.put(
+    '/:userId',
+    verifyAuthIdToken('Error updating user'),
+    updateUserMiddleware,
+    userController.updateUser
+);
 
-router.post('/delete', verifyAuthIdToken, userController.deleteUser);
+router.post(
+    '/delete',
+    verifyAuthIdToken('Error deleting user'),
+    userController.deleteUser
+);
 
 router.post(
     '/profile-picture/update',
-    verifyAuthIdToken,
+    verifyAuthIdToken('Error updating profile picture'),
     upload.single('image'),
     updateProfilePictureMiddleware,
     userController.updateProfilePicture
 );
 
-router.post('/profile-picture/delete', verifyAuthIdToken, userController.deleteProfilePicture);
+router.post(
+    '/profile-picture/delete',
+    verifyAuthIdToken('Error deleting profile picture'),
+    userController.deleteProfilePicture
+);
 
-router.post('/report', verifyAuthIdToken, userController.reportUser);
+router.post(
+    '/report',
+    verifyAuthIdToken('Error reporting user'),
+    userController.reportUser
+);
 
 export default router;

@@ -2,7 +2,8 @@ import type { Request, Response } from 'express';
 import { e } from '@utils/logs';
 import type { Announcement, AnnouncementReport } from '@models/announcement';
 import AnnouncementRepository from '@repositories/announcementRepository';
-import { formatOracleError } from '@utils/exceptionUtils';
+import {formatOracleError, invalidFieldsErrorMessage} from '@utils/exceptionUtils';
+import type {ServerResponse} from '@models/serverResponse';
 
 const announcementsRepository = new AnnouncementRepository();
 
@@ -13,10 +14,9 @@ export const getAnnouncements = async (req: Request, res: Response) => {
         const result = await announcementsRepository.getAnnouncements(announcementTest);
         res.json(result);
     } catch (error: any) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        const serverResponse = {
-            message: 'Error to get announcements',
-            error: errorMessage
+        const serverResponse: ServerResponse = {
+            message: 'Error getting announcements',
+            error: error.message
         };
 
         e(serverResponse.message, error);
@@ -35,19 +35,12 @@ export const createAnnouncement = async (req: Request, res: Response) => {
     } = req.body;
 
     if (!content || !date || !userId) {
-        const serverResponse = {
-            message: "Error to create announcement",
-            error: `
-            Some missing announcement fields: 
-            {
-                content: ${content},
-                date: ${date},
-                userId: ${userId}
-            }
-            `
+        const serverResponse: ServerResponse = {
+            message: 'Error creating announcement',
+            error: 'Missing fields'
         };
 
-        e(serverResponse.message, new Error(serverResponse.error));
+        e(serverResponse.message, new Error(invalidFieldsErrorMessage(serverResponse.error, req.body)));
         res.status(400).json(serverResponse);
         return;
     }
@@ -62,9 +55,10 @@ export const createAnnouncement = async (req: Request, res: Response) => {
             userId: userId
         };
         await announcementsRepository.createAnnouncement(announcement);
-        res.status(201).json({ message: 'Announcement created successfully' });
+        const serverResponse: ServerResponse = { message: 'Announcement created successfully' };
+        res.status(201).json(serverResponse);
     } catch (error: any) {
-        const serverResponse = formatOracleError(error, 'Error creating announcement');
+        const serverResponse: ServerResponse = formatOracleError('Error creating announcement', error);
         e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
@@ -81,20 +75,12 @@ export const updateAnnouncement = async (req: Request, res: Response) => {
     } = req.body;
 
     if (!id || !content || !date || !userId) {
-        const serverResponse = {
-            message: "Error to update announcement",
-            error: `
-            Some missing announcement fields: 
-            {
-                id: ${id},
-                content: ${content},
-                date: ${date},
-                userId: ${userId}
-            }
-            `
+        const serverResponse: ServerResponse = {
+            message: 'Error updating announcement',
+            error: 'Missing fields'
         };
 
-        e(serverResponse.message, new Error(serverResponse.error));
+        e(serverResponse.message, new Error(invalidFieldsErrorMessage(serverResponse.error, req.body)));
         res.status(400).json(serverResponse);
         return;
     }
@@ -109,9 +95,10 @@ export const updateAnnouncement = async (req: Request, res: Response) => {
             userId: userId
         };
         await announcementsRepository.updateAnnouncement(announcement);
-        res.status(201).json({ message: `Announcement ${announcement.id} updated successfully` });
+        const serverResponse: ServerResponse = { message: 'Announcement updated successfully' };
+        res.status(201).json(serverResponse);
     } catch (error: any) {
-        const serverResponse = formatOracleError(error, 'Error updating announcement');
+        const serverResponse: ServerResponse = formatOracleError('Error updating announcement', error);
         e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
@@ -123,9 +110,10 @@ export const deleteUserAnnouncements = async (req: Request, res: Response) => {
 
     try {
         await announcementsRepository.deleteUserAnnouncements(userId, announcementTest);
-        res.status(200).json({ message: `Announcements of ${userId} have been deleted successfully` });
+        const serverResponse: ServerResponse = { message: 'User announcements deleted successfully' };
+        res.status(200).json(serverResponse);
     } catch (error) {
-        const serverResponse = formatOracleError(error, 'Error deleting announcements');
+        const serverResponse: ServerResponse = formatOracleError('Error deleting user announcements', error);
         e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
@@ -138,11 +126,23 @@ export const deleteAnnouncement = async (req: Request, res: Response) => {
         USER_ID: userId
     } = req.body;
 
+    if (!announcementId || !userId) {
+        const serverResponse: ServerResponse = {
+            message: 'Error deleting announcement',
+            error: 'Missing fields'
+        };
+
+        e(serverResponse.message, new Error(invalidFieldsErrorMessage(serverResponse.error, req.body)));
+        res.status(400).json(serverResponse);
+        return;
+    }
+
     try {
         await announcementsRepository.deleteAnnouncement(announcementId, announcementTest, userId);
-        res.status(200).json({ message: `Announcement ${announcementId} deleted successfully` });
+        const serverResponse: ServerResponse = { message: 'Announcement deleted successfully' };
+        res.status(200).json(serverResponse);
     } catch (error: any) {
-        const serverResponse = formatOracleError(error, 'Error deleting announcement');
+        const serverResponse: ServerResponse = formatOracleError('Error deleting announcement', error);
         e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
@@ -157,20 +157,12 @@ export const reportAnnouncement = async (req: Request, res: Response) => {
     } = req.body;
 
     if (!announcementId || !author || !reporter || !reason) {
-        const serverResponse = {
-            message: "Error to report announcement",
-            error: `
-            Some missing report fields:
-            {
-                announcementId: ${announcementId},
-                author: ${author},
-                reporter: ${reporter},
-                reason: ${reason}
-            }
-            `
+        const serverResponse: ServerResponse = {
+            message: 'Error reporting announcement',
+            error: 'Missing fields'
         };
 
-        e(serverResponse.message, new Error(serverResponse.error));
+        e(serverResponse.message, new Error(invalidFieldsErrorMessage(serverResponse.error, req.body)));
         res.status(400).json(serverResponse);
         return;
     }
@@ -184,9 +176,10 @@ export const reportAnnouncement = async (req: Request, res: Response) => {
 
     try {
         await announcementsRepository.reportAnnouncement(report);
-        res.status(200).json({ message: `Announcement ${announcementId} reported successfully` });
+        const serverResponse: ServerResponse = { message: `Announcement reported successfully` };
+        res.status(200).json(serverResponse);
     } catch (error: any) {
-        const serverResponse = {
+        const serverResponse: ServerResponse = {
             message: 'Error reporting announcement',
             error: error.message
         };

@@ -1,23 +1,24 @@
 import OracleApi from '@api/oracleApi';
 import { sendMail } from '@api/googleApi';
-import {toMission} from "@data/mappers/missionMapper";
-import {Result} from "oracledb";
-import type {Mission, MissionTask, MissionReport, OracleMission} from "@models/mission";
-import * as getMissionsQueries from '@queries/mission/getMissionsQueries';
-import * as getMissionQueries from '@queries/mission/getMissionQueries';
-import * as createMissionQueries from '@queries/mission/createMissionQueries';
-import * as updateMissionQueries from '@queries/mission/updateMissionQueries';
-import * as deleteMissionQueries from '@queries/mission/deleteMissionQueries';
-import * as addParticipantMissionQueries from '@queries/mission/addParticipantMissionQueries';
-import * as removeParticipantQueries from '@queries/mission/removeParticipantQueries';
+import {toMission} from '@data/mappers/missionMapper';
+import type {Result} from 'oracledb';
+import type {Mission, MissionTask, MissionReport, OracleMission} from '@models/mission';
+import * as getMissionsQuery from '@queries/mission/getMissionsQuery';
+import * as getMissionQuery from '@queries/mission/getMissionQuery';
+import * as getMissionParticipantCountQuery from '@queries/mission/getMissionParticipantCountQuery';
+import * as createMissionQuery from '@queries/mission/createMissionQuery';
+import * as updateMissionQuery from '@queries/mission/updateMissionQuery';
+import * as deleteMissionQuery from '@queries/mission/deleteMissionQuery';
+import * as addParticipantMissionQuery from '@queries/mission/addParticipantMissionQuery';
+import * as removeParticipantQuery from '@queries/mission/removeParticipantQuery';
 
 const oracleApi = OracleApi.instance;
 
 export default class MissionRepository {
     async getMissions(missionTest: boolean) {
         const result = await oracleApi.execute(
-            getMissionsQueries.getMissionsQuery,
-            getMissionsQueries.getMissionsBinds(missionTest)
+            getMissionsQuery.query,
+            getMissionsQuery.binds(missionTest)
         );
         return result.rows?.map(row =>
             JSON.parse(row as [string][0]) as Mission
@@ -26,31 +27,38 @@ export default class MissionRepository {
 
     async getMission(missionId: string) {
         const result = await oracleApi.execute(
-            getMissionQueries.getMissionQuery,
-            getMissionQueries.getMissionBinds(missionId)
+            getMissionQuery.query,
+            getMissionQuery.binds(missionId)
         ) as Result<string[]>;
+        const missionJson = result.rows?.[0]?.[0];
+        return missionJson ? toMission(JSON.parse(missionJson) as OracleMission) : null;
+    }
 
-        const oracleMission = JSON.parse(result.rows?.[0]?.[0] ?? '') as OracleMission;
-        return toMission(oracleMission)
+    async getMissionParticipantCount(missionId: string) {
+        const result = await oracleApi.execute(
+            getMissionParticipantCountQuery.query,
+            getMissionParticipantCountQuery.binds(missionId)
+        ) as Result<number[]>;
+        return result.rows?.[0]?.[0] ?? 0;
     }
 
     async createMission(mission: Mission, managerIds: string[], tasks: MissionTask[]) {
         await oracleApi.execute(
-            createMissionQueries.insertMissionQuery,
-            createMissionQueries.insertMissionBinds(mission),
+            createMissionQuery.insertMissionQuery,
+            createMissionQuery.insertMissionBinds(mission),
             { autoCommit: true }
         );
 
         await oracleApi.executeMany(
-            createMissionQueries.insertMissionManagerQuery,
-            createMissionQueries.insertMissionManagerBinds(mission.id, managerIds),
+            createMissionQuery.insertMissionManagerQuery,
+            createMissionQuery.insertMissionManagerBinds(mission.id, managerIds),
             { autoCommit: true }
         );
 
         if (tasks.length > 0) {
             await oracleApi.executeMany(
-                createMissionQueries.insertMissionTaskQuery,
-                createMissionQueries.insertMissionTaskBinds(mission.id, tasks),
+                createMissionQuery.insertMissionTaskQuery,
+                createMissionQuery.insertMissionTaskBinds(mission.id, tasks),
                 { autoCommit: true }
             );
         }
@@ -58,8 +66,8 @@ export default class MissionRepository {
 
     async updateMission(mission: Mission, managerIds: string[], tasks: MissionTask[]) {
         const updateMissionResult = await oracleApi.execute(
-            updateMissionQueries.updateMissionQuery,
-            updateMissionQueries.updateMissionBinds(mission),
+            updateMissionQuery.updateMissionQuery,
+            updateMissionQuery.updateMissionBinds(mission),
             { autoCommit: true }
         );
 
@@ -68,27 +76,27 @@ export default class MissionRepository {
         }
 
         await oracleApi.execute(
-            updateMissionQueries.deleteMissionManagerQuery,
-            updateMissionQueries.deleteMissionManagerBinds(mission.id),
+            updateMissionQuery.deleteMissionManagerQuery,
+            updateMissionQuery.deleteMissionManagerBinds(mission.id),
             { autoCommit: true }
         );
 
         await oracleApi.executeMany(
-            updateMissionQueries.insertMissionManagerQuery,
-            updateMissionQueries.insertMissionManagerBinds(mission.id, managerIds),
+            updateMissionQuery.insertMissionManagerQuery,
+            updateMissionQuery.insertMissionManagerBinds(mission.id, managerIds),
             { autoCommit: true }
         );
 
         await oracleApi.execute(
-            updateMissionQueries.deleteMissionTaskQuery,
-            updateMissionQueries.deleteMissionTaskBinds(mission.id),
+            updateMissionQuery.deleteMissionTaskQuery,
+            updateMissionQuery.deleteMissionTaskBinds(mission.id),
             { autoCommit: true }
         );
 
         if (tasks.length > 0) {
             await oracleApi.executeMany(
-                updateMissionQueries.insertMissionTaskQuery,
-                updateMissionQueries.insertMissionTaskBinds(mission.id, tasks),
+                updateMissionQuery.insertMissionTaskQuery,
+                updateMissionQuery.insertMissionTaskBinds(mission.id, tasks),
                 { autoCommit: true }
             );
         }
@@ -96,8 +104,8 @@ export default class MissionRepository {
 
     async deleteMission(missionId: string, missionTest: boolean) {
         const deleteMissionResult = await oracleApi.execute(
-            deleteMissionQueries.deleteMissionQuery,
-            deleteMissionQueries.deleteMissionBinds(missionId, missionTest),
+            deleteMissionQuery.deleteMissionQuery,
+            deleteMissionQuery.deleteMissionBinds(missionId, missionTest),
             { autoCommit: true }
         );
 
@@ -106,14 +114,14 @@ export default class MissionRepository {
         }
 
         await oracleApi.execute(
-            updateMissionQueries.deleteMissionManagerQuery,
-            updateMissionQueries.deleteMissionManagerBinds(missionId),
+            deleteMissionQuery.deleteMissionManagerQuery,
+            deleteMissionQuery.deleteMissionManagerBinds(missionId),
             { autoCommit: true }
         );
 
         await oracleApi.execute(
-            updateMissionQueries.deleteMissionTaskQuery,
-            updateMissionQueries.deleteMissionTaskBinds(missionId),
+            deleteMissionQuery.deleteMissionTaskQuery,
+            deleteMissionQuery.deleteMissionTaskBinds(missionId),
             { autoCommit: true }
         );
     }
@@ -131,16 +139,16 @@ export default class MissionRepository {
 
     async addParticipant(missionId: string, userId: string) {
         await oracleApi.execute(
-            addParticipantMissionQueries.insertParticipantQuery,
-            addParticipantMissionQueries.insertParticipantBinds(missionId, userId),
+            addParticipantMissionQuery.query,
+            addParticipantMissionQuery.binds(missionId, userId),
             { autoCommit: true }
         );
     }
 
     async removeParticipant(missionId: string, userId: string) {
         await oracleApi.execute(
-            removeParticipantQueries.deleteParticipantQuery,
-            removeParticipantQueries.deleteParticipantBinds(missionId, userId),
+            removeParticipantQuery.query,
+            removeParticipantQuery.binds(missionId, userId),
             { autoCommit: true }
         );
     }

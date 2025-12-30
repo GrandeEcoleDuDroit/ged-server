@@ -1,4 +1,4 @@
-import {BlockedUserField} from "@fields/userField";
+import {BlockedUserField} from '@fields/userField';
 
 export const query = `
     SELECT ${BlockedUserField.BLOCKED_USER_ID} 

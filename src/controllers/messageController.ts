@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import { e } from '@utils/logs';
 import MessageRepository from '@repositories/messageRepository';
 import type { MessageReport } from '@models/messageReport';
+import type {ServerResponse} from '@models/serverResponse';
+import {invalidFieldsErrorMessage} from "@utils/exceptionUtils";
 
 const messageRepository = new MessageRepository();
 
@@ -14,20 +16,12 @@ export const reportMessage = async (req: Request, res: Response) => {
     } = req.body;
 
     if (!conversationId || !messageId || !recipient || !reason) {
-        const serverResponse = {
-            message: "Error reporting message",
-            error: `
-            Some missing report fields:
-            {
-                conversationId: ${conversationId},
-                messageId: ${messageId},
-                recipient: ${recipient},
-                reason: ${reason},
-            }
-            `
+        const serverResponse: ServerResponse = {
+            message: 'Error reporting message',
+            error: 'Missing fields'
         };
 
-        e(serverResponse.message, new Error(serverResponse.error));
+        e(serverResponse.message, new Error(invalidFieldsErrorMessage(serverResponse.error, req.body)));
         res.status(400).json(serverResponse);
         return;
     }
@@ -41,13 +35,10 @@ export const reportMessage = async (req: Request, res: Response) => {
 
     try {
         await messageRepository.reportMessage(report);
-        const serverResponse = {
-            message: `Message ${messageId} of ${report.recipient.fullName} has been reported successfully`
-        };
-
+        const serverResponse: ServerResponse = { message: 'Message has been reported successfully' };
         res.status(200).json(serverResponse);
     } catch (error: any) {
-        const serverResponse = {
+        const serverResponse: ServerResponse = {
             message: 'Error reporting message',
             error: error.message
         };

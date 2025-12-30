@@ -1,6 +1,6 @@
 import { MissionParticipantField } from '@fields/missionField';
 
-export const insertParticipantQuery = `
+export const query = `
     INSERT INTO ${MissionParticipantField.TABLE_NAME}(
         ${MissionParticipantField.MISSION_ID},
         ${MissionParticipantField.USER_ID}
@@ -10,7 +10,7 @@ export const insertParticipantQuery = `
     )
 `;
 
-export const insertParticipantBinds = (missionId: string, userId: string) => ({
+export const binds = (missionId: string, userId: string) => ({
     mission_id: missionId,
     user_id: userId
 });

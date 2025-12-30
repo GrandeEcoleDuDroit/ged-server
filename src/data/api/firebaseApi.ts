@@ -1,8 +1,8 @@
 import admin, {ServiceAccount} from 'firebase-admin';
-import {Message} from "firebase-admin/messaging";
-import {FcmMessage} from "@models/fcmMessage";
+import {Message} from 'firebase-admin/messaging';
+import {FcmMessage} from '@models/fcmMessage';
 import serviceAccount from '@root/firebase_credentials.json';
-import {Auth} from "firebase-admin/auth";
+import {Auth} from 'firebase-admin/auth';
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount as ServiceAccount)

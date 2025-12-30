@@ -1,7 +1,7 @@
 import { MissionField, MissionManagerField, MissionParticipantField, MissionTaskField } from '@fields/missionField';
 import {UserField} from '@fields/userField';
 
-export const getMissionsQuery = `
+export const query = `
     SELECT JSON_OBJECT(
         '${MissionField.MISSION_ID}': M.${MissionField.MISSION_ID},
         '${MissionField.MISSION_TITLE}': M.${MissionField.MISSION_TITLE},
@@ -64,6 +64,6 @@ export const getMissionsQuery = `
     WHERE M.${MissionField.MISSION_TEST} = :mission_test;
 `;
 
-export const getMissionsBinds = (missionTest: boolean) => ({
+export const binds = (missionTest: boolean) => ({
     mission_test: missionTest ? 1 : 0
 });

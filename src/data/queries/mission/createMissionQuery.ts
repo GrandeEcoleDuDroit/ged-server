@@ -1,5 +1,5 @@
 import { MissionField, MissionManagerField, MissionTaskField } from '@fields/missionField';
-import type { Mission, MissionTask } from "@models/mission";
+import type { Mission, MissionTask } from '@models/mission';
 
 export const insertMissionQuery = `
     INSERT INTO ${MissionField.TABLE_NAME}(

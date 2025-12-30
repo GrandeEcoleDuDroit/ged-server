@@ -1,8 +1,8 @@
 import OracleApi from '@api/oracleApi';
 import { sendMail } from '@api/googleApi';
 import type { User, UserReport } from '@models/user';
-import {Result} from "oracledb";
-import FirebaseApi from "@api/firebaseApi";
+import type {Result} from 'oracledb';
+import FirebaseApi from '@api/firebaseApi';
 import * as getUsersQuery from '@queries/user/getUsersQuery';
 import * as getUserQuery from '@queries/user/getUserQuery';
 import * as createUserQuery from '@queries/user/createUserQuery';
@@ -10,7 +10,7 @@ import * as updateUserQuery from '@queries/user/updateUserQuery';
 import * as updateProfilePictureFileNameQuery from '@queries/user/updateProfilePictureFileNameQuery';
 import * as deleteProfilePictureFileNameQuery from '@queries/user/deleteProfilePictureFileNameQuery';
 import {FieldValue} from 'firebase-admin/firestore';
-import {toFirestoreUser} from "@data/mappers/userMapper";
+import {toFirestoreUser} from '@data/mappers/userMapper';
 
 const oracleApi = OracleApi.instance;
 const firebaseApi = new FirebaseApi();
@@ -27,12 +27,12 @@ export default class UserRepository {
         ) ?? [];
     }
 
-    async getUser(userId: string, tester: boolean): Promise<User | null> {
+    async getUser(userId: string, tester: boolean){
         const query = getUserQuery.query;
         const binds = getUserQuery.binds(userId, tester ? 1 : 0);
         const result = await oracleApi.execute(query, binds) as Result<string[]>;
         const userJson = result.rows?.[0]?.[0];
-        return userJson ? JSON.parse(userJson) : null;
+        return userJson ? JSON.parse(userJson) as User : null;
     }
 
     async createUser(user: User) {

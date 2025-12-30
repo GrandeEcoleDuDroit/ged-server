@@ -1,5 +1,5 @@
 import { MissionField, MissionManagerField, MissionTaskField } from '@fields/missionField';
-import type { Mission, MissionTask } from "@models/mission";
+import type { Mission, MissionTask } from '@models/mission';
 
 export const updateMissionQuery = `
     UPDATE ${MissionField.TABLE_NAME}
