@@ -1,4 +1,4 @@
-import { BindParameters, ExecuteOptions, Pool } from 'oracledb';
+import type { BindParameters, ExecuteOptions, Pool } from 'oracledb';
 import oracledb from 'oracledb';
 import dbConfig from '@root/dbConfig.json';
 import { e } from '@utils/logs';
@@ -11,11 +11,11 @@ export default class OracleApi {
 
     private constructor() {}
 
-    public static get instance(): OracleApi {
+    public static get instance() {
         return this._instance || (this._instance = new this());
     }
 
-    private async pool(): Promise<Pool> {
+    private async getPool() {
         if (!this._pool) {
             const pool = await oracledb.createPool(dbConfig);
             this._pool = pool;
@@ -28,11 +28,11 @@ export default class OracleApi {
     async execute(sql: string, params: BindParameters = [], options: ExecuteOptions = {}) {
         let connection;
         try {
-            connection = await (await this.pool()).getConnection();
+            connection = await (await this.getPool()).getConnection();
             return await connection.execute(sql, params, options);
-        } catch (err) {
-            e('Error execute oracle query:', err);
-            throw err;
+        } catch (error) {
+            e('Error executing oracle query', error);
+            throw error;
         } finally {
             if (connection) {
                 await connection.close();
@@ -43,11 +43,11 @@ export default class OracleApi {
     async executeMany(sql: string, params: BindParameters[] = [], options: ExecuteOptions = {}) {
         let connection;
         try {
-            connection = await (await this.pool()).getConnection();
+            connection = await (await this.getPool()).getConnection();
             return await connection.executeMany(sql, params, options);
-        } catch (err) {
-            e('Error execute many oracle query:', err);
-            throw err;
+        } catch (error) {
+            e('Error executing many oracle query', error);
+            throw error;
         } finally {
             if (connection) {
                 await connection.close();
@@ -60,8 +60,8 @@ export default class OracleApi {
             try {
                 await this._pool.close(10);
                 this._pool = null;
-            } catch (err) {
-                e('Error closing Oracle connection _pool:', err);
+            } catch (error) {
+                e('Error closing Oracle connection pool', error);
             }
         }
     }

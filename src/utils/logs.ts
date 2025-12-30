@@ -1,7 +1,8 @@
 import winston from 'winston';
 import { captureException } from '@sentry/node';
+import {NODE_ENV} from '@root/src/env';
 
-const productionEnvironment = process.env.NODE_ENV == 'production';
+const productionEnvironment = NODE_ENV == 'production';
 const { combine, timestamp, printf, colorize, align, errors } = winston.format;
 
 const log = winston.createLogger({
@@ -33,8 +34,8 @@ export const w = function (message: string) {
 }
 
 export const e = function (message: string, error: any) {
-    log.error(error, message);
+    log.error(`${message}: ${error}`);
     if (productionEnvironment) {
-        captureException(e)
+        captureException(error)
     }
 }

@@ -1,8 +1,10 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { e } from '@utils/logs';
 import FcmRepository from '@repositories/fcmRepository';
 import FcmToken from '@models/fcmToken';
-import type { FcmMessage } from "@models/fcmMessage";
+import type { FcmMessage } from '@models/fcmMessage';
+import type {ServerResponse} from '@models/serverResponse';
+import {invalidFieldsErrorMessage} from "@utils/exceptionUtils";
 
 const fcmRepository = new FcmRepository();
 
@@ -10,30 +12,25 @@ export const addToken = async (req: Request, res: Response) => {
     const { userId, token } = req.body;
 
     if (!userId || !token) {
-        const serverResponse = {
-            message: "Error to add FCM token",
-            error: `
-            Some missing fields: 
-            {
-                userId: ${userId},
-                token: ${token}
-            }
-            `
+        const serverResponse: ServerResponse = {
+            message: 'Error adding fcm token',
+            error: 'Missing fields'
         };
 
-        e(serverResponse.message, new Error(serverResponse.error));
-        return res.status(400).json(serverResponse);
+        e(serverResponse.message, new Error(invalidFieldsErrorMessage(serverResponse.error, req.body)));
+        res.status(400).json(serverResponse);
+        return;
     }
 
     try {
         const fcmToken = new FcmToken(userId, token);
         await fcmRepository.upsertToken(fcmToken);
 
-        const serverResponse = { message: 'FCM token added successfully' };
+        const serverResponse: ServerResponse = { message: 'Fcm token has been added successfully' };
         res.status(201).json(serverResponse);
     } catch (error: any) {
-        const serverResponse = {
-            message: 'Error adding FCM token',
+        const serverResponse: ServerResponse = {
+            message: 'Error adding fcm token',
             error: error.message
         };
 
@@ -46,17 +43,12 @@ export const sendNotification = async (req: Request, res: Response) => {
     const { recipientId, fcmMessage: fcmMessageJson } = req.body;
 
     if (!fcmMessageJson) {
-        const serverResponse = {
-            message: "Error to send notification",
-            error: `
-            Missing field: 
-            {
-                fcmMessage: ${fcmMessageJson}
-            }
-            `
+        const serverResponse: ServerResponse = {
+            message: 'Error sending notification',
+            error: 'Missing fields'
         };
 
-        e(serverResponse.message, new Error(serverResponse.error));
+        e(serverResponse.message, new Error(invalidFieldsErrorMessage(serverResponse.error, req.body)));
         res.status(400).json(serverResponse);
         return;
     }
@@ -98,10 +90,10 @@ export const sendNotification = async (req: Request, res: Response) => {
 
         await fcmRepository.sendNotification(fcmMessage);
 
-        const serverResponse = { message: 'Notification sent successfully' };
+        const serverResponse: ServerResponse = { message: 'Notification has been sent successfully' };
         res.status(201).json(serverResponse);
     } catch (error: any) {
-        const serverResponse = {
+        const serverResponse: ServerResponse = {
             message: 'Error sending notification',
             error: error.message
         };

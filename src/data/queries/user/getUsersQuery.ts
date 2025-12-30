@@ -1,4 +1,4 @@
-import {UserField} from "@fields/userField";
+import {UserField} from '@fields/userField';
 
 export const query = `
     SELECT JSON_OBJECT(*) 

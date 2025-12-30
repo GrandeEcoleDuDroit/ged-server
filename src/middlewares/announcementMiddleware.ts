@@ -1,50 +1,55 @@
-import {NextFunction, Request, Response} from "express";
-import {e} from "@utils/logs";
+import type {NextFunction, Request, Response} from 'express';
+import {e} from '@utils/logs';
+import type {ServerResponse} from '@models/serverResponse';
+import {missMatchTokenIdErrorMessage} from '@utils/exceptionUtils';
 
 export const updateAnnouncementMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const { USER_ID: userId } = req.body;
 
     if (userId != req.uid) {
-        const serverResponse = {
-            message: 'You are not authorized to perform this action.',
-            error: 'Error updating user'
+        const serverResponse: ServerResponse = {
+            message: 'Error updating announcement',
+            error: 'You are not authorized to perform this action'
         };
 
-        e(serverResponse.message, new Error(serverResponse.error));
-        return res.status(403).json(serverResponse);
-    } else {
-        next();
+        e(serverResponse.message, new Error(missMatchTokenIdErrorMessage(userId, req.uid)));
+        res.status(403).json(serverResponse);
+        return;
     }
+
+    next();
 };
 
 export const deleteUserAnnouncementMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const userId = req.params.userId;
 
     if (userId != req.uid) {
-        const serverResponse = {
-            message: 'You are not authorized to perform this action.',
-            error: 'Error deleting user announcement'
+        const serverResponse: ServerResponse = {
+            message: 'Error deleting user announcement',
+            error: 'You are not authorized to perform this action'
         };
 
-        e(serverResponse.message, new Error(serverResponse.error));
-        return res.status(403).json(serverResponse);
-    } else {
-        next();
+        e(serverResponse.message, new Error(missMatchTokenIdErrorMessage(userId, req.uid)));
+        res.status(403).json(serverResponse);
+        return;
     }
+
+    next();
 };
 
 export const deleteAnnouncementMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const { USER_ID: userId } = req.body;
 
     if (userId != req.uid) {
-        const serverResponse = {
-            message: 'You are not authorized to perform this action.',
-            error: 'Error deleting announcement'
+        const serverResponse: ServerResponse = {
+            message: 'Error deleting announcement',
+            error: 'You are not authorized to perform this action'
         };
 
-        e(serverResponse.message, new Error(serverResponse.error));
-        return res.status(403).json(serverResponse);
-    } else {
-        next();
+        e(serverResponse.message, new Error(missMatchTokenIdErrorMessage(userId, req.uid)));
+        res.status(403).json(serverResponse);
+        return;
     }
+
+    next();
 };

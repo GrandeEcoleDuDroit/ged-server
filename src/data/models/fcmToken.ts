@@ -14,6 +14,6 @@ export default class FcmToken {
     }
 
     static fileName() {
-        return "fcmToken.json";
+        return 'fcmToken.json';
     }
 }

@@ -16,7 +16,7 @@ export type FcmData = {
 }
 
 export type AndroidConfig = {
-    priority: "high" | "normal" | undefined;
+    priority: 'high' | 'normal' | undefined;
     notification: AndroidNotification;
 }
 

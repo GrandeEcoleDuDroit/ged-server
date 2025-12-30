@@ -1,16 +1,15 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { e } from '@utils/logs';
-import { formatOracleError } from '@utils/exceptionUtils';
+import {formatOracleError, invalidFieldsErrorMessage} from '@utils/exceptionUtils';
 import type { User, UserReport } from '@models/user';
 import UserRepository from '@repositories/userRepository';
-import WhiteListRepository from '@repositories/whiteListRepository';
-import {Readable} from "stream";
-import ImageRepository from "@repositories/imageRepository";
-import AnnouncementRepository from "@repositories/announcementRepository";
-import FirebaseApi from "@api/firebaseApi";
+import {Readable} from 'stream';
+import ImageRepository from '@repositories/imageRepository';
+import AnnouncementRepository from '@repositories/announcementRepository';
+import FirebaseApi from '@api/firebaseApi';
+import type {ServerResponse} from '@models/serverResponse';
 
 const userRepository = new UserRepository();
-const whiteListRepository = new WhiteListRepository();
 const imageRepository = new ImageRepository();
 const announcementRepository = new AnnouncementRepository();
 const firebaseApi = new FirebaseApi();
@@ -22,7 +21,7 @@ export const getUsers = async (req: Request, res: Response) => {
         const user = await userRepository.getUsers(tester);
         res.status(200).json(user);
     } catch (error: any) {
-        const serverResponse = formatOracleError(error, 'Error getting users');
+        const serverResponse: ServerResponse = formatOracleError('Error getting users', error);
         e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
@@ -36,7 +35,7 @@ export const getUser = async (req: Request, res: Response) => {
         const user = await userRepository.getUser(userId, tester);
         res.status(200).json(user);
     } catch (error: any) {
-        const serverResponse = formatOracleError(error, 'Error getting user');
+        const serverResponse: ServerResponse = formatOracleError('Error getting user', error);
         e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
@@ -53,22 +52,14 @@ export const createUser = async (req: Request, res: Response) => {
     } = req.body;
 
     if (!id || !firstName || !lastName || !email || !schoolLevel || !state) {
-        const serverResponse = {
+        const serverResponse: ServerResponse = {
             message: 'Error creating user',
-            error: `
-              All user fields are required :
-              {
-                id: ${id},
-                firstName: ${firstName},
-                lastName: ${lastName},
-                email: ${email},
-                schoolLevel: ${schoolLevel},
-                state: ${state}
-              }`
+            error: 'Missing fields'
         };
 
-        e(serverResponse.message, new Error(serverResponse.error));
-        return res.status(400).json(serverResponse);
+        e(serverResponse.message, new Error(invalidFieldsErrorMessage(serverResponse.error, req.body)));
+        res.status(400).json(serverResponse);
+        return;
     }
 
     try {
@@ -80,28 +71,15 @@ export const createUser = async (req: Request, res: Response) => {
             schoolLevel: schoolLevel,
             admin: 0,
             profilePictureFileName: null,
-            state: state,
+            state: 1,
             tester: 0
         };
 
-        const isWhiteListed = await whiteListRepository.checkUserWhiteList(email);
-        if (!isWhiteListed) {
-            const serverResponse = {
-                message: 'Error creating user',
-                error: `User ${email} is not whitelisted`
-            };
-
-            e(serverResponse.message, new Error(serverResponse.error));
-            return res.status(403).json(serverResponse);
-        }
-
         await userRepository.createUser(user);
-        const serverResponse = {
-            message: `User ${user.firstName} ${user.lastName} has been created successfully.`
-        };
+        const serverResponse: ServerResponse = { message: 'User has been created successfully' };
         res.status(201).json(serverResponse);
     } catch (error: any) {
-        const serverResponse = formatOracleError(error, 'Error inserting user');
+        const serverResponse: ServerResponse = formatOracleError('Error creating user', error);
         e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
@@ -130,24 +108,14 @@ export const updateUser = async (req: Request, res: Response) => {
         state == null ||
         tester == null
     ) {
-        const serverResponse = {
+        const serverResponse: ServerResponse = {
             message: 'Error updating user',
-            error: `
-              All user fields are required :
-              {
-                id: ${id},
-                firstName: ${firstName},
-                lastName: ${lastName},
-                email: ${email},
-                schoolLevel: ${schoolLevel},
-                admin: ${admin},
-                state: ${state},
-                tester: ${tester}
-              }`
+            error: 'Missing fields'
         };
 
-        e(serverResponse.message, new Error(serverResponse.error));
-        return res.status(400).json(serverResponse);
+        e(serverResponse.message, new Error(invalidFieldsErrorMessage(serverResponse.error, req.body)));
+        res.status(400).json(serverResponse);
+        return;
     }
 
     try {
@@ -164,13 +132,10 @@ export const updateUser = async (req: Request, res: Response) => {
         };
 
         await userRepository.updateUser(user);
-        const serverResponse = {
-            message: `User updated successfully`
-        };
-
+        const serverResponse: ServerResponse = { message: 'User has been updated successfully' };
         res.status(200).json(serverResponse);
     } catch (error: any) {
-        const serverResponse = formatOracleError(error, 'Error updating user');
+        const serverResponse: ServerResponse = formatOracleError('Error updating user', error);
         e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
@@ -179,22 +144,19 @@ export const updateUser = async (req: Request, res: Response) => {
 export const updateProfilePicture = async (req: Request, res: Response) => {
     const {
         USER_ID: userId,
-        USER_PROFILE_PICTURE_FILE_NAME: oldProfilePictureFileName
+        USER_PROFILE_PICTURE_FILE_NAME: previousProfilePictureFileName
     } = req.body;
     const imageFile = req.file;
 
     if(!imageFile || !userId) {
-        const serverResponse = {
+        const serverResponse: ServerResponse = {
             message: 'Error updating profile picture',
-            error: `Missing fields : 
-            { 
-                imageFile, 
-                userId: ${userId}
-            }`
+            error: 'Missing fields'
         };
 
-        e(serverResponse.message, new Error(serverResponse.error));
-        return res.status(400).json(serverResponse);
+        e(serverResponse.message, new Error(invalidFieldsErrorMessage(serverResponse.error, req.body)));
+        res.status(400).json(serverResponse);
+        return;
     }
 
     try {
@@ -204,21 +166,21 @@ export const updateProfilePicture = async (req: Request, res: Response) => {
             imageFile.size
         )
         await userRepository.updateProfilePictureFileName(imageFile.originalname, userId);
-
-        if (oldProfilePictureFileName) {
-            try {
-                await imageRepository.deleteImage(getProfilePicturePath(oldProfilePictureFileName))
-            } catch (error) {
-                e(`Failed to delete old profile picture of ${userId}`, error);
-            }
-        }
-
-        const serverResponse = { message: `Profile picture file name updated successfully` };
+        const serverResponse: ServerResponse = { message: `Profile picture file has been updated successfully` };
         res.status(200).json(serverResponse);
     } catch (error: any) {
-        const serverResponse = formatOracleError(error, 'Error updating profile picture');
+        const serverResponse: ServerResponse = formatOracleError('Error updating profile picture', error);
         e(serverResponse.message, error);
         res.status(500).json(serverResponse);
+        return;
+    }
+
+    if (previousProfilePictureFileName) {
+        try {
+            await imageRepository.deleteImage(getProfilePicturePath(previousProfilePictureFileName))
+        } catch (error) {
+            e(`Error deleting previous profile picture of ${userId}`, error);
+        }
     }
 }
 
@@ -245,24 +207,14 @@ export const deleteUser = async (req: Request, res: Response) => {
         state == null ||
         tester == null
     ) {
-        const serverResponse = {
-            message: 'Error updating user',
-            error: `
-              All user fields are required :
-              {
-                userId: ${userId},
-                firstName: ${firstName},
-                lastName: ${lastName},
-                email: ${email},
-                schoolLevel: ${schoolLevel},
-                admin: ${admin},
-                state: ${state},
-                tester: ${tester}
-              }`
+        const serverResponse: ServerResponse = {
+            message: 'Error deleting user',
+            error: 'Missing fields'
         };
 
-        e(serverResponse.message, new Error(serverResponse.error));
-        return res.status(400).json(serverResponse);
+        e(serverResponse.message, new Error(invalidFieldsErrorMessage(serverResponse.error, req.body)));
+        res.status(400).json(serverResponse);
+        return;
     }
 
     try {
@@ -280,26 +232,27 @@ export const deleteUser = async (req: Request, res: Response) => {
 
         await userRepository.updateUser(deletedUser);
         await announcementRepository.deleteUserAnnouncements(userId, tester)
-        if (req.uid != null) {
+        if (req.uid) {
             await firebaseApi
                 .getAuth()
                 .deleteUser(req.uid);
         }
 
-        if (profilePictureFileName) {
-            try {
-                await imageRepository.deleteImage(getProfilePicturePath(profilePictureFileName))
-            } catch (error) {
-                e(`Failed to delete profile picture of ${userId}`, error);
-            }
-        }
-
-        const serverResponse = { message: `User deleted successfully` };
+        const serverResponse: ServerResponse = { message: 'User has been deleted successfully' };
         res.status(200).json(serverResponse);
     } catch (error: any) {
-        const serverResponse = formatOracleError(error, 'Error deleting profile picture');
+        const serverResponse: ServerResponse = formatOracleError('Error deleting user', error);
         e(serverResponse.message, error);
         res.status(500).json(serverResponse);
+        return;
+    }
+
+    if (profilePictureFileName) {
+        try {
+            await imageRepository.deleteImage(getProfilePicturePath(profilePictureFileName))
+        } catch (error) {
+            e(`Error deleting profile picture of ${userId}`, error);
+        }
     }
 }
 
@@ -310,27 +263,24 @@ export const deleteProfilePicture = async (req: Request, res: Response) => {
     } = req.body;
 
     if(!userId || !profilePictureFileName) {
-        const serverResponse = {
-            message: 'Error updating profile picture',
-            error: `Missing fields : 
-            { 
-                userId: ${userId},
-                profilePictureFileName: ${profilePictureFileName},
-            }`
+        const serverResponse: ServerResponse = {
+            message: 'Error deleting profile picture',
+            error: 'Missing fields'
         };
 
-        e(serverResponse.message, new Error(serverResponse.error));
-        return res.status(400).json(serverResponse);
+        e(serverResponse.message, new Error(invalidFieldsErrorMessage(serverResponse.error, req.body)));
+        res.status(400).json(serverResponse);
+        return;
     }
 
     try {
         await userRepository.deleteProfilePictureFileName(userId);
         await imageRepository.deleteImage(getProfilePicturePath(profilePictureFileName))
 
-        const serverResponse = { message: `Profile picture deleted successfully` };
+        const serverResponse: ServerResponse = { message: 'Profile picture has been deleted successfully' };
         res.status(200).json(serverResponse);
     } catch (error: any) {
-        const serverResponse = formatOracleError(error, 'Error deleting profile picture');
+        const serverResponse: ServerResponse = formatOracleError('Error deleting profile picture', error);
         e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }
@@ -344,20 +294,14 @@ export const reportUser = async (req: Request, res: Response) => {
     } = req.body;
 
     if (!reportedUser || !reporter || !reason) {
-        const serverResponse = {
-            message: "Error to report user",
-            error: `
-            Some missing report fields :
-            {
-                reportedUser: ${reportedUser},
-                reporter: ${reporter},
-                reason: ${reason},
-            }
-            `
+        const serverResponse: ServerResponse = {
+            message: 'Error reporting user',
+            error: `Missing fields`
         };
 
-        e(serverResponse.message, new Error(serverResponse.error));
-        return res.status(400).json(serverResponse);
+        e(serverResponse.message, new Error(invalidFieldsErrorMessage(serverResponse.error, req.body)));
+        res.status(400).json(serverResponse);
+        return;
     }
 
     try {
@@ -366,16 +310,16 @@ export const reportUser = async (req: Request, res: Response) => {
             reporter: reporter,
             reason: reason
         };
+
         await userRepository.reportUser(report);
-        const serverResponse = {
-            message: `User ${report.reportedUser.id} has been reported successfully`
-        };
+        const serverResponse: ServerResponse = { message: 'User has been reported successfully' };
         res.status(200).json(serverResponse);
     } catch (error: any) {
-        const serverResponse = {
+        const serverResponse: ServerResponse = {
             message: 'Error reporting user',
             error: error.message
         };
+
         e(serverResponse.message, error);
         res.status(500).json(serverResponse);
     }

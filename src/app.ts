@@ -5,7 +5,7 @@ import fs from 'fs';
 import https from 'https';
 import path from 'path';
 import routes from '@routes/index';
-import {setupExpressErrorHandler} from "@sentry/node";
+import {setupExpressErrorHandler} from '@sentry/node';
 import { d } from '@utils/logs';
 import OracleApi from '@api/oracleApi';
 import { fileURLToPath } from 'url';
@@ -15,9 +15,7 @@ import { PORT, NODE_ENV, SSL_KEY_PATH, SSL_CERT_PATH } from './env'
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const oracleApi = OracleApi.instance;
-
 const app = express();
-
 const productionEnvironment = NODE_ENV == 'production';
 
 app.use(express.static(path.join(__dirname, 'public')));
