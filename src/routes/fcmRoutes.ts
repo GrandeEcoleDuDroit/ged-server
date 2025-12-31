@@ -10,6 +10,8 @@ router.post(
     fcmController.addToken
 );
 
+router.post('/delete-token', fcmController.deleteToken);
+
 router.post(
     '/send-notification',
     verifyAuthIdToken('Error sending notification'),
