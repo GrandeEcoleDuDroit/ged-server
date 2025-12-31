@@ -1,51 +1,59 @@
-export type FcmMessage = {
+export interface FcmMessage {
     data: FcmData;
     android: AndroidConfig;
     apns: ApnsConfig;
     token: string;
 }
 
-export type FcmNotification = {
+export interface FcmMulticastMessage {
+    data: FcmData;
+    android: AndroidConfig;
+    apns: ApnsConfig;
+    tokens: string[];
+}
+
+export interface FcmNotification {
     title: string;
     body: string;
 }
 
-export type FcmData = {
+export interface FcmData {
     type: string;
     value: string;
 }
 
-export type AndroidConfig = {
+export interface AndroidConfig {
     priority: 'high' | 'normal' | undefined;
     notification: AndroidNotification;
 }
 
-export type AndroidNotification = {
+export interface AndroidNotification {
     channelId: string;
     icon: string;
 }
 
-export type ApnsConfig = {
+export interface ApnsConfig {
     headers: ApnsHeaders;
     payload: ApnsPayload;
 }
 
-export type ApnsHeaders = {
+export interface ApnsHeaders {
+    apnsPushType: string;
     apnsPriority: string;
     apnsCollapseId: string;
 }
 
-export type ApnsPayload = {
+export interface ApnsPayload {
     aps: Aps
 }
 
-export type Aps = {
+export interface Aps {
     alert: Alert;
     sound: string;
     badge: number;
 }
 
-export type Alert = {
+export interface Alert {
     title: string;
     body: string;
 }

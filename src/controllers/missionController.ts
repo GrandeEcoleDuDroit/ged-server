@@ -184,9 +184,9 @@ export const updateMission = async (req: Request, res: Response) => {
     }
 
     try {
-        const imageFileName = previousMission?.imageFileName;
-        if (imageFileName && imageFileName != mission.imageFileName) {
-            await imageRepository.deleteImage(getImagePath(imageFileName));
+        const previousImageFileName = previousMission?.imageFileName;
+        if (previousImageFileName && previousImageFileName != mission.imageFileName) {
+            await imageRepository.deleteImage(getImagePath(previousImageFileName));
         }
     } catch (error: any) {
         e(`Error deleting previous mission image: ${mission.id}`, error);
