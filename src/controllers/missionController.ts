@@ -50,6 +50,7 @@ export const createMission = async (req: Request, res: Response) => {
         !id ||
         !title ||
         !description ||
+        !schoolLevels ||
         !date ||
         !startDate ||
         !endDate ||
@@ -71,7 +72,7 @@ export const createMission = async (req: Request, res: Response) => {
             id: id,
             title: title,
             description: description,
-            schoolLevels: schoolLevels || '[]',
+            schoolLevels: schoolLevels,
             date: date,
             startDate: startDate,
             endDate: endDate,
@@ -127,6 +128,7 @@ export const updateMission = async (req: Request, res: Response) => {
         !id ||
         !title ||
         !description ||
+        !schoolLevels ||
         !startDate ||
         !endDate ||
         !managerIds ||
@@ -146,7 +148,7 @@ export const updateMission = async (req: Request, res: Response) => {
         id: id,
         title: title,
         description: description,
-        schoolLevels: schoolLevels || '[]',
+        schoolLevels: schoolLevels,
         date: date,
         startDate: startDate,
         endDate: endDate,

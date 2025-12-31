@@ -58,8 +58,8 @@ const addParticipantMiddleware = async (req: Request, res: Response, next: NextF
             return
         }
 
-        const schoolLevels = JSON.parse(mission.schoolLevels) as string[];
-        if (schoolLevels.length > 0 && !schoolLevels.includes(userSchoolLevel))  {
+        const schoolLevels = JSON.parse(mission.schoolLevels) as number[];
+        if (!schoolLevels.includes(userSchoolLevel))  {
             const serverResponse: ServerResponse = {
                 message: 'Error adding participant to mission',
                 error : 'User school level not allowed for this mission'
