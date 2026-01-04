@@ -6,7 +6,7 @@ import {
     GOOGLE_REDIRECT_URI,
     GOOGLE_REFRESH_TOKEN,
     EMAIL_ADDRESS
-} from '@root/src/env'
+} from '@root/env'
 
 const oAuth2Client = new google.auth.OAuth2(
     GOOGLE_CLIENT_ID,

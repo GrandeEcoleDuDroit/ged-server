@@ -1,6 +1,6 @@
 import winston from 'winston';
 import { captureException } from '@sentry/node';
-import {NODE_ENV} from '@root/src/env';
+import {NODE_ENV} from '@root/env';
 
 const productionEnvironment = NODE_ENV == 'production';
 const { combine, timestamp, printf, colorize, align, errors } = winston.format;

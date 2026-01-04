@@ -2,7 +2,7 @@ import ociCommon from 'oci-common';
 import ociObjectStorage from 'oci-objectstorage';
 import {GetObjectRequest, PutObjectRequest} from 'oci-objectstorage/lib/request';
 import {Readable} from 'stream';
-import { OBJECT_STORAGE_NAMESPACE, OBJECT_STORAGE_BUCKET_NAME } from '@root/src/env';
+import { OBJECT_STORAGE_NAMESPACE, OBJECT_STORAGE_BUCKET_NAME } from '@root/env';
 
 const provider = new ociCommon.ConfigFileAuthenticationDetailsProvider();
 
