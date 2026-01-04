@@ -8,11 +8,12 @@ RUN apt update && \
 
 WORKDIR /usr/app
 
+# Install Node.js using NVM
+RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \
+    apt-get install nsolid -y
+
 # Download project
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash && \
-    \. "$HOME/.nvm/nvm.sh" && \
-    nvm install 24 && \
-    git clone https://github.com/GrandeEcoleDuDroit/ged-server.git && \
+RUN git clone https://github.com/GrandeEcoleDuDroit/ged-server.git && \
     cd ged-server && \
     npm install
 
@@ -22,6 +23,7 @@ RUN wget https://download.oracle.com/otn_software/linux/instantclient/2326000/in
     rm -r instantclient-basic-linux.arm64-23.26.0.0.0.zip
 
 # Add Oracle client nvironment variables
+ENV TNS_ADMIN=/opt/oracle/wallet
 ENV ORACLE_HOME=/opt/oracle/instantclient_23_26
 ENV LD_LIBRARY_PATH={ORACLE_HOME}
 
