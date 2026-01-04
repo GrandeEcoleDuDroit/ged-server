@@ -4,7 +4,7 @@ LABEL authors="mourchidimfoumby"
 # Updates packages and install necessary dependecies
 RUN apt update && \
     apt upgrade && \
-    apt install -y nano curl wget unzip git
+    apt install -y nano curl wget unzip git libaio1
 
 WORKDIR /usr/app
 

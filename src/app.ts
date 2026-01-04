@@ -14,13 +14,14 @@ import { PORT, NODE_ENV, SSL_KEY_PATH, SSL_CERT_PATH } from './env'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const ROOT = path.join(__dirname, '../');
 const oracleApi = OracleApi.instance;
 const app = express();
 const productionEnvironment = NODE_ENV == 'production';
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(ROOT, 'public')));
 app.get('/', (_: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, 'public/index.html'));
+    res.sendFile(path.join(ROOT, 'public/index.html'));
 });
 app.use(express.static('public'));
 app.use(express.json());
