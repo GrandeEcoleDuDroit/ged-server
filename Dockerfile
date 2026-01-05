@@ -8,9 +8,9 @@ RUN apt update && \
 
 WORKDIR /usr/app
 
-# Install Node.js using NVM
+# Install Node.js
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \
-    apt-get install nsolid -y
+    apt-get install -y nodejs
 
 # Download project
 RUN git clone https://github.com/GrandeEcoleDuDroit/ged-server.git && \
