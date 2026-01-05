@@ -1,9 +1,10 @@
 import type { BindParameters, ExecuteOptions, Pool } from 'oracledb';
 import oracledb from 'oracledb';
-import dbConfig from '@root/dbConfig.json';
 import { e } from '@utils/logs';
+import { dbConfig } from '@api/configs';
+import {ORACLE_HOME} from "@root/env";
 
-oracledb.initOracleClient({ libDir: process.env.ORACLE_HOME });
+oracledb.initOracleClient({ libDir: ORACLE_HOME });
 
 export default class OracleApi {
     private _pool: Pool | null = null;

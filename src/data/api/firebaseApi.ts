@@ -1,11 +1,11 @@
 import admin, {type ServiceAccount} from 'firebase-admin';
 import type {FcmMessage, FcmMulticastMessage} from '@models/fcmMessage';
-import serviceAccount from '@root/firebase_credentials.json';
 import {Auth} from 'firebase-admin/auth';
 import {toMessage, toMulticastMessage} from "@data/mappers/fcmMapper";
+import {firebaseCredentials} from "@api/configs";
 
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount as ServiceAccount)
+    credential: admin.credential.cert(firebaseCredentials as ServiceAccount)
 });
 
 export default class FirebaseApi {
