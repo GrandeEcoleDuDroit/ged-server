@@ -31,7 +31,7 @@ const addParticipantMiddleware = async (req: Request, res: Response, next: NextF
 
     try {
         const mission = await missionRepository.getMission(missionId);
-        const participantCount = await missionRepository.getMissionParticipantCount(missionId)
+        const missionParticipants = await missionRepository.getMissionParticipants(missionId)
 
         if (!mission) {
             const serverResponse: ServerResponse = {
@@ -70,7 +70,7 @@ const addParticipantMiddleware = async (req: Request, res: Response, next: NextF
             return
         }
 
-        if (participantCount >= mission.maxParticipants) {
+        if (missionParticipants.length >= mission.maxParticipants) {
             const serverResponse: ServerResponse = {
                 message: 'Error adding participant to mission',
                 error : 'Mission is full'

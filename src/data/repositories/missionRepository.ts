@@ -1,27 +1,41 @@
 import OracleApi from '@api/oracleApi';
 import { sendMail } from '@api/googleApi';
-import {toMission} from '@data/mappers/missionMapper';
+import {toMission, toMissionManager, toMissionParticipant, toMissionTask} from '@data/mappers/missionMapper';
 import type {Result} from 'oracledb';
-import type {Mission, MissionTask, MissionReport, OracleMission} from '@models/mission';
+import type {
+    Mission,
+    MissionTask,
+    MissionReport,
+    OracleMission,
+    OracleMissionTask,
+    OracleMissionParticipant, OracleMissionManager, InboundOracleMission
+} from '@models/mission';
 import * as getMissionsQuery from '@queries/mission/getMissionsQuery';
 import * as getMissionQuery from '@queries/mission/getMissionQuery';
-import * as getMissionParticipantCountQuery from '@queries/mission/getMissionParticipantCountQuery';
+import * as getMissionManagersQuery from '@queries/mission/getMissionManagersQuery';
+import * as getMissionParticipantsQuery from '@queries/mission/getMissionParticipantsQuery';
+import * as getMissionParticipantUsersQuery from '@queries/mission/getMissionParticipantUsersQuery';
+import * as getMissionTasksQuery from '@queries/mission/getMissionTasksQuery';
 import * as createMissionQuery from '@queries/mission/createMissionQuery';
+import * as addParticipantMissionQuery from '@queries/mission/addParticipantMissionQuery';
 import * as updateMissionQuery from '@queries/mission/updateMissionQuery';
 import * as deleteMissionQuery from '@queries/mission/deleteMissionQuery';
-import * as addParticipantMissionQuery from '@queries/mission/addParticipantMissionQuery';
-import * as removeParticipantQuery from '@queries/mission/removeParticipantQuery';
+import * as deleteMissionParticipantsQuery from '@queries/mission/deleteMissionParticipantsQuery';
+import * as deleteMissionParticipantQuery from '@queries/mission/deleteMissionParticipantQuery';
+import type {OracleUser} from "@models/user";
+import {toUser} from "@data/mappers/userMapper";
 
 const oracleApi = OracleApi.instance;
 
 export default class MissionRepository {
     async getMissions(missionTest: boolean) {
         const result = await oracleApi.execute(
-            getMissionsQuery.query,
+            getMissionsQuery.missionQuery,
             getMissionsQuery.binds(missionTest)
         );
+
         return result.rows?.map(row =>
-            JSON.parse(row as [string][0]) as Mission
+            JSON.parse(row as [string][0]) as InboundOracleMission
         ) ?? [];
     }
 
@@ -34,12 +48,60 @@ export default class MissionRepository {
         return missionJson ? toMission(JSON.parse(missionJson) as OracleMission) : null;
     }
 
-    async getMissionParticipantCount(missionId: string) {
+    async getMissionManagers(missionId: string) {
         const result = await oracleApi.execute(
-            getMissionParticipantCountQuery.query,
-            getMissionParticipantCountQuery.binds(missionId)
-        ) as Result<number[]>;
-        return result.rows?.[0]?.[0] ?? 0;
+            getMissionManagersQuery.query,
+            getMissionManagersQuery.binds(missionId)
+        );
+
+        return result.rows?.map(
+            row => {
+                const oracleMissionManager = JSON.parse(row as [string][0]) as OracleMissionManager
+                return toMissionManager(oracleMissionManager)
+            }
+        ) ?? [];
+    }
+
+    async getMissionParticipants(missionId: string) {
+        const result = await oracleApi.execute(
+            getMissionParticipantsQuery.query,
+            getMissionParticipantsQuery.binds(missionId)
+        );
+
+        return result.rows?.map(
+            row => {
+                const oracleMissionParticipant = JSON.parse(row as [string][0]) as OracleMissionParticipant
+                return toMissionParticipant(oracleMissionParticipant)
+            }
+        ) ?? [];
+    }
+
+    async getMissionParticipantUsers(missionId: string) {
+        const result = await oracleApi.execute(
+            getMissionParticipantUsersQuery.query,
+            getMissionParticipantUsersQuery.binds(missionId)
+        );
+
+        return result.rows?.map(
+            row => {
+                const oracleUser = JSON.parse(row as [string][0]) as OracleUser
+                return toUser(oracleUser)
+            }
+        ) ?? [];
+    }
+
+    async getMissionTasks(missionId: string) {
+        const result = await oracleApi.execute(
+            getMissionTasksQuery.query,
+            getMissionTasksQuery.binds(missionId)
+        );
+
+        return result.rows?.map(
+            row => {
+                const oracleMissionTask = JSON.parse(row as [string][0]) as OracleMissionTask
+                return toMissionTask(oracleMissionTask)
+            }
+        ) ?? [];
     }
 
     async createMission(mission: Mission, managerIds: string[], tasks: MissionTask[]) {
@@ -64,41 +126,68 @@ export default class MissionRepository {
         }
     }
 
-    async updateMission(mission: Mission, managerIds: string[], tasks: MissionTask[]) {
-        const updateMissionResult = await oracleApi.execute(
-            updateMissionQuery.updateMissionQuery,
-            updateMissionQuery.updateMissionBinds(mission),
-            { autoCommit: true }
-        );
+    async updateMission(
+        mission: Mission,
+        managerIdsToDelete: string[],
+        managerIdsToAdd: string[],
+        missionTasksToDelete: MissionTask[],
+        missionTasksToAdd: MissionTask[],
+        participantIdsToDelete: string[],
+    ) {
+        let connection;
 
-        if (updateMissionResult.rowsAffected == 0) {
-            throw new Error('Mission not found');
-        }
+        try {
+            connection = await oracleApi.getConnection();
 
-        await oracleApi.execute(
-            updateMissionQuery.deleteMissionManagerQuery,
-            updateMissionQuery.deleteMissionManagerBinds(mission.id),
-            { autoCommit: true }
-        );
-
-        await oracleApi.executeMany(
-            updateMissionQuery.insertMissionManagerQuery,
-            updateMissionQuery.insertMissionManagerBinds(mission.id, managerIds),
-            { autoCommit: true }
-        );
-
-        await oracleApi.execute(
-            updateMissionQuery.deleteMissionTaskQuery,
-            updateMissionQuery.deleteMissionTaskBinds(mission.id),
-            { autoCommit: true }
-        );
-
-        if (tasks.length > 0) {
-            await oracleApi.executeMany(
-                updateMissionQuery.insertMissionTaskQuery,
-                updateMissionQuery.insertMissionTaskBinds(mission.id, tasks),
-                { autoCommit: true }
+            const updateMissionResult = await connection.execute(
+                updateMissionQuery.updateMissionQuery,
+                updateMissionQuery.updateMissionBinds(mission)
             );
+
+            if (updateMissionResult.rowsAffected == 0) {
+                throw new Error('Mission not found');
+            }
+
+            if (managerIdsToDelete.length > 0) {
+                await connection.executeMany(
+                    updateMissionQuery.deleteManagersQuery,
+                    updateMissionQuery.deleteManagersBinds(mission.id, managerIdsToDelete)
+                );
+            }
+
+            if (managerIdsToAdd.length > 0) {
+                await connection.executeMany(
+                    updateMissionQuery.insertManagersQuery,
+                    updateMissionQuery.insertMissionManagersBinds(mission.id, managerIdsToAdd)
+                );
+            }
+
+            if (missionTasksToDelete.length > 0) {
+                await connection.executeMany(
+                    updateMissionQuery.deleteMissionTasksQuery,
+                    updateMissionQuery.deleteMissionTasksBinds(mission.id, missionTasksToDelete)
+                );
+            }
+
+            if (missionTasksToAdd.length > 0) {
+                await connection.executeMany(
+                    updateMissionQuery.insertMissionTasksQuery,
+                    updateMissionQuery.insertMissionTasksBinds(mission.id, missionTasksToAdd)
+                );
+            }
+
+            if (participantIdsToDelete.length > 0) {
+                await connection.executeMany(
+                    deleteMissionParticipantsQuery.query,
+                    deleteMissionParticipantsQuery.binds(mission.id, participantIdsToDelete)
+                )
+            }
+
+            await connection.commit();
+        } catch (error) {
+            throw error;
+        } finally {
+            await connection?.close();
         }
     }
 
@@ -137,7 +226,7 @@ export default class MissionRepository {
         await sendMail(subject, html);
     }
 
-    async addParticipant(missionId: string, userId: string) {
+    async addMissionParticipant(missionId: string, userId: string) {
         await oracleApi.execute(
             addParticipantMissionQuery.query,
             addParticipantMissionQuery.binds(missionId, userId),
@@ -145,10 +234,10 @@ export default class MissionRepository {
         );
     }
 
-    async removeParticipant(missionId: string, userId: string) {
+    async deleteMissionParticipant(missionId: string, userId: string) {
         await oracleApi.execute(
-            removeParticipantQuery.query,
-            removeParticipantQuery.binds(missionId, userId),
+            deleteMissionParticipantQuery.query,
+            deleteMissionParticipantQuery.binds(missionId, userId),
             { autoCommit: true }
         );
     }

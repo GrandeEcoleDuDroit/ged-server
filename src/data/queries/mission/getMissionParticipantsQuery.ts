@@ -1,7 +1,7 @@
 import {MissionParticipantField} from '@fields/missionField';
 
 export const query = `
-    SELECT COUNT(*) 
+    SELECT JSON_OBJECT(*) 
     FROM ${MissionParticipantField.TABLE_NAME}
     WHERE ${MissionParticipantField.MISSION_ID} = :mission_id
 `;

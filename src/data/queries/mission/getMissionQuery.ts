@@ -2,7 +2,7 @@ import {MissionField} from '@fields/missionField';
 
 export const query = `
     SELECT JSON_OBJECT(*)
-    FROM MISSIONS
+    FROM ${MissionField.TABLE_NAME}
     WHERE ${MissionField.MISSION_ID} = :mission_id
 `;
 

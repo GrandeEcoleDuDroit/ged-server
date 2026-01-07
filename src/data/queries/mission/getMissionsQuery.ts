@@ -1,7 +1,7 @@
 import { MissionField, MissionManagerField, MissionParticipantField, MissionTaskField } from '@fields/missionField';
 import {UserField} from '@fields/userField';
 
-export const query = `
+export const missionQuery = `
     SELECT JSON_OBJECT(
         '${MissionField.MISSION_ID}': M.${MissionField.MISSION_ID},
         '${MissionField.MISSION_TITLE}': M.${MissionField.MISSION_TITLE},

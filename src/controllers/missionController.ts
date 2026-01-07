@@ -161,13 +161,38 @@ export const updateMission = async (req: Request, res: Response) => {
 
     try {
         previousMission = await missionRepository.getMission(mission.id)
-        const missionTasks: MissionTask[] = JSON.parse(tasks).map((task: any) => ({
+        const previousMissionManagerIds = await missionRepository.getMissionManagers(mission.id)
+            .then(managers => managers.map(m => m.userId));
+        const previousMissionManagerIdsSet = new Set(previousMissionManagerIds);
+        const newMissionManagerIds: string[] = JSON.parse(managerIds);
+        const newMissionManagerIdsSet = new Set(newMissionManagerIds);
+        const missionManagerIdsToDelete = previousMissionManagerIds.filter(managerId => !newMissionManagerIdsSet.has(managerId));
+        const missionManagerIdsToAdd = newMissionManagerIds.filter(managerId => !previousMissionManagerIdsSet.has(managerId));
+
+        const previousMissionTasks = await missionRepository.getMissionTasks(mission.id);
+        const previousMissionTaskMap = new Map(previousMissionTasks.map(task => [task.id, task]));
+        const newMissionTasks: MissionTask[] = JSON.parse(tasks).map((task: any): MissionTask => ({
             id: task.MISSION_TASK_ID,
             value: task.MISSION_TASK_VALUE
         }));
-        const missionManagerIds: string[] = JSON.parse(managerIds);
+        const newMissionTaskMap = new Map(newMissionTasks.map(task => [task.id, task]));
+        const missionTasksToDelete = previousMissionTasks.filter(task => !newMissionTaskMap.has(task.id));
+        const missionTasksToAdd = newMissionTasks.filter(task => !previousMissionTaskMap.has(task.id));
 
-        await missionRepository.updateMission(mission, missionManagerIds, missionTasks);
+        const missionParticipantUsers = await missionRepository.getMissionParticipantUsers(mission.id);
+        const newMissionSchoolLevels = new Set<number>(JSON.parse(mission.schoolLevels));
+        const missionParticipantIdsToDelete = missionParticipantUsers
+            .filter(user => !newMissionSchoolLevels.has(user.schoolLevel))
+            .map(user => user.userId);
+
+        await missionRepository.updateMission(
+            mission,
+            missionManagerIdsToDelete,
+            missionManagerIdsToAdd,
+            missionTasksToDelete,
+            missionTasksToAdd,
+            missionParticipantIdsToDelete
+        );
         if (imageFile) {
             await imageRepository.uploadImage(
                 Readable.from(imageFile.buffer),
@@ -290,7 +315,7 @@ export const addParticipant = async (req: Request, res: Response) => {
     }
 
     try {
-        await missionRepository.addParticipant(missionId, userId);
+        await missionRepository.addMissionParticipant(missionId, userId);
         const serverResponse: ServerResponse = { message: 'Participant has been added to mission successfully' };
         res.status(200).json(serverResponse);
     } catch (error: any) {
@@ -322,7 +347,7 @@ export const removeParticipant = async (req: Request, res: Response) => {
     }
 
     try {
-        await missionRepository.removeParticipant(missionId, userId);
+        await missionRepository.deleteMissionParticipant(missionId, userId);
         const serverResponse: ServerResponse = { message: 'Participant has been removed from mission successfully' };
         res.status(200).json(serverResponse);
     } catch (error: any) {
