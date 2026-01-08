@@ -1,4 +1,11 @@
-import type {Mission, OracleMission} from '@models/mission';
+import type {
+    Mission,
+    MissionManager, MissionParticipant,
+    MissionTask,
+    OracleMission,
+    OracleMissionManager, OracleMissionParticipant,
+    OracleMissionTask
+} from '@models/mission';
 
 export const toMission = (oracleMission: OracleMission): Mission => ({
     id: oracleMission.MISSION_ID,
@@ -13,3 +20,18 @@ export const toMission = (oracleMission: OracleMission): Mission => ({
     imageFileName: oracleMission.MISSION_IMAGE_FILE_NAME,
     test: oracleMission.MISSION_TEST == 1
 });
+
+export const toMissionManager = (oracleMissionManager: OracleMissionManager): MissionManager => ({
+    missionId: oracleMissionManager.MISSION_ID,
+    userId: oracleMissionManager.USER_ID
+})
+
+export const toMissionParticipant = (oracleMissionParticipant: OracleMissionParticipant): MissionParticipant => ({
+    missionId: oracleMissionParticipant.MISSION_ID,
+    userId: oracleMissionParticipant.USER_ID
+})
+
+export const toMissionTask = (oracleMissionTask: OracleMissionTask): MissionTask => ({
+    id: oracleMissionTask.MISSION_TASK_ID,
+    value: oracleMissionTask.MISSION_TASK_VALUE
+})

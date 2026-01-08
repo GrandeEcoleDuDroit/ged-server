@@ -29,16 +29,18 @@ export const updateMissionBinds = (mission: Mission) => ({
     mission_test: mission.test ? 1 : 0
 });
 
-export const deleteMissionManagerQuery = `
+export const deleteManagersQuery = `
     DELETE FROM ${MissionManagerField.TABLE_NAME}
-    WHERE ${MissionManagerField.MISSION_ID} = :mission_id
+    WHERE ${MissionManagerField.MISSION_ID} = :mission_id AND
+          ${MissionManagerField.USER_ID} = :user_id
 `;
 
-export const deleteMissionManagerBinds = (missionId: string) => ({
-    mission_id: missionId
-});
+export const deleteManagersBinds = (missionId: string, managerIds: string[]) => managerIds.map (managerId => ({
+    mission_id: missionId,
+    user_id: managerId
+}));
 
-export const insertMissionManagerQuery = `
+export const insertManagersQuery = `
     INSERT INTO ${MissionManagerField.TABLE_NAME}(
         ${MissionManagerField.MISSION_ID},
         ${MissionManagerField.USER_ID}
@@ -48,22 +50,24 @@ export const insertMissionManagerQuery = `
     )
 `;
 
-export const insertMissionManagerBinds = (missionId: string, managerIds: string[]) => managerIds.map(managerId => ({
+export const insertMissionManagersBinds = (missionId: string, managerIds: string[]) => managerIds.map(managerId => ({
     mission_id: missionId,
     user_id: managerId
 }));
 
 
-export const deleteMissionTaskQuery = `
+export const deleteMissionTasksQuery = `
     DELETE FROM ${MissionTaskField.TABLE_NAME}
-    WHERE ${MissionTaskField.MISSION_ID} = :mission_id
+    WHERE ${MissionTaskField.MISSION_ID} = :mission_id AND
+          ${MissionTaskField.MISSION_TASK_ID} = :mission_task_id
 `;
 
-export const deleteMissionTaskBinds = (missionId: string) => ({
-    mission_id: missionId
-});
+export const deleteMissionTasksBinds = (missionId: string, missionTaskIds: MissionTask[]) => missionTaskIds.map (missionTask => ({
+    mission_id: missionId,
+    mission_task_id: missionTask.id
+}));
 
-export const insertMissionTaskQuery = `
+export const insertMissionTasksQuery = `
     INSERT INTO ${MissionTaskField.TABLE_NAME}(
         ${MissionTaskField.MISSION_TASK_ID},
         ${MissionTaskField.MISSION_TASK_VALUE},
@@ -75,7 +79,7 @@ export const insertMissionTaskQuery = `
     )
 `;
 
-export const insertMissionTaskBinds = (missionId: string, tasks: MissionTask[]) => tasks.map(task => ({
+export const insertMissionTasksBinds = (missionId: string, missionTasks: MissionTask[]) => missionTasks.map(task => ({
     mission_task_id: task.id,
     mission_task_value: task.value,
     mission_id: missionId

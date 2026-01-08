@@ -1,4 +1,16 @@
-import type {User, FirestoreUser} from '@models/user';
+import type {User, FirestoreUser, OracleUser} from '@models/user';
+
+export const toUser = (oracleUser: OracleUser): User => ({
+    userId: oracleUser.USER_ID,
+    firstName: oracleUser.USER_FIRST_NAME,
+    lastName: oracleUser.USER_LAST_NAME,
+    email: oracleUser.USER_EMAIL,
+    schoolLevel: oracleUser.USER_SCHOOL_LEVEL,
+    admin: oracleUser.USER_ADMIN,
+    profilePictureFileName: oracleUser.USER_PROFILE_PICTURE_FILE_NAME,
+    state: oracleUser.USER_STATE,
+    tester: oracleUser.USER_TESTER
+})
 
 export const toFirestoreUser = (user: User): FirestoreUser => ({
     userId: user.userId,
