@@ -3,31 +3,30 @@ import { e } from '@utils/logs';
 import type {Mission, MissionTask, MissionReport} from '@models/mission';
 import MissionRepository from '@repositories/missionRepository';
 import ImageRepository from '@repositories/imageRepository';
-import {formatOracleError, invalidFieldsErrorMessage} from '@utils/exceptionUtils';
+import {
+    oracleErrorResponse,
+    badRequestErrorResponse,
+    internalServerErrorResponse
+} from '@utils/errorUtils';
 import {Readable} from 'stream';
 import type {ServerResponse} from '@models/serverResponse';
 
 const missionRepository = new MissionRepository();
 const imageRepository = new ImageRepository();
 
-export const getMissions = async (req: Request, res: Response) => {
+export const getMissions = async (req: Request, res: Response): Promise<void> => {
     const missionTest = req.claims?.tester ?? false;
 
     try {
         const result = await missionRepository.getMissions(missionTest);
         res.json(result);
     } catch (error: any) {
-        const serverResponse: ServerResponse = {
-            message: 'Error getting missions',
-            error : error.message
-        };
-
-        e(serverResponse.message, error);
-        res.status(500).json(serverResponse);
+        e(new Error(`Error getting missions: ${error.message}`));
+        res.status(500).json(oracleErrorResponse(error));
     }
 }
 
-export const createMission = async (req: Request, res: Response) => {
+export const createMission = async (req: Request, res: Response): Promise<void> => {
     const missionTest = req.claims?.tester ?? false;
     const missionJson = req.body.mission;
     const imageFile = req.file;
@@ -57,36 +56,32 @@ export const createMission = async (req: Request, res: Response) => {
         !managerIds ||
         !maxParticipants
     ) {
-        const serverResponse: ServerResponse = {
-            message: 'Error creating mission',
-            error: 'Missing fields'
-        };
-
-        e(serverResponse.message, new Error(invalidFieldsErrorMessage(serverResponse.error, req.body)));
-        res.status(400).json(serverResponse);
+        res.status(400).json(badRequestErrorResponse);
         return;
     }
 
-    try {
-        const mission: Mission = {
-            id: id,
-            title: title,
-            description: description,
-            schoolLevels: schoolLevels,
-            date: date,
-            startDate: startDate,
-            endDate: endDate,
-            duration: duration,
-            maxParticipants: maxParticipants,
-            imageFileName: imageFileName,
-            test: missionTest
-        };
-        const missionTasks: MissionTask[] = JSON.parse(tasks).map((task: any) => ({
-            id: task.MISSION_TASK_ID,
-            value: task.MISSION_TASK_VALUE
-        }));
-        const missionManagerIds: string[] = JSON.parse(managerIds);
+    const mission: Mission = {
+        id: id,
+        title: title,
+        description: description,
+        schoolLevels: schoolLevels,
+        date: date,
+        startDate: startDate,
+        endDate: endDate,
+        duration: duration,
+        maxParticipants: maxParticipants,
+        imageFileName: imageFileName,
+        test: missionTest
+    };
 
+    const missionTasks: MissionTask[] = JSON.parse(tasks).map((task: any): MissionTask => ({
+        id: task.MISSION_TASK_ID,
+        value: task.MISSION_TASK_VALUE
+    }));
+
+    const missionManagerIds: string[] = JSON.parse(managerIds);
+
+    try {
         await missionRepository.createMission(mission, missionManagerIds, missionTasks);
         if (imageFile) {
             await imageRepository.uploadImage(
@@ -99,13 +94,12 @@ export const createMission = async (req: Request, res: Response) => {
         const serverResponse: ServerResponse = { message: `Mission has been created successfully` };
         res.status(201).json(serverResponse);
     } catch (error: any) {
-        const serverResponse: ServerResponse = formatOracleError('Error creating mission', error);
-        e(serverResponse.message, error);
-        res.status(500).json(serverResponse);
+        e(new Error(`Error creating mission ${mission.id} : ${error.message}`));
+        res.status(500).json(oracleErrorResponse(error));
     }
 }
 
-export const updateMission = async (req: Request, res: Response) => {
+export const updateMission = async (req: Request, res: Response): Promise<void> => {
     const missionTest = req.claims?.tester ?? false;
     const missionJson = req.body.mission;
     const imageFile = req.file;
@@ -134,13 +128,7 @@ export const updateMission = async (req: Request, res: Response) => {
         !managerIds ||
         !maxParticipants
     ) {
-        const serverResponse: ServerResponse = {
-            message: 'Error updating mission',
-            error: 'Missing fields'
-        };
-
-        e(serverResponse.message, new Error(invalidFieldsErrorMessage(serverResponse.error, req.body)));
-        res.status(400).json(serverResponse);
+        res.status(400).json(badRequestErrorResponse);
         return;
     }
 
@@ -204,9 +192,8 @@ export const updateMission = async (req: Request, res: Response) => {
         const serverResponse: ServerResponse = { message: 'Mission has been updated successfully'};
         res.status(201).json(serverResponse);
     } catch (error: any) {
-        const serverResponse: ServerResponse = formatOracleError('Error updating mission', error);
-        e(serverResponse.message, error);
-        res.status(500).json(serverResponse);
+        e(new Error(`Error updating mission ${mission.id}: ${error.message}`));
+        res.status(500).json(oracleErrorResponse(error));
         return;
     }
 
@@ -216,11 +203,11 @@ export const updateMission = async (req: Request, res: Response) => {
             await imageRepository.deleteImage(getImagePath(previousImageFileName));
         }
     } catch (error: any) {
-        e(`Error deleting previous mission image: ${mission.id}`, error);
+        e(new Error(`Error deleting previous mission image ${previousMission?.id}: ${error.message}`));
     }
 }
 
-export const deleteMission = async (req: Request, res: Response) => {
+export const deleteMission = async (req: Request, res: Response): Promise<void> => {
     const missionTest = req.claims?.tester ?? false;
     const {
         MISSION_ID: missionId,
@@ -228,13 +215,7 @@ export const deleteMission = async (req: Request, res: Response) => {
     } = req.body;
 
     if(!missionId) {
-        const serverResponse: ServerResponse = {
-            message: 'Error deleting mission',
-            error: 'Missing fields'
-        };
-
-        e(serverResponse.message, new Error(invalidFieldsErrorMessage(serverResponse.error, req.body)));
-        res.status(400).json(serverResponse);
+        res.status(400).json(badRequestErrorResponse);
         return;
     }
 
@@ -243,9 +224,8 @@ export const deleteMission = async (req: Request, res: Response) => {
         const serverResponse: ServerResponse = { message: 'Mission has been deleted successfully' };
         res.status(200).json(serverResponse);
     } catch (error: any) {
-        const serverResponse: ServerResponse = formatOracleError('Error deleting mission', error);
-        e(serverResponse.message, error);
-        res.status(500).json(serverResponse);
+        e(new Error(`Error deleting mission ${missionId} : ${error.message}`));
+        res.status(500).json(oracleErrorResponse(error));
         return;
     }
 
@@ -253,12 +233,12 @@ export const deleteMission = async (req: Request, res: Response) => {
         try {
             await imageRepository.deleteImage(getImagePath(imageFileName));
         } catch (error: any) {
-            e(`Error deleting mission image: ${missionId}`, error);
+            e(new Error(`Error deleting mission image ${missionId} : ${error.message}`));
         }
     }
 }
 
-export const reportMission = async (req: Request, res: Response) => {
+export const reportMission = async (req: Request, res: Response): Promise<void> => {
     const {
         missionId: missionId,
         reporter: reporter,
@@ -266,13 +246,7 @@ export const reportMission = async (req: Request, res: Response) => {
     } = req.body;
 
     if(!missionId || !reporter || !reason) {
-        const serverResponse: ServerResponse = {
-            message: 'Error reporting mission',
-            error: 'Missing fields'
-        };
-
-        e(serverResponse.message, new Error(invalidFieldsErrorMessage(serverResponse.error, req.body)));
-        res.status(400).json(serverResponse);
+        res.status(400).json(badRequestErrorResponse);
         return;
     }
 
@@ -287,30 +261,19 @@ export const reportMission = async (req: Request, res: Response) => {
         const serverResponse: ServerResponse = { message: 'Mission has been reported successfully' };
         res.status(200).json(serverResponse);
     } catch (error: any) {
-        const serverResponse: ServerResponse = {
-            message: 'Error reporting mission',
-            error: error.message
-        };
-
-        e(serverResponse.message, error);
-        res.status(500).json(serverResponse);
+        e(new Error(`Error reporting mission ${missionId}: ${error.message}`));
+        res.status(500).json(internalServerErrorResponse);
     }
 }
 
-export const addParticipant = async (req: Request, res: Response) => {
+export const addParticipant = async (req: Request, res: Response): Promise<void> => {
     const {
         MISSION_ID: missionId,
         USER_ID: userId
     } = req.body;
 
     if(!missionId || !userId) {
-        const serverResponse: ServerResponse = {
-            message: 'Error adding participant to mission',
-            error: 'Missing fields'
-        };
-
-        e(serverResponse.message, new Error(invalidFieldsErrorMessage(serverResponse.error, req.body)));
-        res.status(400).json(serverResponse);
+        res.status(400).json(badRequestErrorResponse);
         return;
     }
 
@@ -319,30 +282,19 @@ export const addParticipant = async (req: Request, res: Response) => {
         const serverResponse: ServerResponse = { message: 'Participant has been added to mission successfully' };
         res.status(200).json(serverResponse);
     } catch (error: any) {
-        const serverResponse: ServerResponse = {
-            message: 'Error adding participant to mission',
-            error: error.message
-        };
-
-        e(serverResponse.message, error);
-        res.status(500).json(serverResponse);
+        e(new Error(`Error adding mission participant ${userId} to mission ${missionId}: ${error.message}`));
+        res.status(500).json(oracleErrorResponse);
     }
 }
 
-export const removeParticipant = async (req: Request, res: Response) => {
+export const removeParticipant = async (req: Request, res: Response): Promise<void> => {
     const {
         MISSION_ID: missionId,
         USER_ID: userId
     } = req.body;
 
     if(!missionId || !userId) {
-        const serverResponse: ServerResponse = {
-            message: 'Error removing participant from mission',
-            error: 'Missing fields'
-        };
-
-        e(serverResponse.message, new Error(invalidFieldsErrorMessage(serverResponse.error, req.body)));
-        res.status(400).json(serverResponse);
+        res.status(400).json(badRequestErrorResponse);
         return;
     }
 
@@ -351,17 +303,11 @@ export const removeParticipant = async (req: Request, res: Response) => {
         const serverResponse: ServerResponse = { message: 'Participant has been removed from mission successfully' };
         res.status(200).json(serverResponse);
     } catch (error: any) {
-        const serverResponse: ServerResponse = {
-            message: 'Error removing participant from mission',
-            error: error.message
-        };
-
-        e(serverResponse.message, error);
-        res.status(500).json(serverResponse);
+        e(new Error(`Error removing mission participant ${userId} to mission ${missionId}: ${error.message}`));
+        res.status(500).json(oracleErrorResponse(error));
     }
 }
 
 function getImagePath(fileName: string): string {
-    const imageFolder = 'MissionImages';
-    return `${imageFolder}/${fileName}`;
+    return `MissionImages/${fileName}`;
 }

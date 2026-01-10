@@ -32,7 +32,7 @@ export default class OracleApi {
             connection = await (await this.getPool()).getConnection();
             return await connection.execute(sql, params, options);
         } catch (error) {
-            e('Error executing oracle query', error);
+            e(error);
             throw error;
         } finally {
             await connection?.close();
@@ -45,7 +45,7 @@ export default class OracleApi {
             connection = await (await this.getPool()).getConnection();
             return await connection.executeMany(sql, params, options);
         } catch (error) {
-            e('Error executing many oracle query', error);
+            e(error);
             throw error;
         } finally {
             await connection?.close();
@@ -62,7 +62,7 @@ export default class OracleApi {
                 await this._pool.close(10);
                 this._pool = null;
             } catch (error) {
-                e('Error closing Oracle connection pool', error);
+                e(error);
             }
         }
     }

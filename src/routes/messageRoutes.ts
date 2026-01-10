@@ -4,6 +4,6 @@ import {verifyAuthIdToken} from '@middlewares/authMiddleware';
 
 const router = express.Router();
 
-router.post('/report', verifyAuthIdToken('Error reporting message'), messageController.reportMessage);
+router.post('/report', verifyAuthIdToken, messageController.reportMessage);
 
 export default router;

@@ -3,7 +3,6 @@ import * as announcementsController from '@controllers/announcementsController';
 import {propagateCustomClaims, verifyAuthIdToken, verifyCustomClaims} from '@middlewares/authMiddleware';
 import {
     deleteAnnouncementMiddleware,
-    deleteUserAnnouncementMiddleware,
     updateAnnouncementMiddleware
 } from '@middlewares/announcementMiddleware';
 
@@ -11,45 +10,37 @@ const router = express.Router();
 
 router.get(
     '/',
-    verifyAuthIdToken('Error getting announcements'),
-    propagateCustomClaims('Error getting announcements'),
+    verifyAuthIdToken,
+    propagateCustomClaims,
     announcementsController.getAnnouncements
 );
 
 router.post(
     '/create',
-    verifyCustomClaims((claims) => claims.admin == true, 'Error creating announcement'),
-    propagateCustomClaims('Error creating announcement'),
+    verifyCustomClaims((claims) => claims.admin == true),
+    propagateCustomClaims,
     announcementsController.createAnnouncement
 );
 
 router.post(
     '/update',
-    verifyCustomClaims((claims) => claims.admin == true, 'Error updating announcement'),
-    propagateCustomClaims('Error updating announcement'),
+    verifyCustomClaims((claims) => claims.admin == true),
+    propagateCustomClaims,
     updateAnnouncementMiddleware,
     announcementsController.updateAnnouncement
 );
 
-router.delete(
-    '/user/:userId',
-    verifyCustomClaims((claims) => claims.admin == true, 'Error deleting user announcements'),
-    propagateCustomClaims('Error deleting user announcements'),
-    deleteUserAnnouncementMiddleware,
-    announcementsController.deleteUserAnnouncements
-);
-
 router.post(
     '/delete',
-    verifyCustomClaims((claims) => claims.admin == true, 'Error deleting announcement'),
-    propagateCustomClaims('Error deleting announcement'),
+    verifyCustomClaims((claims) => claims.admin == true),
+    propagateCustomClaims,
     deleteAnnouncementMiddleware,
     announcementsController.deleteAnnouncement
 );
 
 router.post(
     '/report',
-    verifyAuthIdToken('Error reporting announcement'),
+    verifyAuthIdToken,
     announcementsController.reportAnnouncement
 );
 

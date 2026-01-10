@@ -10,52 +10,52 @@ const router = express.Router();
 
 router.get(
     '/',
-    verifyAuthIdToken('Error getting missions'),
-    propagateCustomClaims('Error getting missions'),
+    verifyAuthIdToken,
+    propagateCustomClaims,
     missionController.getMissions
 );
 
 router.post(
     '/create',
-    verifyCustomClaims((claims) => claims.admin == true, 'Error creating mission'),
+    verifyCustomClaims((claims) => claims.admin == true),
     upload.single('image'),
-    propagateCustomClaims('Error creating mission'),
+    propagateCustomClaims,
     missionController.createMission
 );
 
 router.post(
     '/update',
-    verifyCustomClaims((claims) => claims.admin == true, 'Error updating mission'),
+    verifyCustomClaims((claims) => claims.admin == true),
     upload.single('image'),
-    propagateCustomClaims('Error updating mission'),
+    propagateCustomClaims,
     missionController.updateMission
 );
 
 router.post(
     '/delete',
-    verifyCustomClaims((claims) => claims.admin == true, 'Error deleting mission'),
-    propagateCustomClaims('Error deleting mission'),
+    verifyCustomClaims((claims) => claims.admin == true),
+    propagateCustomClaims,
     missionController.deleteMission
 );
 
 router.post(
     '/report',
-    verifyAuthIdToken('Error reporting mission'),
+    verifyAuthIdToken,
     missionController.reportMission
 );
 
 router.post(
     '/add-participant',
-    verifyAuthIdToken('Error adding mission participant'),
-    propagateCustomClaims('Error adding mission participant'),
+    verifyAuthIdToken,
+    propagateCustomClaims,
     addMissionParticipantMiddleware,
     missionController.addParticipant
 );
 
 router.post(
     '/remove-participant',
-    verifyAuthIdToken('Error removing mission participant'),
-    propagateCustomClaims('Error removing mission participant'),
+    verifyAuthIdToken,
+    propagateCustomClaims,
     removeMissionParticipantMiddleware,
     missionController.removeParticipant
 );

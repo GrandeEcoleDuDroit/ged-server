@@ -33,8 +33,8 @@ export const w = function (message: string) {
     log.warn(message)
 }
 
-export const e = function (message: string, error: any) {
-    log.error(`${message}: ${error}`);
+export const e = function (error: any) {
+    log.error(error);
     if (productionEnvironment) {
         captureException(error)
     }
