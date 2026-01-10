@@ -1,3 +1,4 @@
 export type FcmToken = {
-    tokens: string[];
+    USER_ID: string;
+    TOKENS: string[];
 }

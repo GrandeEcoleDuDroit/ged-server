@@ -1,43 +1,62 @@
-import fs from 'fs';
-import path from 'path';
-import os from 'os';
 import FirebaseApi from '@api/firebaseApi';
+import OracleApi from "@api/oracleApi";
 import type {FcmMessage, FcmMulticastMessage} from '@models/fcmMessage';
 import type {FcmToken} from "@models/fcmToken";
+import * as getFcmTokensQuery from "@queries/fcmTokenQueries/getFcmTokensQuery"
+import * as addFcmTokenQuery from "@queries/fcmTokenQueries/addFcmTokenQuery"
+import * as deleteFcmTokenQuery from "@queries/fcmTokenQueries/deleteFcmTokenQuery";
+import type {User} from "@models/user";
 
 const firebaseApi = new FirebaseApi();
-const userDir = path.join(os.homedir(), 'gedoise-data', 'users');
+const oracleApi = OracleApi.instance;
 
 export default class FcmRepository {
-    async getFcmToken(userId: string) {
-        const filePath = this.getFilePath(userId);
-        return await fs.promises.readFile(filePath, 'utf8')
-            .then(json => JSON.parse(json) as FcmToken)
-            .catch(() => null);
+    private static _instance: FcmRepository;
+    static get instance(): FcmRepository {
+        return this._instance || (this._instance = new this());
+    }
+
+    private _fcmTokens = new Map<string, string[]>();
+    get fcmTokens(): Map<string, string[]> {
+        return this._fcmTokens;
+    }
+
+    private constructor() {
+        this.getAllFcmToken()
+            .then(fcmTokens => fcmTokens.map(fcmToken => this._fcmTokens.set(fcmToken.USER_ID, fcmToken.TOKENS)))
+            .catch(error => console.error(error))
+    }
+
+    private async getAllFcmToken(): Promise<FcmToken[]> {
+        const result = await oracleApi.execute(getFcmTokensQuery.query);
+        return result.rows?.map(row =>
+            JSON.parse(row as [string][0]) as FcmToken
+        ) ?? [];
     }
 
     async addToken(userId: string, token: string)  {
-        let fcmToken = await this.getFcmToken(userId) ?? { tokens: [] };
-        if (!fcmToken?.tokens.includes(token)) {
-            fcmToken?.tokens.push(token);
-        }
+        await oracleApi.execute(
+            addFcmTokenQuery.query,
+            addFcmTokenQuery.binds(userId, token),
+            { autoCommit: true }
+        );
 
-        const dirPath = this.getDirPath(userId);
-        const filePath = this.getFilePath(userId);
-        const json = JSON.stringify(fcmToken);
-
-        await fs.promises.mkdir(dirPath, { recursive: true });
-        await fs.promises.writeFile(filePath, json, 'utf8');
+        const tokens = this._fcmTokens.get(userId) ?? []
+        tokens?.push(token)
+        this._fcmTokens.set(userId, tokens);
     }
 
     async deleteToken(userId: string, token: string) {
-        let fcmToken = await this.getFcmToken(userId);
-        if (!fcmToken) { return; }
-        fcmToken.tokens = fcmToken.tokens.filter(value => value !== token);
+        await oracleApi.execute(
+            deleteFcmTokenQuery.query,
+            deleteFcmTokenQuery.binds(userId, token),
+            { autoCommit: true }
+        )
 
-        const filePath = this.getFilePath(userId);
-        const json = JSON.stringify(fcmToken);
-        await fs.promises.writeFile(filePath, json, 'utf8');
+        const tokens = this._fcmTokens.get(userId)?.filter(s => s !== token);
+        if (tokens) {
+            this._fcmTokens.set(userId, tokens);
+        }
     }
 
     async sendNotification(fcmMessage: FcmMessage) {
@@ -46,14 +65,5 @@ export default class FcmRepository {
 
     async sendNotifications(fcmMulticastMessage: FcmMulticastMessage) {
         await firebaseApi.sendMulticastNotification(fcmMulticastMessage);
-    }
-
-    private getFilePath(userId: string) {
-        const fileName = 'fcm-token.json';
-        return path.join(userDir, `${userId}`, fileName);
-    }
-
-    private getDirPath(userId: string) {
-        return path.join(userDir, `${userId}`);
     }
 }
