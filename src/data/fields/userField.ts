@@ -14,5 +14,6 @@ export const UserField = Object.freeze({
 export const BlockedUserField = Object.freeze({
     TABLE_NAME: 'BLOCKED_USERS',
     USER_ID: 'USER_ID',
-    BLOCKED_USER_ID: 'BLOCKED_USER_ID'
+    BLOCKED_USER_ID: 'BLOCKED_USER_ID',
+    BLOCKED_DATE: 'BLOCKED_DATE'
 })

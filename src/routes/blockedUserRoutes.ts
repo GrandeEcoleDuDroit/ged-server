@@ -4,10 +4,10 @@ import * as blockedUserController from '@controllers/blockedUserController';
 
 const router = express.Router();
 
-router.get('/', verifyAuthIdToken, blockedUserController.getBlockedUserIds);
+router.get('/:userId', verifyAuthIdToken, blockedUserController.getBlockedUserIds);
 
 router.post('/create', verifyAuthIdToken, blockedUserController.addBlockedUser);
 
-router.delete('/:userId', verifyAuthIdToken, blockedUserController.removeBlockedUser);
+router.post('/delete', verifyAuthIdToken, blockedUserController.removeBlockedUser);
 
 export default router;

@@ -1,5 +1,5 @@
 import {UserField} from '@fields/userField';
-import type {User} from '@models/user';
+import type {User} from '@models/user/user';
 
 export const query = `
     MERGE INTO ${UserField.TABLE_NAME} U

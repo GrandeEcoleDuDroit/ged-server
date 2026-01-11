@@ -19,7 +19,7 @@ export const getMissions = async (req: Request, res: Response): Promise<void> =>
 
     try {
         const result = await missionRepository.getMissions(missionTest);
-        res.json(result);
+        res.status(200).json(result);
     } catch (error: any) {
         e(new Error(`Error getting missions: ${error.message}`));
         res.status(500).json(oracleErrorResponse(error));

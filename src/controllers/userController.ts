@@ -5,7 +5,8 @@ import {
     badRequestErrorResponse,
     internalServerErrorResponse
 } from '@utils/errorUtils';
-import type { User, UserReport } from '@models/user';
+import type { User } from '@models/user/user';
+import type { UserReport } from '@models/user/userReport';
 import UserRepository from '@repositories/userRepository';
 import {Readable} from 'stream';
 import ImageRepository from '@repositories/imageRepository';

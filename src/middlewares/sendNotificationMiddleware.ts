@@ -15,8 +15,8 @@ export const sendNotificationMiddleware= (req: Request, res: Response, next: Nex
         return;
     }
 
-    const blockedUserIds = blockedUserRepository.blockedUserIds.get(recipientId);
-    if (blockedUserIds?.includes(senderId)) {
+    const blockedUsers = blockedUserRepository.blockedUsers.get(recipientId);
+    if (blockedUsers?.some(b => b.BLOCKED_USER_ID === senderId)) {
         res.status(201);
         return;
     }

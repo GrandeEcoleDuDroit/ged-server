@@ -2,6 +2,7 @@ import type {NextFunction, Request, Response} from 'express';
 import {e} from '@utils/logs';
 import {badRequestErrorResponse, forbiddenErrorResponse, internalServerErrorResponse} from '@utils/errorUtils';
 import MissionRepository from '@repositories/missionRepository';
+import {MissionErrorCodes} from "@data/error/missionErrorCodes";
 
 const missionRepository = new MissionRepository();
 
@@ -37,7 +38,7 @@ const addParticipantMiddleware = async (req: Request, res: Response, next: NextF
         }
 
         const schoolLevels = JSON.parse(mission.schoolLevels) as number[];
-        if (!schoolLevels.includes(userSchoolLevel as number))  {
+        if (!schoolLevels.includes(parseInt(userSchoolLevel)))  {
             res.status(400).json(badRequestErrorResponse('User school level not allowed for this mission', MissionErrorCodes.SCHOOL_LEVEL_NOT_ALLOWED));
             return;
         }

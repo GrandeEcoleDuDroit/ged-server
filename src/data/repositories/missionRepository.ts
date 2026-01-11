@@ -22,7 +22,7 @@ import * as updateMissionQuery from '@queries/mission/updateMissionQuery';
 import * as deleteMissionQuery from '@queries/mission/deleteMissionQuery';
 import * as deleteMissionParticipantsQuery from '@queries/mission/deleteMissionParticipantsQuery';
 import * as deleteMissionParticipantQuery from '@queries/mission/deleteMissionParticipantQuery';
-import type {OracleUser} from "@models/user";
+import type {OracleUser} from "@models/user/user";
 import {toUser} from "@data/mappers/userMapper";
 
 const oracleApi = OracleApi.instance;

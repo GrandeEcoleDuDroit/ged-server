@@ -1,6 +1,7 @@
 import OracleApi from '@api/oracleApi';
 import { sendMail } from '@api/googleApi';
-import type { User, UserReport } from '@models/user';
+import type { User } from '@models/user/user';
+import type { UserReport } from '@models/user/userReport';
 import type {Result} from 'oracledb';
 import FirebaseApi from '@api/firebaseApi';
 import * as getUsersQuery from '@queries/user/getUsersQuery';

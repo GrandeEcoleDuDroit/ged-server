@@ -1,4 +1,4 @@
-import {OracleUser} from "@models/user";
+import {OracleUser} from "@models/user/user";
 
 export interface Mission {
     readonly id: string;

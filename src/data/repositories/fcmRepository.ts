@@ -5,7 +5,7 @@ import type {FcmToken} from "@models/fcmToken";
 import * as getFcmTokensQuery from "@queries/fcmTokenQueries/getFcmTokensQuery"
 import * as addFcmTokenQuery from "@queries/fcmTokenQueries/addFcmTokenQuery"
 import * as deleteFcmTokenQuery from "@queries/fcmTokenQueries/deleteFcmTokenQuery";
-import type {User} from "@models/user";
+import type {User} from "@models/user/user";
 
 const firebaseApi = new FirebaseApi();
 const oracleApi = OracleApi.instance;
