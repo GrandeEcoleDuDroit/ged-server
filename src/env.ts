@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const PORT = process.env.PORT || 3000;
+export const ROOT_PATH = process.env.ROOT_PATH;
 export const ORACLE_HOME = process.env.ORACLE_HOME;
 export const SSL_KEY_PATH = process.env.SSL_KEY_PATH;
 export const SSL_CERT_PATH = process.env.SSL_CERT_PATH;
