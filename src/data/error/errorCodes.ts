@@ -1,0 +1,4 @@
+export enum ErrorCode {
+    EMPTY_OR_INVALID_TOKEN = 'EMPTY_OR_INVALID_TOKEN',
+    ACCESS_DENIED = 'ACCESS_DENIED',
+}

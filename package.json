@@ -1,17 +1,19 @@
 {
-  "name": "web_server",
+  "name": "ged-server",
   "version": "1.0.0",
-  "description": "Serveur web pour l'application Gedoise",
+  "description": "Serveur de l'application La Grande Ecole Du Droit",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon src/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node dist/app.js",
+    "build": "tsc && tsc-alias --resolve-full-paths",
+    "dev": "tsc --noEmit && tsx --watch src/app.ts"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gedoiseteam/gedoise_web_server.git"
+    "url": "https://github.com/GrandeEcoleDuDroit/ged-server.git"
   },
   "private": true,
+  "type": "module",
   "dependencies": {
     "@logtail/winston": "^0.5.2",
     "@sentry/cli": "^2.43.0",
@@ -25,7 +27,6 @@
     "module-alias": "^2.2.3",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^7.0.6",
-    "nodemon": "^3.1.10",
     "oci-common": "^2.89.4",
     "oci-objectstorage": "^2.89.4",
     "oci-sdk": "^2.89.2",
@@ -33,14 +34,26 @@
     "winston": "^3.17.0"
   },
   "_moduleAliases": {
-    "@root": ".",
+    "@root": "src",
     "@routes": "src/routes",
-    "@data": "src/data",
+    "@api": "src/data/api",
+    "@fields": "src/data/fields",
     "@models": "src/data/models",
     "@repositories": "src/data/repositories",
+    "@queries": "src/data/queries",
     "@controllers": "src/controllers",
-    "@config": "src/config",
     "@utils": "src/utils",
     "@middlewares": "src/middlewares"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.5",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^24.10.1",
+    "@types/nodemailer": "^7.0.4",
+    "@types/oracledb": "^6.10.0",
+    "tsc-alias": "^1.8.16",
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
   }
 }
