@@ -2,12 +2,8 @@ name: Build and deploy release
 
 on:
   push:
-    tags:
-      - 'v*'
-  pull_request: #For testing
     branches:
-      - 'development'
-
+      - 'main'
 env:
   SSH_TARGET: ${{ secrets.SSH_TARGET }}
   SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -49,14 +45,3 @@ jobs:
         run: |
           rsync -av package.json package-lock.json public $SSH_TARGET:~/app
           rsync -av dist/ $SSH_TARGET:~/app/src
-
-      - name: Restart application
-        run: |
-          ssh $SSH_TARGET "
-            bash -lc '
-              set -e
-              cd ~/app
-              npm ci --omit=dev
-              pm2 restart src/app.js
-            '
-          "
