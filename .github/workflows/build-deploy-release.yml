@@ -1,7 +1,7 @@
 name: Build and deploy release
 
 on:
-  push:
+  pull_request:
     branches:
       - 'main'
 
@@ -51,6 +51,6 @@ jobs:
         run: | 
           ssh $SSH_TARGET "
             cd ~/app
-            npm ci --production
+            npm ci --omit=dev
             pm2 restart src/app.js
           "
