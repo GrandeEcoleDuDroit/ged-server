@@ -31,6 +31,7 @@
     "oci-objectstorage": "^2.89.4",
     "oci-sdk": "^2.89.2",
     "oracledb": "^6.8.0",
+    "pm2": "^6.0.14",
     "winston": "^3.17.0"
   },
   "_moduleAliases": {
