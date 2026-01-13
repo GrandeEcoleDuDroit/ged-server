@@ -52,5 +52,5 @@ jobs:
           ssh $SSH_TARGET "
             cd ~/app
             npm ci --production
-            pm2 restart app
+            pm2 restart src/app.js
           "
