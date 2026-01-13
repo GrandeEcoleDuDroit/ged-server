@@ -53,9 +53,10 @@ jobs:
       - name: Restart application
         run: |
           ssh $SSH_TARGET "
-            set -e
-            source ~/.bashrc
-            cd ~/app
-            npm ci --omit=dev
-            pm2 restart src/app.js
+            bash -lc '
+              set -e
+              cd ~/app
+              npm ci --omit=dev
+              pm2 restart src/app.js
+            '
           "
