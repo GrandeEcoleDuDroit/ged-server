@@ -34,12 +34,13 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Write SSH key
+      - name: Setup SSH
         run : |
           mkdir -p ~/.ssh/ 
           chmod 700 ~/.ssh/
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-      - name: Deploy
-        run: rsync -av dist/ $SSH_TARGET:~/app
+
+      - name: Deploy to server
+        run: rsync -av dist/ package.json package-lock.json public/ $SSH_TARGET:/app
