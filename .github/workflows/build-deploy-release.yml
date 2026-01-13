@@ -4,6 +4,9 @@ on:
   push:
     tags:
       - 'v*'
+  pull_request: #For testing
+    branches:
+      - 'development'
 
 env:
   SSH_TARGET: ${{ secrets.SSH_TARGET }}
