@@ -43,4 +43,4 @@ jobs:
           echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
 
       - name: Deploy to server
-        run: rsync -av dist/ package.json package-lock.json public/ $SSH_TARGET:/app
+        run: rsync -av dist/ package.json package-lock.json public/ $SSH_TARGET:~/app
