@@ -1,0 +1,45 @@
+name: Build and deploy release
+
+on:
+  pull_request:
+    branches:
+      - 'release/*'
+
+env:
+  SSH_TARGET: ${{ secrets.SSH_TARGET }}
+  SSH_KEY: ${{ secrets.SSH_KEY }}
+  SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [ 24.x ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Write SSH key
+        run : |
+          mkdir -p ~/.ssh/ && chmod 700 ~/.ssh/
+          echo $SSH_KNOWN_HOSTS > ~/.ssh/known_hosts
+          echo $SSH_KEY > ~/.ssh/id_rsa
+
+      - name: Deploy
+        run: rsync -av dist/ $SSH_TARGET:/app/dist
+
