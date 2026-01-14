@@ -11,7 +11,7 @@ export const verifyAuthIdToken = async (req: Request, res: Response, next: NextF
         req.uid = decodedToken.uid;
         next();
     } catch (error: any) {
-        res.status(401).json(unauthorizedErrorResponse);
+        res.status(401).json(unauthorizedErrorResponse());
     }
 }
 
@@ -27,7 +27,7 @@ export const verifyCustomClaims = (block: (decodedIdToken: DecodedIdToken) => bo
                 res.status(403).json(forbiddenErrorResponse('User does not have required permissions'));
             }
         } catch (error: any) {
-            res.status(401).json(unauthorizedErrorResponse);
+            res.status(401).json(unauthorizedErrorResponse());
         }
     }
 }
@@ -36,7 +36,7 @@ export const propagateCustomClaims = async (req: Request, res: Response, next: N
     const uid = req.uid;
 
     if (!uid) {
-        res.status(401).json(unauthorizedErrorResponse);
+        res.status(401).json(unauthorizedErrorResponse());
         return;
     }
 
@@ -48,7 +48,7 @@ export const propagateCustomClaims = async (req: Request, res: Response, next: N
         req.claims = userRecord.customClaims || {};
         next();
     } catch (error: any) {
-        res.status(401).json(unauthorizedErrorResponse);
+        res.status(401).json(unauthorizedErrorResponse());
     }
 }
 

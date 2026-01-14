@@ -107,7 +107,7 @@ export const toMessage = (fcmMessage: FcmMessage): Message => {
     return {
         data: {
             type: fcmMessage.data.type,
-            value: JSON.stringify(fcmMessage.data.value)
+            value: fcmMessage.data.value
         },
         android: {
             priority: fcmMessage.android.priority,
