@@ -12,11 +12,6 @@ export interface FcmMulticastMessage {
     tokens: string[];
 }
 
-export interface FcmNotification {
-    title: string;
-    body: string;
-}
-
 export interface FcmData {
     type: string;
     value: string;
@@ -24,12 +19,6 @@ export interface FcmData {
 
 export interface AndroidConfig {
     priority: 'high' | 'normal' | undefined;
-    notification: AndroidNotification;
-}
-
-export interface AndroidNotification {
-    channelId: string;
-    icon: string;
 }
 
 export interface ApnsConfig {

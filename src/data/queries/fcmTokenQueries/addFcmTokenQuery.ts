@@ -4,10 +4,13 @@ export const query = `
     INSERT INTO ${FcmTokenField.TABLE_NAME} (
         ${FcmTokenField.USER_ID},
         ${FcmTokenField.TOKEN}
-    ) VALUES (
-        :user_id,
-        :token
     )
+    SELECT :user_id, :token
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM ${FcmTokenField.TABLE_NAME}
+        WHERE ${FcmTokenField.USER_ID} = :user_id AND ${FcmTokenField.TOKEN} = :token
+    );
 `;
 
 export const binds = (userId: string, token: string) => ({
