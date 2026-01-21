@@ -5,14 +5,10 @@ export const toFcmMessage = (object: any, token: string): FcmMessage => {
     return {
         data: {
             type: object.data.type,
-            value: JSON.stringify(object.data.value)
+            value: object.data.value
         },
         android: {
-            priority: object.android.priority,
-            notification: {
-                channelId: object.android.notification.channelId,
-                icon: object.android.notification.icon
-            }
+            priority: object.android.priority
         },
         apns: {
             headers: {
@@ -39,14 +35,10 @@ export const toFcmMulticastMessage = (object: any, tokens: string[]): FcmMultica
     return {
         data: {
             type: object.data.type,
-            value: JSON.stringify(object.data.value)
+            value: object.data.value
         },
         android: {
-            priority: object.android.priority,
-            notification: {
-                channelId: object.android.notification.channelId,
-                icon: object.android.notification.icon
-            }
+            priority: object.android.priority
         },
         apns: {
             headers: {
@@ -76,11 +68,7 @@ export const toMulticastMessage = (fcmMulticastMessage: FcmMulticastMessage): Mu
             value: JSON.stringify(fcmMulticastMessage.data.value)
         },
         android: {
-            priority: fcmMulticastMessage.android.priority,
-            notification: {
-                channelId: fcmMulticastMessage.android.notification.channelId,
-                icon: fcmMulticastMessage.android.notification.icon
-            }
+            priority: fcmMulticastMessage.android.priority
         },
         apns: {
             headers: {
@@ -107,14 +95,10 @@ export const toMessage = (fcmMessage: FcmMessage): Message => {
     return {
         data: {
             type: fcmMessage.data.type,
-            value: fcmMessage.data.value
+            value: JSON.stringify(fcmMessage.data.value)
         },
         android: {
-            priority: fcmMessage.android.priority,
-            notification: {
-                channelId: fcmMessage.android.notification.channelId,
-                icon: fcmMessage.android.notification.icon
-            }
+            priority: fcmMessage.android.priority
         },
         apns: {
             headers: {
