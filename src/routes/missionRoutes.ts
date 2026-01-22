@@ -3,6 +3,7 @@ import multer from 'multer';
 import * as missionController from '@controllers/missionController';
 import addMissionParticipantMiddleware from '@middlewares/mission/addMissionParticipantMiddleware';
 import removeMissionParticipantMiddleware from '@middlewares/mission/removeMissionParticipantMiddleware';
+import updateMissionMiddleware from '@middlewares/mission/updateMissionMiddleware';
 import {propagateCustomClaims, verifyAuthIdToken, verifyCustomClaims} from '@middlewares/authMiddleware';
 
 const upload = multer({ storage: multer.memoryStorage() });
@@ -25,9 +26,10 @@ router.post(
 
 router.post(
     '/update',
-    verifyCustomClaims((claims) => claims.admin == true),
+    verifyAuthIdToken,
     upload.single('image'),
     propagateCustomClaims,
+    updateMissionMiddleware,
     missionController.updateMission
 );
 
