@@ -26,7 +26,7 @@ RUN if [ "$TARGETARCH" = "arm64" ]; then \
         wget https://download.oracle.com/otn_software/linux/instantclient/2326000/instantclient-basic-linux.arm64-23.26.0.0.0.zip && \
         unzip instantclient-basic-linux.arm64-23.26.0.0.0.zip -d /opt/oracle && \
         rm instantclient-basic-linux.arm64-23.26.0.0.0.zip ; \
-    elif [ "$TARGETARCH" = "amd64" ]; then \
+    else; then \
         wget https://download.oracle.com/otn_software/linux/instantclient/2326000/instantclient-basic-linux.x64-23.26.0.0.0.zip && \
         unzip instantclient-basic-linux.x64-23.26.0.0.0.zip -d /opt/oracle && \
         rm instantclient-basic-linux.x64-23.26.0.0.0.zip ; \
