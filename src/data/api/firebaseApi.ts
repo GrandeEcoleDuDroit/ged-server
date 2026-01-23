@@ -1,11 +1,12 @@
-import admin, {type ServiceAccount} from 'firebase-admin';
+import admin from 'firebase-admin';
 import type {FcmMessage, FcmMulticastMessage} from '@models/fcmMessage';
 import {Auth} from 'firebase-admin/auth';
 import {toMessage, toMulticastMessage} from "@data/mappers/fcmMapper";
-import {firebaseCredentials} from "@api/configs";
+import {GOOGLE_CLOUD_PROJECT} from '@root/env';
 
 admin.initializeApp({
-    credential: admin.credential.cert(firebaseCredentials as ServiceAccount)
+    credential: admin.credential.applicationDefault(),
+    projectId: GOOGLE_CLOUD_PROJECT
 });
 
 export default class FirebaseApi {
