@@ -16,7 +16,7 @@ export const addToken = async (req: Request, res: Response): Promise<void> => {
     }
 
     try {
-        await fcmRepository.addToken(userId, token);
+        await fcmRepository.upsertFcmToken(userId, token);
         const serverResponse: ServerResponse = { message: 'Fcm token has been added successfully' };
         res.status(201).json(serverResponse);
     } catch (error: any) {
@@ -34,7 +34,7 @@ export const deleteToken = async (req: Request, res: Response): Promise<void> =>
     }
 
     try {
-        await fcmRepository.deleteToken(userId, token);
+        await fcmRepository.deleteFcmToken(userId, token);
         const serverResponse: ServerResponse = { message: 'Fcm token has been deleted successfully' };
         res.status(201).json(serverResponse);
     } catch (error: any) {
@@ -52,14 +52,15 @@ export const sendNotification = async (req: Request, res: Response): Promise<voi
     }
 
     try {
-        const tokens = fcmRepository.fcmTokens.get(recipientId);
-        const fcmMessageObject = JSON.parse(fcmMessageJson);
+        const tokens = fcmRepository.userFcmTokens.get(recipientId);
+        if (tokens && tokens.size > 0) {
+            const tokensArray = Array.from(tokens);
+            const fcmMessageObject = JSON.parse(fcmMessageJson);
 
-        if (tokens && tokens.length > 0) {
-            if (tokens.length == 1) {
-                await fcmRepository.sendNotification(toFcmMessage(fcmMessageObject, tokens[0]));
+            if (tokensArray.length == 1) {
+                await fcmRepository.sendNotification(toFcmMessage(fcmMessageObject, tokensArray[0]));
             } else {
-                await fcmRepository.sendNotifications(toFcmMulticastMessage(fcmMessageObject, tokens))
+                await fcmRepository.sendNotifications(toFcmMulticastMessage(fcmMessageObject, tokensArray))
             }
         } else {
             const serverResponse: ServerResponse = { message: 'Cannot send notification: No token found for the recipient' };
