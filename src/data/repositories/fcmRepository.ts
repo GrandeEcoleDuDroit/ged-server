@@ -1,11 +1,13 @@
 import FirebaseApi from '@api/firebaseApi';
 import OracleApi from "@api/oracleApi";
 import type {FcmMessage, FcmMulticastMessage} from '@models/fcmMessage';
-import type {FcmToken} from "@models/fcmToken";
+import type {FcmToken, FcmTokens} from "@models/fcmTokens";
+import * as getFcmTokenQuery from "@queries/fcmTokenQueries/getFcmTokenQuery"
 import * as getFcmTokensQuery from "@queries/fcmTokenQueries/getFcmTokensQuery"
-import * as addFcmTokenQuery from "@queries/fcmTokenQueries/addFcmTokenQuery"
+import * as insertFcmTokenQuery from "@queries/fcmTokenQueries/insertFcmTokenQuery"
+import * as updateFcmTokenQuery from "@queries/fcmTokenQueries/updateFcmTokenQuery"
 import * as deleteFcmTokenQuery from "@queries/fcmTokenQueries/deleteFcmTokenQuery";
-import type {User} from "@models/user/user";
+import type {Result} from "oracledb";
 
 const firebaseApi = new FirebaseApi();
 const oracleApi = OracleApi.instance;
@@ -16,47 +18,50 @@ export default class FcmRepository {
         return this._instance || (this._instance = new this());
     }
 
-    private _fcmTokens = new Map<string, string[]>();
-    get fcmTokens(): Map<string, string[]> {
-        return this._fcmTokens;
+    private _userFcmTokens = new Map<string, Set<string>>();
+    get userFcmTokens(): Map<string, Set<string>> {
+        return this._userFcmTokens;
     }
 
     private constructor() {
-        this.getAllFcmToken()
-            .then(fcmTokens => fcmTokens.map(fcmToken => this._fcmTokens.set(fcmToken.USER_ID, fcmToken.TOKENS)))
-            .catch(error => console.error(error))
+        this.getAllFcmTokens()
+            .then(fcmTokens => {
+                fcmTokens.forEach(fcmToken => {
+                    this._userFcmTokens.set(fcmToken.USER_ID, new Set(fcmToken.TOKENS));
+                });
+            })
+            .catch(error => console.error(error));
     }
 
-    private async getAllFcmToken(): Promise<FcmToken[]> {
+    private async getAllFcmTokens(): Promise<FcmTokens[]> {
         const result = await oracleApi.execute(getFcmTokensQuery.query);
         return result.rows?.map(row =>
-            JSON.parse(row as [string][0]) as FcmToken
+            JSON.parse(row as [string][0]) as FcmTokens
         ) ?? [];
     }
 
-    async addToken(userId: string, token: string)  {
-        await oracleApi.execute(
-            addFcmTokenQuery.query,
-            addFcmTokenQuery.binds(userId, token),
-            { autoCommit: true }
-        );
+    async upsertFcmToken(userId: string, deviceToken: string)  {
+        const currentFcmToken = await this.getFcmToken(deviceToken)
 
-        const tokens = this._fcmTokens.get(userId) ?? []
-        tokens?.push(token)
-        this._fcmTokens.set(userId, tokens);
+        if (currentFcmToken) {
+            await this.updateFcmToken(userId, deviceToken);
+            this._userFcmTokens.get(currentFcmToken.USER_ID)?.delete(deviceToken);
+            this._userFcmTokens.get(userId)?.add(deviceToken);
+        } else {
+            await this.insertFcmToken(userId, deviceToken);
+            const tokens = this._userFcmTokens.get(userId) ?? new Set<string>();
+            tokens.add(deviceToken);
+            this._userFcmTokens.set(userId, tokens);
+        }
     }
 
-    async deleteToken(userId: string, token: string) {
+    async deleteFcmToken(userId: string, deviceToken: string) {
         await oracleApi.execute(
             deleteFcmTokenQuery.query,
-            deleteFcmTokenQuery.binds(userId, token),
+            deleteFcmTokenQuery.binds(deviceToken),
             { autoCommit: true }
         )
-
-        const tokens = this._fcmTokens.get(userId)?.filter(s => s !== token);
-        if (tokens) {
-            this._fcmTokens.set(userId, tokens);
-        }
+        this._userFcmTokens.get(userId)?.delete(deviceToken);
     }
 
     async sendNotification(fcmMessage: FcmMessage) {
@@ -65,5 +70,25 @@ export default class FcmRepository {
 
     async sendNotifications(fcmMulticastMessage: FcmMulticastMessage) {
         await firebaseApi.sendMulticastNotification(fcmMulticastMessage);
+    }
+
+    private async getFcmToken(userId: string): Promise<FcmToken | null> {
+        const query = getFcmTokenQuery.query;
+        const binds = getFcmTokenQuery.binds(userId);
+        const result = await oracleApi.execute(query, binds) as Result<string[]>;
+        const fcmTokenJson = result.rows?.[0]?.[0];
+        return fcmTokenJson ? JSON.parse(fcmTokenJson) as FcmToken : null;
+    }
+
+    private async insertFcmToken(userId: string, deviceToken: string) {
+        const query = insertFcmTokenQuery.query;
+        const binds = insertFcmTokenQuery.binds(userId, deviceToken);
+        await oracleApi.execute(query, binds, { autoCommit: true });
+    }
+
+    private async updateFcmToken(userId: string, deviceToken: string) {
+        const query = updateFcmTokenQuery.query;
+        const binds = updateFcmTokenQuery.binds(userId, deviceToken);
+        await oracleApi.execute(query, binds, { autoCommit: true });
     }
 }
