@@ -19,13 +19,20 @@ const removeParticipantMiddleware = async (req: Request, res: Response, next: Ne
 
     try {
         const mission = await missionRepository.getMission(missionId);
+        const missionManagers = await missionRepository.getMissionManagers(missionId);
 
         if (!mission) {
             res.status(400).json(badRequestErrorResponse('Mission not found'));
             return
         }
 
-        if (tester != mission.test || (userId != req.uid && req.claims?.admin != true)) {
+        const isAllowed = (): boolean => {
+            if (tester != mission.test) return false;
+            if (userId == req.uid || req.claims?.admin) return true;
+            return missionManagers.some(manager => manager.userId == req.uid);
+        }
+
+        if (!isAllowed()) {
             res.status(403).json(forbiddenErrorResponse);
             return;
         }
