@@ -72,9 +72,9 @@ export default class FcmRepository {
         await firebaseApi.sendMulticastNotification(fcmMulticastMessage);
     }
 
-    private async getFcmToken(userId: string): Promise<FcmToken | null> {
+    private async getFcmToken(deviceToken: string): Promise<FcmToken | null> {
         const query = getFcmTokenQuery.query;
-        const binds = getFcmTokenQuery.binds(userId);
+        const binds = getFcmTokenQuery.binds(deviceToken);
         const result = await oracleApi.execute(query, binds) as Result<string[]>;
         const fcmTokenJson = result.rows?.[0]?.[0];
         return fcmTokenJson ? JSON.parse(fcmTokenJson) as FcmToken : null;

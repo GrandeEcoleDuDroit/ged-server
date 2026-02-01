@@ -1,6 +1,6 @@
 {
   "name": "ged-server",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "description": "Serveur de l'application La Grande Ecole Du Droit",
   "main": "app.js",
   "scripts": {
