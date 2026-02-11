@@ -1,10 +1,24 @@
 import OracleApi from '@api/oracleApi';
-import Post from '@models/post';
+import type {Post, RemotePost} from '@models/post';
 import PostField from '@fields/postField';
 
 const oracleApi = OracleApi.instance;
 
 export default class PostRepository {
+    async getPosts(testPost: boolean): Promise<RemotePost[]> {
+        const query = `
+            SELECT JSON_OBJECT(*)
+            FROM ${PostField.TABLE_NAME}
+            WHERE ${PostField.POST_TEST} = :post_test
+        `;
+        const binds = { post_test: testPost ? 1 : 0 };
+
+        const result = await oracleApi.execute(query, binds);
+        return result.rows?.map(row =>
+            JSON.parse(row as [string][0]) as RemotePost
+        ) ?? [];
+    }
+
     async createPost(post: Post) {
         const query = `
             INSERT INTO ${PostField.TABLE_NAME} (

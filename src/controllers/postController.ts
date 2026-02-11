@@ -5,13 +5,25 @@ import {
     badRequestErrorResponse
 } from '@utils/errorUtils';
 import type {ServerResponse} from '@models/serverResponse';
-import Post from '@models/post';
+import {Post} from '@models/post';
 import {e} from '@utils/logs';
 import ImageRepository from "@repositories/imageRepository";
 import {Readable} from "stream";
 
 const postRepository = new PostRepository();
 const imageRepository = new ImageRepository();
+
+export const getPosts = async (req: Request, res: Response): Promise<void> => {
+    const testPost = req.claims?.tester ?? false;
+
+    try {
+        const result = await postRepository.getPosts(testPost);
+        res.json(result);
+    } catch (error: any) {
+        e(new Error(`Error getting posts: ${error.message}`));
+        res.status(500).json(oracleErrorResponse(error));
+    }
+}
 
 export const createPost = async (req: Request, res: Response): Promise<void> => {
     const testPost = req.claims?.tester ?? false;
