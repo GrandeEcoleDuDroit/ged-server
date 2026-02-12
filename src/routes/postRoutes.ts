@@ -17,6 +17,13 @@ const upload = multer({
 
 const router = express.Router();
 
+router.get(
+    '/',
+    verifyAuthIdToken,
+    propagateCustomClaims,
+    postController.getPosts
+);
+
 router.post(
     '/create',
     verifyCustomClaims((claims) => claims.admin == true),
