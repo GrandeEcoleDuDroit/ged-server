@@ -7,7 +7,7 @@ const oracleApi = OracleApi.instance;
 export default class PostRepository {
     async getPosts(testPost: boolean): Promise<RemotePost[]> {
         const query = `
-            SELECT JSON_OBJECT(*)
+            SELECT JSON_OBJECT(* RETURNING CLOB)
             FROM ${PostField.TABLE_NAME}
             WHERE ${PostField.POST_TEST} = :post_test
         `;
