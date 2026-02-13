@@ -1,17 +1,18 @@
 import OracleApi from '@api/oracleApi';
 import type {Post, RemotePost} from '@models/post';
 import PostField from '@fields/postField';
+import {MissionField} from "@fields/missionField";
 
 const oracleApi = OracleApi.instance;
 
 export default class PostRepository {
-    async getPosts(testPost: boolean): Promise<RemotePost[]> {
+    async getPosts(postTest: boolean): Promise<RemotePost[]> {
         const query = `
             SELECT JSON_OBJECT(* RETURNING CLOB)
             FROM ${PostField.TABLE_NAME}
             WHERE ${PostField.POST_TEST} = :post_test
         `;
-        const binds = { post_test: testPost ? 1 : 0 };
+        const binds = { post_test: postTest ? 1 : 0 };
 
         const result = await oracleApi.execute(query, binds);
         return result.rows?.map(row =>
@@ -54,5 +55,20 @@ export default class PostRepository {
         };
 
         return await oracleApi.execute(query, binds, { autoCommit: true });
+    }
+
+    async deletePost(postId: string, postTest: boolean) {
+        const query = `
+            DELETE FROM ${PostField.TABLE_NAME}
+            WHERE ${PostField.POST_ID} = :post_id 
+              AND ${PostField.POST_TEST} = :post_test
+        `;
+
+        const binds = {
+            post_id: postId,
+            post_test: postTest ? 1 : 0
+        };
+
+        await oracleApi.execute(query, binds, { autoCommit: true });
     }
 }
