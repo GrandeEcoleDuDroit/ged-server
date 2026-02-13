@@ -32,4 +32,11 @@ router.post(
     postController.createPost
 )
 
+router.post(
+    '/delete',
+    verifyCustomClaims((claims) => claims.admin == true),
+    propagateCustomClaims,
+    postController.deleteMission
+);
+
 export default router;

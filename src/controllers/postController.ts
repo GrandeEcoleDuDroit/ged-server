@@ -14,10 +14,10 @@ const postRepository = new PostRepository();
 const imageRepository = new ImageRepository();
 
 export const getPosts = async (req: Request, res: Response): Promise<void> => {
-    const testPost = req.claims?.tester ?? false;
+    const postTest = req.claims?.tester ?? false;
 
     try {
-        const result = await postRepository.getPosts(testPost);
+        const result = await postRepository.getPosts(postTest);
         res.json(result);
     } catch (error: any) {
         e(new Error(`Error getting posts: ${error.message}`));
@@ -26,7 +26,7 @@ export const getPosts = async (req: Request, res: Response): Promise<void> => {
 }
 
 export const createPost = async (req: Request, res: Response): Promise<void> => {
-    const testPost = req.claims?.tester ?? false;
+    const postTest = req.claims?.tester ?? false;
     const postJson = req.body.post;
     const {
         POST_ID: id,
@@ -59,7 +59,7 @@ export const createPost = async (req: Request, res: Response): Promise<void> => 
         sourceId: sourceId,
         date: date,
         imageFileNames: imageFileNames,
-        test: testPost
+        test: postTest
     };
 
     try {
@@ -79,6 +79,38 @@ export const createPost = async (req: Request, res: Response): Promise<void> => 
         res.status(500).json(oracleErrorResponse(error));
     }
 }
+
+export const deleteMission = async (req: Request, res: Response): Promise<void> => {
+    const postTest = req.claims?.tester ?? false;
+    const {
+        POST_ID: postId,
+        POST_IMAGE_FILE_NAMES: postImageFileNames
+    } = req.body;
+
+    if(!postId) {
+        res.status(400).json(badRequestErrorResponse);
+        return;
+    }
+
+    try {
+        await postRepository.deletePost(postId, postTest);
+        const serverResponse: ServerResponse = { message: 'Post has been deleted successfully' };
+        res.status(200).json(serverResponse);
+    } catch (error: any) {
+        e(new Error(`Error deleting post ${postId} : ${error.message}`));
+        res.status(500).json(oracleErrorResponse(error));
+        return;
+    }
+
+    const imageFileNames = JSON.parse(postImageFileNames) as string[];
+    imageFileNames.forEach((fileName: string) => {
+        imageRepository.deleteImage(getImagePath(fileName))
+            .catch((error: Error) => {
+                e(new Error(`Error deleting post image ${fileName} : ${error.message}`));
+            });
+    });
+}
+
 
 function getImagePath(fileName: string): string {
     return `PostImages/${fileName}`;
