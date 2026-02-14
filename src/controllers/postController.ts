@@ -80,6 +80,80 @@ export const createPost = async (req: Request, res: Response): Promise<void> => 
     }
 }
 
+export const updatePost = async (req: Request, res: Response): Promise<void> => {
+    const postTest = req.claims?.tester ?? false;
+    const postJson = req.body.post;
+    const {
+        POST_ID: id,
+        POST_TITLE: title,
+        POST_CONTENT: content,
+        POST_LINK: link,
+        POST_SOURCE_ID: sourceId,
+        POST_DATE: date,
+        POST_IMAGE_FILE_NAMES: imageFileNames,
+    } = JSON.parse(postJson);
+
+    if (
+        !id ||
+        !title ||
+        !content ||
+        !link ||
+        !sourceId ||
+        !date ||
+        !imageFileNames
+    ) {
+        res.status(400).json(badRequestErrorResponse);
+        return;
+    }
+
+    const post: Post = {
+        id: id,
+        title: title,
+        content: content,
+        link: link,
+        sourceId: sourceId,
+        date: date,
+        imageFileNames: imageFileNames,
+        test: postTest
+    };
+
+    let previousImageFileNames: string[] = [];
+    let previousImageFileNamesSet = new Set<string>();
+
+    try {
+        const previousPost = await postRepository.getPost(id, postTest);
+        await postRepository.updatePost(post);
+
+        if (previousPost) {
+            previousImageFileNames = JSON.parse(previousPost.imageFileNames) as string[];
+            previousImageFileNamesSet = new Set(previousImageFileNames);
+        }
+
+        const files = Array.isArray(req.files) ? req.files : [];
+        const imageToAdd = files.filter((value) => !previousImageFileNamesSet.has(value.originalname));
+        for (const file of imageToAdd) {
+            await imageRepository.uploadImage(
+                Readable.from(file.buffer),
+                getImagePath(file.originalname),
+                file.size
+            );
+        }
+        const serverResponse: ServerResponse = { message: 'Post updated successfully' };
+        res.status(201).json(serverResponse);
+
+        const imageFilesNamesSet = new Set(JSON.parse(post.imageFileNames) as string[]);
+        const imageToDelete = previousImageFileNames.filter((value) => !imageFilesNamesSet.has(value));
+
+        for (const fileName of imageToDelete) {
+            await imageRepository.deleteImage(getImagePath(fileName))
+                .catch((error: any) => e(new Error(`Error deleting previous post image ${fileName}: ${error.message}`)));
+        }
+    } catch (error: any) {
+        e(new Error(`Error updating post: ${error.message}`));
+        res.status(500).json(oracleErrorResponse(error));
+    }
+}
+
 export const deleteMission = async (req: Request, res: Response): Promise<void> => {
     const postTest = req.claims?.tester ?? false;
     const {
