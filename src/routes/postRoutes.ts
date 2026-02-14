@@ -33,6 +33,14 @@ router.post(
 )
 
 router.post(
+    '/update',
+    verifyCustomClaims((claims) => claims.admin == true),
+    upload.array('images', 15),
+    propagateCustomClaims,
+    postController.updatePost
+)
+
+router.post(
     '/delete',
     verifyCustomClaims((claims) => claims.admin == true),
     propagateCustomClaims,
