@@ -41,7 +41,7 @@ export const createPost = async (req: Request, res: Response): Promise<void> => 
     if (
         !id ||
         !title ||
-        !content ||
+        (!content && !imageFileNames) ||
         !link ||
         !sourceId ||
         !date ||
