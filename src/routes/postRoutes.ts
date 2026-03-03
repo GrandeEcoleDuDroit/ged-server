@@ -40,8 +40,8 @@ router.post(
     postController.updatePost
 )
 
-router.post(
-    '/delete',
+router.delete(
+    '/:postId',
     verifyCustomClaims((claims) => claims.admin == true),
     propagateCustomClaims,
     postController.deleteMission
