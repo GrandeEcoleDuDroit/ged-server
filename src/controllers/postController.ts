@@ -156,33 +156,32 @@ export const updatePost = async (req: Request, res: Response): Promise<void> => 
 
 export const deleteMission = async (req: Request, res: Response): Promise<void> => {
     const postTest = req.claims?.tester ?? false;
-    const {
-        POST_ID: postId,
-        POST_IMAGE_FILE_NAMES: postImageFileNames
-    } = req.body;
-
-    if(!postId) {
-        res.status(400).json(badRequestErrorResponse);
-        return;
-    }
+    const postId = req.params.postId;
 
     try {
+        const post = await postRepository.getPost(postId, postTest);
+
+        if (!post) {
+            res.status(204);
+            return
+        }
+
         await postRepository.deletePost(postId, postTest);
         const serverResponse: ServerResponse = { message: 'Post has been deleted successfully' };
         res.status(200).json(serverResponse);
+
+        const imageFileNames = JSON.parse(post.imageFileNames) as string[];
+        imageFileNames.forEach((fileName: string) => {
+            imageRepository.deleteImage(getImagePath(fileName))
+                .catch((error: Error) => {
+                    e(new Error(`Error deleting post image ${fileName} : ${error.message}`));
+                });
+        });
     } catch (error: any) {
         e(new Error(`Error deleting post ${postId} : ${error.message}`));
         res.status(500).json(oracleErrorResponse(error));
         return;
     }
-
-    const imageFileNames = JSON.parse(postImageFileNames) as string[];
-    imageFileNames.forEach((fileName: string) => {
-        imageRepository.deleteImage(getImagePath(fileName))
-            .catch((error: Error) => {
-                e(new Error(`Error deleting post image ${fileName} : ${error.message}`));
-            });
-    });
 }
 
 
