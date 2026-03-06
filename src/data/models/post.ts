@@ -1,3 +1,5 @@
+import type {Reporter} from "@models/reporter";
+
 export interface Post {
     readonly id: string;
     readonly title: string;
@@ -18,4 +20,10 @@ export interface RemotePost {
     readonly POST_DATE: string;
     readonly POST_IMAGE_FILE_NAMES: string;
     readonly POST_TEST: boolean;
+}
+
+export interface PostReport {
+    postId: string;
+    reporter: Reporter;
+    reason: string;
 }

@@ -1,3 +1,5 @@
+import type {Reporter} from "@models/reporter";
+
 export interface Announcement {
     readonly id: string;
     readonly title: string;
@@ -15,11 +17,6 @@ export interface AnnouncementReport {
 }
 
 interface Author {
-    readonly fullName: string,
-    readonly email: string
-}
-
-interface Reporter {
     readonly fullName: string,
     readonly email: string
 }

@@ -1,8 +1,9 @@
 import OracleApi from '@api/oracleApi';
-import type {Post, RemotePost} from '@models/post';
+import type {Post, PostReport, RemotePost} from '@models/post';
 import PostField from '@fields/postField';
 import type {Result} from "oracledb";
 import {toPost} from "@data/mappers/postMapper";
+import {sendMail} from "@api/googleApi";
 
 const oracleApi = OracleApi.instance;
 
@@ -115,5 +116,16 @@ export default class PostRepository {
         };
 
         await oracleApi.execute(query, binds, { autoCommit: true });
+    }
+
+    async reportPost(report: PostReport) {
+        const subject = `Post report: ${report.postId}`;
+        const html = `
+           <p>The announcement ${report.postId} has been reported</p>
+           <p>Reported by: ${report.reporter.fullName} - <b>${report.reporter.email}</b></p>
+           <p>Reason: ${report.reason}</p>
+         `;
+
+        await sendMail(subject, html);
     }
 }

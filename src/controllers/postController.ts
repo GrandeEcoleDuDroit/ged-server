@@ -2,13 +2,14 @@ import type { Request, Response } from 'express';
 import PostRepository from '@repositories/postRepository';
 import {
     oracleErrorResponse,
-    badRequestErrorResponse
+    badRequestErrorResponse, internalServerErrorResponse
 } from '@utils/errorUtils';
 import type {ServerResponse} from '@models/serverResponse';
 import {Post} from '@models/post';
 import {e} from '@utils/logs';
 import ImageRepository from "@repositories/imageRepository";
 import {Readable} from "stream";
+import type {PostReport} from "@models/post";
 
 const postRepository = new PostRepository();
 const imageRepository = new ImageRepository();
@@ -184,6 +185,33 @@ export const deleteMission = async (req: Request, res: Response): Promise<void> 
     }
 }
 
+export const reportPost = async (req: Request, res: Response): Promise<void> => {
+    const {
+        postId: postId,
+        reporter: reporter,
+        reason: reason
+    } = req.body;
+
+    if (!postId || !reporter || !reason) {
+        res.status(400).json(badRequestErrorResponse);
+        return;
+    }
+
+    const report: PostReport = {
+        postId: postId,
+        reporter: reporter,
+        reason: reason
+    };
+
+    try {
+        await postRepository.reportPost(report);
+        const serverResponse: ServerResponse = { message: `Post has been reported successfully` };
+        res.status(200).json(serverResponse);
+    } catch (error: any) {
+        e(new Error(`Error reporting post ${postId}: ${error.message}`));
+        res.status(500).json(internalServerErrorResponse);
+    }
+};
 
 function getImagePath(fileName: string): string {
     return `PostImages/${fileName}`;
