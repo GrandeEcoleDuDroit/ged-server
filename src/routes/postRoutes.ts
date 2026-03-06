@@ -2,6 +2,7 @@ import express from 'express';
 import {propagateCustomClaims, verifyAuthIdToken, verifyCustomClaims} from '@middlewares/authMiddleware';
 import * as postController from '@controllers/postController';
 import multer from 'multer';
+import * as announcementsController from "@controllers/announcementsController";
 
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -45,6 +46,12 @@ router.delete(
     verifyCustomClaims((claims) => claims.admin == true),
     propagateCustomClaims,
     postController.deleteMission
+);
+
+router.post(
+    '/report',
+    verifyAuthIdToken,
+    postController.reportPost
 );
 
 export default router;
