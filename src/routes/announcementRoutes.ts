@@ -30,8 +30,8 @@ router.post(
     announcementsController.updateAnnouncement
 );
 
-router.post(
-    '/delete',
+router.delete(
+    '/:announcementId',
     verifyCustomClaims((claims) => claims.admin == true),
     propagateCustomClaims,
     deleteAnnouncementMiddleware,
