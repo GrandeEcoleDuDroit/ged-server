@@ -92,17 +92,15 @@ export const updateAnnouncement = async (req: Request, res: Response): Promise<v
 };
 
 export const deleteAnnouncement = async (req: Request, res: Response): Promise<void> => {
+    const announcementId = req.params.announcementId;
     const announcementTest = req.claims?.tester ?? false;
-    const {
-        ANNOUNCEMENT_ID: announcementId,
-        USER_ID: userId
-    } = req.body;
+    const userId = req.uid;
 
     if (!announcementId || !userId) {
         res.status(400).json(badRequestErrorResponse);
         return;
     }
-
+    
     try {
         await announcementRepository.deleteAnnouncement(announcementId, announcementTest, userId);
         const serverResponse: ServerResponse = { message: 'Announcement deleted successfully' };
