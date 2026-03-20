@@ -7,7 +7,7 @@ import {MissionErrorCodes} from "@data/error/missionErrorCodes";
 const missionRepository = new MissionRepository();
 
 const addParticipantMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const tester = req.claims?.tester ?? false;
+    const missionTest = req.claims?.tester ?? false;
     const {
         MISSION_ID: missionId,
         USER_ID: userId,
@@ -24,7 +24,7 @@ const addParticipantMiddleware = async (req: Request, res: Response, next: NextF
     }
 
     try {
-        const mission = await missionRepository.getMission(missionId);
+        const mission = await missionRepository.getMission(missionId, missionTest);
         const missionParticipants = await missionRepository.getMissionParticipants(missionId)
 
         if (!mission) {
@@ -32,7 +32,7 @@ const addParticipantMiddleware = async (req: Request, res: Response, next: NextF
             return;
         }
 
-        if (tester != mission.test || userId != req.uid) {
+        if (missionTest != mission.test || userId != req.uid) {
             res.status(403).json(forbiddenErrorResponse);
             return;
         }

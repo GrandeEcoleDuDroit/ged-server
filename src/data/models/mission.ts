@@ -40,7 +40,7 @@ interface UserInfo {
     readonly email: string
 }
 
-export interface OracleMission {
+export interface RemoteMission {
     readonly MISSION_ID: string;
     readonly MISSION_TITLE: string;
     readonly MISSION_DESCRIPTION: string;
@@ -52,6 +52,22 @@ export interface OracleMission {
     readonly MISSION_MAX_PARTICIPANTS: number;
     readonly MISSION_IMAGE_FILE_NAME: string | null;
     readonly MISSION_TEST: number;
+}
+
+export interface RemoteMissionManager {
+    readonly MISSION_ID: string;
+    readonly USER_ID: string;
+}
+
+export interface RemoteMissionParticipant {
+    readonly MISSION_ID: string;
+    readonly USER_ID: string;
+}
+
+export interface RemoteMissionTask {
+    readonly MISSION_TASK_ID: string;
+    readonly MISSION_TASK_VALUE: string;
+    readonly MISSION_ID: string;
 }
 
 export interface InboundOracleMission {
@@ -68,22 +84,6 @@ export interface InboundOracleMission {
     readonly MISSION_MAX_PARTICIPANTS: number;
     readonly MISSION_TASKS: InboundOracleMissionTask[];
     readonly MISSION_IMAGE_FILE_NAME: string | null;
-}
-
-export interface OracleMissionManager {
-    readonly MISSION_ID: string;
-    readonly USER_ID: string;
-}
-
-export interface OracleMissionParticipant {
-    readonly MISSION_ID: string;
-    readonly USER_ID: string;
-}
-
-export interface OracleMissionTask {
-    readonly MISSION_TASK_ID: string;
-    readonly MISSION_TASK_VALUE: string;
-    readonly MISSION_ID: string;
 }
 
 export interface InboundOracleMissionTask {

@@ -6,9 +6,9 @@ import type {
     Mission,
     MissionTask,
     MissionReport,
-    OracleMission,
-    OracleMissionTask,
-    OracleMissionParticipant, OracleMissionManager, InboundOracleMission
+    RemoteMission,
+    RemoteMissionTask,
+    RemoteMissionParticipant, RemoteMissionManager, InboundOracleMission
 } from '@models/mission';
 import * as getMissionsQuery from '@queries/mission/getMissionsQuery';
 import * as getMissionQuery from '@queries/mission/getMissionQuery';
@@ -28,7 +28,7 @@ import {toUser} from "@data/mappers/userMapper";
 const oracleApi = OracleApi.instance;
 
 export default class MissionRepository {
-    async getMissions(missionTest: boolean) {
+    async getMissions(missionTest: boolean): Promise<InboundOracleMission[]> {
         const result = await oracleApi.execute(
             getMissionsQuery.missionQuery,
             getMissionsQuery.binds(missionTest)
@@ -39,13 +39,13 @@ export default class MissionRepository {
         ) ?? [];
     }
 
-    async getMission(missionId: string) {
+    async getMission(missionId: string, missionTest: boolean): Promise<Mission | null> {
         const result = await oracleApi.execute(
             getMissionQuery.query,
-            getMissionQuery.binds(missionId)
+            getMissionQuery.binds(missionId, missionTest)
         ) as Result<string[]>;
         const missionJson = result.rows?.[0]?.[0];
-        return missionJson ? toMission(JSON.parse(missionJson) as OracleMission) : null;
+        return missionJson ? toMission(JSON.parse(missionJson) as RemoteMission) : null;
     }
 
     async getMissionManagers(missionId: string) {
@@ -56,7 +56,7 @@ export default class MissionRepository {
 
         return result.rows?.map(
             row => {
-                const oracleMissionManager = JSON.parse(row as [string][0]) as OracleMissionManager
+                const oracleMissionManager = JSON.parse(row as [string][0]) as RemoteMissionManager
                 return toMissionManager(oracleMissionManager)
             }
         ) ?? [];
@@ -70,7 +70,7 @@ export default class MissionRepository {
 
         return result.rows?.map(
             row => {
-                const oracleMissionParticipant = JSON.parse(row as [string][0]) as OracleMissionParticipant
+                const oracleMissionParticipant = JSON.parse(row as [string][0]) as RemoteMissionParticipant
                 return toMissionParticipant(oracleMissionParticipant)
             }
         ) ?? [];
@@ -98,7 +98,7 @@ export default class MissionRepository {
 
         return result.rows?.map(
             row => {
-                const oracleMissionTask = JSON.parse(row as [string][0]) as OracleMissionTask
+                const oracleMissionTask = JSON.parse(row as [string][0]) as RemoteMissionTask
                 return toMissionTask(oracleMissionTask)
             }
         ) ?? [];
