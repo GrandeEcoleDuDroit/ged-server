@@ -6,7 +6,7 @@ import MissionRepository from '@repositories/missionRepository';
 const missionRepository = new MissionRepository();
 
 const removeParticipantMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const tester = req.claims?.tester ?? false;
+    const missionTest = req.claims?.tester ?? false;
     const {
         MISSION_ID: missionId,
         USER_ID: userId
@@ -18,7 +18,7 @@ const removeParticipantMiddleware = async (req: Request, res: Response, next: Ne
     }
 
     try {
-        const mission = await missionRepository.getMission(missionId);
+        const mission = await missionRepository.getMission(missionId, missionTest);
         const missionManagers = await missionRepository.getMissionManagers(missionId);
 
         if (!mission) {
@@ -27,7 +27,7 @@ const removeParticipantMiddleware = async (req: Request, res: Response, next: Ne
         }
 
         const isAllowed = (): boolean => {
-            if (tester != mission.test) return false;
+            if (missionTest != mission.test) return false;
             if (userId == req.uid || req.claims?.admin) return true;
             return missionManagers.some(manager => manager.userId == req.uid);
         }

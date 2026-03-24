@@ -148,7 +148,7 @@ export const updateMission = async (req: Request, res: Response): Promise<void> 
     let previousMission: Mission | null = null;
 
     try {
-        previousMission = await missionRepository.getMission(mission.id)
+        previousMission = await missionRepository.getMission(mission.id, missionTest)
         const previousMissionManagerIds = await missionRepository.getMissionManagers(mission.id)
             .then(managers => managers.map(m => m.userId));
         const previousMissionManagerIdsSet = new Set(previousMissionManagerIds);
@@ -191,28 +191,24 @@ export const updateMission = async (req: Request, res: Response): Promise<void> 
 
         const serverResponse: ServerResponse = { message: 'Mission has been updated successfully'};
         res.status(201).json(serverResponse);
+
+        const previousImageFileName = previousMission?.imageFileName;
+        if (previousImageFileName && previousImageFileName != mission.imageFileName) {
+            await imageRepository.deleteImage(getImagePath(previousImageFileName))
+                .catch(error =>
+                    e(new Error(`Error deleting previous mission image ${previousImageFileName}: ${error.message}`))
+                );
+        }
     } catch (error: any) {
         e(new Error(`Error updating mission ${mission.id}: ${error.message}`));
         res.status(500).json(oracleErrorResponse(error));
         return;
     }
-
-    try {
-        const previousImageFileName = previousMission?.imageFileName;
-        if (previousImageFileName && previousImageFileName != mission.imageFileName) {
-            await imageRepository.deleteImage(getImagePath(previousImageFileName));
-        }
-    } catch (error: any) {
-        e(new Error(`Error deleting previous mission image ${previousMission?.id}: ${error.message}`));
-    }
 }
 
 export const deleteMission = async (req: Request, res: Response): Promise<void> => {
+    const missionId = req.params.missionId;
     const missionTest = req.claims?.tester ?? false;
-    const {
-        MISSION_ID: missionId,
-        MISSION_IMAGE_FILE_NAME: imageFileName
-    } = req.body;
 
     if(!missionId) {
         res.status(400).json(badRequestErrorResponse);
@@ -220,21 +216,24 @@ export const deleteMission = async (req: Request, res: Response): Promise<void> 
     }
 
     try {
+        const mission = await missionRepository.getMission(missionId, missionTest);
+
+        if (!mission) {
+            res.status(204);
+            return;
+        }
+
         await missionRepository.deleteMission(missionId, missionTest);
-        const serverResponse: ServerResponse = { message: 'Mission has been deleted successfully' };
-        res.status(200).json(serverResponse);
+        res.status(204);
+
+        if (mission.imageFileName) {
+            await imageRepository.deleteImage(getImagePath(mission.imageFileName))
+                .catch(error => e(new Error(`Error deleting mission image ${mission.imageFileName} : ${error.message}`)));
+        }
     } catch (error: any) {
         e(new Error(`Error deleting mission ${missionId} : ${error.message}`));
         res.status(500).json(oracleErrorResponse(error));
         return;
-    }
-
-    if (imageFileName) {
-        try {
-            await imageRepository.deleteImage(getImagePath(imageFileName));
-        } catch (error: any) {
-            e(new Error(`Error deleting mission image ${missionId} : ${error.message}`));
-        }
     }
 }
 

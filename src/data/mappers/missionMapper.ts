@@ -2,12 +2,12 @@ import type {
     Mission,
     MissionManager, MissionParticipant,
     MissionTask,
-    OracleMission,
-    OracleMissionManager, OracleMissionParticipant,
-    OracleMissionTask
+    RemoteMission,
+    RemoteMissionManager, RemoteMissionParticipant,
+    RemoteMissionTask
 } from '@models/mission';
 
-export const toMission = (oracleMission: OracleMission): Mission => ({
+export const toMission = (oracleMission: RemoteMission): Mission => ({
     id: oracleMission.MISSION_ID,
     title: oracleMission.MISSION_TITLE,
     description: oracleMission.MISSION_DESCRIPTION,
@@ -21,17 +21,17 @@ export const toMission = (oracleMission: OracleMission): Mission => ({
     test: oracleMission.MISSION_TEST == 1
 });
 
-export const toMissionManager = (oracleMissionManager: OracleMissionManager): MissionManager => ({
+export const toMissionManager = (oracleMissionManager: RemoteMissionManager): MissionManager => ({
     missionId: oracleMissionManager.MISSION_ID,
     userId: oracleMissionManager.USER_ID
 })
 
-export const toMissionParticipant = (oracleMissionParticipant: OracleMissionParticipant): MissionParticipant => ({
+export const toMissionParticipant = (oracleMissionParticipant: RemoteMissionParticipant): MissionParticipant => ({
     missionId: oracleMissionParticipant.MISSION_ID,
     userId: oracleMissionParticipant.USER_ID
 })
 
-export const toMissionTask = (oracleMissionTask: OracleMissionTask): MissionTask => ({
+export const toMissionTask = (oracleMissionTask: RemoteMissionTask): MissionTask => ({
     id: oracleMissionTask.MISSION_TASK_ID,
     value: oracleMissionTask.MISSION_TASK_VALUE
 })

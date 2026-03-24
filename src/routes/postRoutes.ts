@@ -1,10 +1,19 @@
 import express from 'express';
-import * as announcementsController from '@controllers/announcementsController';
 import {propagateCustomClaims, verifyAuthIdToken, verifyCustomClaims} from '@middlewares/authMiddleware';
-import {
-    deleteAnnouncementMiddleware,
-    updateAnnouncementMiddleware
-} from '@middlewares/announcementMiddleware';
+import * as postController from '@controllers/postController';
+import multer from 'multer';
+
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 5 * 1024 * 1024 },
+    fileFilter: (_, file, callback) => {
+        if (file.mimetype.startsWith("image/")) {
+            callback(null, true);
+        } else {
+            callback(new Error("Only images are allowed"));
+        }
+    }
+});
 
 const router = express.Router();
 
@@ -12,36 +21,36 @@ router.get(
     '/',
     verifyAuthIdToken,
     propagateCustomClaims,
-    announcementsController.getAnnouncements
+    postController.getPosts
 );
 
 router.post(
     '/create',
     verifyCustomClaims((claims) => claims.admin == true),
+    upload.array('image', 15),
     propagateCustomClaims,
-    announcementsController.createAnnouncement
-);
+    postController.createPost
+)
 
 router.post(
     '/update',
     verifyCustomClaims((claims) => claims.admin == true),
+    upload.array('image', 15),
     propagateCustomClaims,
-    updateAnnouncementMiddleware,
-    announcementsController.updateAnnouncement
-);
+    postController.updatePost
+)
 
 router.delete(
-    '/:announcementId',
+    '/:postId',
     verifyCustomClaims((claims) => claims.admin == true),
     propagateCustomClaims,
-    deleteAnnouncementMiddleware,
-    announcementsController.deleteAnnouncement
+    postController.deleteMission
 );
 
 router.post(
     '/report',
     verifyAuthIdToken,
-    announcementsController.reportAnnouncement
+    postController.reportPost
 );
 
 export default router;

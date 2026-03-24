@@ -1,10 +1,11 @@
 import express from 'express';
 import multer from 'multer';
 import * as missionController from '@controllers/missionController';
+import {propagateCustomClaims, verifyAuthIdToken, verifyCustomClaims} from '@middlewares/authMiddleware';
 import addMissionParticipantMiddleware from '@middlewares/mission/addMissionParticipantMiddleware';
 import removeMissionParticipantMiddleware from '@middlewares/mission/removeMissionParticipantMiddleware';
 import updateMissionMiddleware from '@middlewares/mission/updateMissionMiddleware';
-import {propagateCustomClaims, verifyAuthIdToken, verifyCustomClaims} from '@middlewares/authMiddleware';
+import deleteMissionMiddleware from "@middlewares/mission/deleteMissionMiddleware";
 
 const upload = multer({ storage: multer.memoryStorage() });
 const router = express.Router();
@@ -33,10 +34,11 @@ router.post(
     missionController.updateMission
 );
 
-router.post(
-    '/delete',
+router.delete(
+    '/:missionId',
     verifyCustomClaims((claims) => claims.admin == true),
     propagateCustomClaims,
+    deleteMissionMiddleware,
     missionController.deleteMission
 );
 

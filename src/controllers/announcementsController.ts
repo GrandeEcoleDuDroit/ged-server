@@ -9,13 +9,13 @@ import {
 } from '@utils/errorUtils';
 import type {ServerResponse} from '@models/serverResponse';
 
-const announcementsRepository = new AnnouncementRepository();
+const announcementRepository = new AnnouncementRepository();
 
 export const getAnnouncements = async (req: Request, res: Response): Promise<void> => {
     const announcementTest = req.claims?.tester ?? false;
 
     try {
-        const result = await announcementsRepository.getAnnouncements(announcementTest);
+        const result = await announcementRepository.getAnnouncements(announcementTest);
         res.json(result);
     } catch (error: any) {
         e(new Error(`Error getting announcements: ${error.message}`));
@@ -48,7 +48,7 @@ export const createAnnouncement = async (req: Request, res: Response): Promise<v
     };
 
     try {
-        await announcementsRepository.createAnnouncement(announcement);
+        await announcementRepository.createAnnouncement(announcement);
         const serverResponse: ServerResponse = { message: 'Announcement created successfully' };
         res.status(201).json(serverResponse);
     } catch (error: any) {
@@ -82,7 +82,7 @@ export const updateAnnouncement = async (req: Request, res: Response): Promise<v
     };
 
     try {
-        await announcementsRepository.updateAnnouncement(announcement);
+        await announcementRepository.updateAnnouncement(announcement);
         const serverResponse: ServerResponse = { message: 'Announcement updated successfully' };
         res.status(201).json(serverResponse);
     } catch (error: any) {
@@ -92,21 +92,18 @@ export const updateAnnouncement = async (req: Request, res: Response): Promise<v
 };
 
 export const deleteAnnouncement = async (req: Request, res: Response): Promise<void> => {
+    const announcementId = req.params.announcementId;
     const announcementTest = req.claims?.tester ?? false;
-    const {
-        ANNOUNCEMENT_ID: announcementId,
-        USER_ID: userId
-    } = req.body;
+    const userId = req.uid;
 
     if (!announcementId || !userId) {
         res.status(400).json(badRequestErrorResponse);
         return;
     }
-
+    
     try {
-        await announcementsRepository.deleteAnnouncement(announcementId, announcementTest, userId);
-        const serverResponse: ServerResponse = { message: 'Announcement deleted successfully' };
-        res.status(200).json(serverResponse);
+        await announcementRepository.deleteAnnouncement(announcementId, announcementTest, userId);
+        res.status(204);
     } catch (error: any) {
         e(new Error(`Error deleting announcement ${announcementId} : ${error.message}`));
         res.status(500).json(oracleErrorResponse(error));
@@ -134,7 +131,7 @@ export const reportAnnouncement = async (req: Request, res: Response): Promise<v
     };
 
     try {
-        await announcementsRepository.reportAnnouncement(report);
+        await announcementRepository.reportAnnouncement(report);
         const serverResponse: ServerResponse = { message: `Announcement reported successfully` };
         res.status(200).json(serverResponse);
     } catch (error: any) {

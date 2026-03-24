@@ -2,12 +2,13 @@ import OracleApi from '@api/oracleApi';
 import { sendMail } from '@api/googleApi';
 import AnnouncementField from '@fields/announcementField';
 import {UserField} from '@fields/userField';
-import type { Announcement, AnnouncementReport } from '@models/announcement';
+import {Announcement, AnnouncementReport, RemoteAnnouncement} from '@models/announcement';
+import type {Result} from "oracledb";
 
 const oracleApi = OracleApi.instance;
 
 export default class AnnouncementRepository {
-    async getAnnouncements(announcementTest: boolean): Promise<Announcement[]> {
+    async getAnnouncements(announcementTest: boolean): Promise<RemoteAnnouncement[]> {
         const query = `
             SELECT JSON_OBJECT(*) 
             FROM ${AnnouncementField.TABLE_NAME} 
@@ -18,8 +19,26 @@ export default class AnnouncementRepository {
 
         const result = await oracleApi.execute(query, binds);
         return result.rows?.map(row =>
-            JSON.parse(row as [string][0]) as Announcement
+            JSON.parse(row as [string][0]) as RemoteAnnouncement
         ) ?? [];
+    }
+
+    async getAnnouncement(announcementId: string, announcementTest: boolean): Promise<RemoteAnnouncement | null> {
+        const query = `
+            SELECT JSON_OBJECT(*) 
+            FROM ${AnnouncementField.TABLE_NAME} 
+            NATURAL JOIN ${UserField.TABLE_NAME}
+            WHERE ${AnnouncementField.ANNOUNCEMENT_ID} = :announcement_id AND 
+                  ${AnnouncementField.ANNOUNCEMENT_TEST} = :announcement_test
+        `;
+        const binds = {
+            announcement_id: announcementId,
+            announcement_test: announcementTest ? 1 : 0
+        };
+
+        const result = await oracleApi.execute(query, binds) as Result<string[]>;;
+        const announcementJson = result.rows?.[0]?.[0];
+        return announcementJson ? JSON.parse(announcementJson) as RemoteAnnouncement : null;
     }
 
     async createAnnouncement(announcement: Announcement) {
