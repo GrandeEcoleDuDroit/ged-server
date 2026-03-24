@@ -2,7 +2,6 @@ import express from 'express';
 import {propagateCustomClaims, verifyAuthIdToken, verifyCustomClaims} from '@middlewares/authMiddleware';
 import * as postController from '@controllers/postController';
 import multer from 'multer';
-import * as announcementsController from "@controllers/announcementsController";
 
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -28,7 +27,7 @@ router.get(
 router.post(
     '/create',
     verifyCustomClaims((claims) => claims.admin == true),
-    upload.array('images', 15),
+    upload.array('image', 15),
     propagateCustomClaims,
     postController.createPost
 )
@@ -36,7 +35,7 @@ router.post(
 router.post(
     '/update',
     verifyCustomClaims((claims) => claims.admin == true),
-    upload.array('images', 15),
+    upload.array('image', 15),
     propagateCustomClaims,
     postController.updatePost
 )
