@@ -168,8 +168,7 @@ export const deleteMission = async (req: Request, res: Response): Promise<void> 
         }
 
         await postRepository.deletePost(postId, postTest);
-        const serverResponse: ServerResponse = { message: 'Post has been deleted successfully' };
-        res.status(200).json(serverResponse);
+        res.status(204);
 
         const imageFileNames = JSON.parse(post.imageFileNames) as string[];
         imageFileNames.forEach((fileName: string) => {

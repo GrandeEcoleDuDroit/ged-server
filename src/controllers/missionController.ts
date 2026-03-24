@@ -224,8 +224,7 @@ export const deleteMission = async (req: Request, res: Response): Promise<void> 
         }
 
         await missionRepository.deleteMission(missionId, missionTest);
-        const serverResponse: ServerResponse = { message: 'Mission has been deleted successfully' };
-        res.status(200).json(serverResponse);
+        res.status(204);
 
         if (mission.imageFileName) {
             await imageRepository.deleteImage(getImagePath(mission.imageFileName))
